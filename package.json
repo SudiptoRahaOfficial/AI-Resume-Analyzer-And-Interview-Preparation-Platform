@@ -1,0 +1,22 @@
+{
+	"name": "ai-resume-analyzer-and-interview-preparation-platform",
+	"version": "1.0.0",
+	"description": "A Production-ready full stack GenAI platform for resume analysis, ATS optimization, skill-gap detection, and AI-powered interview preparation.",
+	"main": "server.js",
+	"scripts": {
+		"dev": "nodemon server.js",
+		"prod": "node server.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"dependencies": {
+		"dotenv": "^18.0.3",
+		"express": "^5.2.1",
+		"mongoose": "^9.10.2"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.14"
+	}
+}
