@@ -20,11 +20,17 @@ const userSchema = new Schema(
 			type: String,
 			trim: true,
 			required: [true, 'Email is required'],
+			lowercase: true,
+			match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email address'],
 			unique: [true, 'Already have an account with this email'],
 		},
 		password: {
 			type: String,
 			required: [true, 'Password is required'],
+			match: [
+				/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+				'Password must be at least 8 characters, contain uppercase & lowercase letter, one number, and one special character',
+			],
 		},
 	},
 	{ timestamps: true },
