@@ -352,7 +352,7 @@ async function resendVerifyEmailController(req, res) {
 
 		try {
 			// sending email to user on signup
-			await sendOTPEmail(user.email, user.name, otp)
+			await sendOTPEmail(user.email, user.username, otp)
 		} catch (emailError) {
 			// if email sending failed remove the newly created OTP
 			await otpModel.deleteOne({
