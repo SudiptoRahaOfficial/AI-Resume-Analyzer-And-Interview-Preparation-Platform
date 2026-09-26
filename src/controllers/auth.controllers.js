@@ -144,6 +144,7 @@ async function signupController(req, res) {
 				id: user._id,
 				username: user.username,
 				email: user.email,
+				verified: user.verified,
 			},
 		})
 	} catch (error) {
@@ -161,7 +162,130 @@ async function signupController(req, res) {
 	}
 }
 
+/**
+    - verify-email controller
+    - POST API - "/api/auth/verify-email"
+ */
+async function verifyEmailController(req, res) {
+	// extracting all data sent by client
+	const { otp, email } = req.body
+
+	// validating required fields
+	if (!otp || !email) {
+		return res.status(400).json({
+			message: 'Email and OTP are required',
+			success: false,
+		})
+	}
+
+	// validating fields type
+	if (typeof email !== 'string' || typeof otp !== 'string') {
+		return res.status(400).json({
+			message: 'Email and OTP must be strings',
+			success: false,
+		})
+	}
+
+	// normalizing email
+	const normalizedEmail = email.trim().toLowerCase()
+
+	// validating email format
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+		return res.status(400).json({
+			message: 'Invalid email address',
+			success: false,
+		})
+	}
+
+	// validating OTP format
+	if (!/^\d{6}$/.test(otp)) {
+		return res.status(400).json({
+			message: 'Invalid OTP format',
+			success: false,
+		})
+	}
+
+	try {
+		// autometically claim one OTP verification attempt
+		const otpDoc = await otpModel.findOneAndUpdate(
+			{
+				email: normalizedEmail,
+				expiresAt: { $gt: new Date() },
+				attempts: { $lt: securityConfig.MAX_OTP_ATTEMPTS },
+			},
+			{
+				$inc: { attempts: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+		)
+
+		// returning failed response if OTP is invalid, expired, or attempts over
+		if (!otpDoc) {
+			return res.status(400).json({
+				message: 'Invalid or expired OTP',
+				success: false,
+			})
+		}
+
+		// securely comparing provided OTP with stored OTP
+		const isOtpValid = await bcrypt.compare(otp, otpDoc.otpHash)
+
+		// returning failed response if OTP is incorrect
+		if (!isOtpValid) {
+			return res.status(400).json({
+				message: 'Invalid or expired OTP',
+				success: false,
+			})
+		}
+
+		// updating verified status true at user document if OTP verified
+		const user = await userModel.findOneAndUpdate(
+			{ _id: otpDoc.user, verified: false },
+			{ $set: { verified: true } },
+			{ returnDocument: 'after' },
+		)
+
+		// returning failed response if user does not exist
+		if (!user) {
+			return res.status(404).json({
+				message: 'User not found',
+				success: false,
+			})
+		}
+
+		// deleting all OTPs belonging to the user
+		await otpModel.deleteMany({ user: otpDoc.user })
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Email verified successfully',
+			success: true,
+			user: {
+				id: user._id,
+				username: user.username,
+				email: user.email,
+				verified: user.verified,
+			},
+		})
+	} catch (error) {
+		// logging on unexpected server error
+		console.error('Email verification failed', {
+			error: error.message,
+			stack: error.stack,
+		})
+
+		// response back on server error
+		return res.status(500).json({
+			message: 'Internal server error',
+			success: false,
+		})
+	}
+}
+
 // exporting controllers
 module.exports = {
 	signupController,
+	verifyEmailController,
 }

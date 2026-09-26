@@ -32,6 +32,10 @@ const userSchema = new Schema(
 				'Password must be at least 8 characters, contain uppercase & lowercase letter, one number, and one special character',
 			],
 		},
+		verified: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true },
 )
