@@ -5,7 +5,7 @@
 
 // importing dependencis
 const nodemailer = require('nodemailer')
-const envConfig = require('../config/env.config')
+const envConfig = require('../configs/env.config')
 
 // configuring transporter
 const transporter = nodemailer.createTransport({

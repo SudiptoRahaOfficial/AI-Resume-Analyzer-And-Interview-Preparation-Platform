@@ -7,7 +7,16 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const envConfig = require('../configs/env.config')
+const securityConfig = require('../configs/security.config')
 const userModel = require('../models/user.model')
+const otpModel = require('../models/otp.model')
+const sessionModel = require('../models/session.model')
+const { generateSecureOTP } = require('../utils/auth.utils')
+const {
+	sendSignupEmail,
+	sendSigninEmail,
+	sendOTPEmail,
+} = require('../services/email.service')
 
 /**
     - signup controller
@@ -59,7 +68,7 @@ async function signupController(req, res) {
 
 	// validating password format
 	if (
-		!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+		!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/.test(
 			password,
 		)
 	) {
@@ -101,8 +110,54 @@ async function signupController(req, res) {
 			email: normalizedEmail,
 			password: passwordHash,
 		})
+
+		// generating otp & encrypting otp
+		const otp = generateSecureOTP()
+		const otpHash = await bcrypt.hash(otp, 10)
+
+		// creating new otp document to db
+		const otpDoc = await otpModel.create({
+			email: user.email,
+			user: user._id,
+			otpHash,
+			expiresAt: new Date(Date.now() + 3 * 60 * 1000),
+		})
+
+		try {
+			// sending email to user on signup
+			await sendSignupEmail(user.email, user.username, otp)
+		} catch (emailError) {
+			// if email sending failed remove the newly created OTP
+			await otpModel.deleteOne({
+				_id: otpDoc._id,
+			})
+
+			// throwing email error
+			throw emailError
+		}
+
+		// response back on success
+		return res.status(201).json({
+			message: 'Signup successful! Please verify your email.',
+			success: true,
+			user: {
+				id: user._id,
+				username: user.username,
+				email: user.email,
+			},
+		})
 	} catch (error) {
-		console.log(error)
+		// logging on unexpected server error
+		console.error('Signup failed', {
+			error: error.message,
+			stack: error.stack,
+		})
+
+		// response back on server error
+		return res.status(500).json({
+			message: 'Internal server error',
+			success: false,
+		})
 	}
 }
 
