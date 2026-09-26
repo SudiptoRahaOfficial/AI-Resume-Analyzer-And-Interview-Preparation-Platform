@@ -16,6 +16,7 @@ const {
 	verifyEmailController,
 	resendVerifyEmailController,
 	signinController,
+	refreshTokenController,
 } = require('../controllers/auth.controllers')
 
 // signup : POST API - "/api/auth/signup"
@@ -38,6 +39,9 @@ router.post(
 	signinIpRateLimiter,
 	signinController,
 )
+
+// refresh-token : POST API - "/api/auth/refresh-token"
+router.post('/refresh-token', refreshTokenController)
 
 // exporting router
 module.exports = router
