@@ -383,9 +383,168 @@ async function resendVerifyEmailController(req, res) {
 	}
 }
 
+/**
+    - signin controller
+    - POST API - "/api/auth/signin"
+ */
+async function signinController(req, res) {
+	// extracting all data sent by client
+	const { username, email, password } = req.body
+
+	// normalizing username & email
+	const normalizedUsername = username?.trim()
+	const normalizedEmail = email?.trim().toLowerCase()
+
+	// validating required fields
+	if ((!normalizedUsername && !normalizedEmail) || !password) {
+		return res.status(400).json({
+			message: 'Username or email and password are required',
+			success: false,
+		})
+	}
+
+	// validating that only one identifier is provided
+	if (normalizedUsername && normalizedEmail) {
+		return res.status(400).json({
+			message: 'Provide either username or email, not both',
+			success: false,
+		})
+	}
+
+	// validating email format
+	if (
+		normalizedEmail &&
+		!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+	) {
+		return res.status(400).json({
+			message: 'Invalid email address',
+			success: false,
+		})
+	}
+
+	// making query accroding username/email
+	const query = normalizedUsername
+		? { username: normalizedUsername }
+		: { email: normalizedEmail }
+
+	try {
+		// finding user to db by username or email
+		const user = await userModel.findOne(query)
+
+		// returning error response if user not found
+		if (!user) {
+			return res.status(401).json({
+				message: 'Invalid credentials',
+				success: false,
+			})
+		}
+
+		// returning failed response if email not verified
+		if (!user.verified) {
+			return res.status(401).json({
+				message: 'Email not verified',
+				success: false,
+			})
+		}
+
+		// checking for password valid/invalid
+		const isPasswordValid = await bcrypt.compare(password, user.password)
+
+		// returning error response if password invalid
+		if (!isPasswordValid) {
+			return res.status(401).json({
+				message: 'Invalid email or password',
+				success: false,
+			})
+		}
+
+		// creating an empty session to generate a unique session id
+		const session = await sessionModel.create({
+			user: user._id,
+			ip: req.ip,
+			userAgent: req.headers['user-agent'],
+			expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+		})
+
+		// generating refresh token
+		const refreshToken = jwt.sign(
+			{
+				type: 'refresh',
+				id: user._id,
+				sessionId: session._id,
+			},
+			envConfig.JWT_REFRESH_TOKEN_SECRET,
+			{ expiresIn: '7d' },
+		)
+
+		// hashing & storing refresh token at session
+		const refreshTokenHash = await bcrypt.hash(refreshToken, 10)
+		session.refreshTokenHash = refreshTokenHash
+		await session.save()
+
+		// setting refreshToken to browser's cookie
+		res.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		})
+
+		// generating access token
+		const accessToken = jwt.sign(
+			{
+				type: 'access',
+				id: user._id,
+				sessionId: session._id,
+			},
+			envConfig.JWT_ACCESS_TOKEN_SECRET,
+			{ expiresIn: '15m' },
+		)
+
+		try {
+			// sending email to user on signin
+			await sendSigninEmail(user.email, user.username)
+		} catch (emailError) {
+			// logging email delivery failure
+			console.error('Signin email delivery failed', {
+				userId: user._id.toString(),
+				email: user.email,
+				error: emailError.message,
+				stack: emailError.stack,
+			})
+		}
+
+		// response back on success
+		return res.status(200).json({
+			message: 'User signed in successfully',
+			success: true,
+			user: {
+				id: user._id,
+				username: user.username,
+				email: user.email,
+				verified: user.verified,
+			},
+			accessToken,
+		})
+	} catch (error) {
+		// logging on unexpected server error
+		console.error('Signin failed', {
+			error: error.message,
+			stack: error.stack,
+		})
+
+		// response back on server error
+		return res.status(500).json({
+			message: 'Internal server error',
+			success: false,
+		})
+	}
+}
+
 // exporting controllers
 module.exports = {
 	signupController,
 	verifyEmailController,
 	resendVerifyEmailController,
+	signinController,
 }
