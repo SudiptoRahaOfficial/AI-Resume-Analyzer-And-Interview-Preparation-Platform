@@ -18,7 +18,7 @@ async function authenticateUser(req, res, next) {
 	if (!authorization) {
 		return res.status(401).json({
 			message: 'Authentication required',
-			status: 'failed',
+			success: false,
 		})
 	}
 
@@ -29,7 +29,7 @@ async function authenticateUser(req, res, next) {
 	if (scheme !== 'Bearer' || !accessToken) {
 		return res.status(401).json({
 			message: 'Invalid authorization header',
-			status: 'failed',
+			success: false,
 		})
 	}
 
@@ -47,7 +47,7 @@ async function authenticateUser(req, res, next) {
 		if (type !== 'access' || !id || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid access token',
-				status: 'failed',
+				success: false,
 			})
 		}
 
@@ -62,7 +62,7 @@ async function authenticateUser(req, res, next) {
 		if (!session) {
 			return res.status(401).json({
 				message: 'Invalid access token',
-				status: 'failed',
+				success: false,
 			})
 		}
 
@@ -73,7 +73,7 @@ async function authenticateUser(req, res, next) {
 		if (!user) {
 			return res.status(401).json({
 				message: 'Unauthenticated user',
-				status: 'failed',
+				success: false,
 			})
 		}
 
@@ -90,7 +90,7 @@ async function authenticateUser(req, res, next) {
 		) {
 			return res.status(401).json({
 				message: 'Invalid access token',
-				status: 'failed',
+				success: false,
 			})
 		}
 
@@ -103,7 +103,7 @@ async function authenticateUser(req, res, next) {
 		// response back on server error
 		return res.status(500).json({
 			message: 'Internal server error',
-			status: 'failed',
+			success: false,
 		})
 	}
 }
