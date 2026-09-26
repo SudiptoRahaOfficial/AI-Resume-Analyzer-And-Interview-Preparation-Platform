@@ -7,10 +7,12 @@
 const router = require('express').Router()
 const {
 	verifyEmailRateLimiter,
+	resendVerifyEmailRateLimiter,
 } = require('../middlewares/rate-limit.middlewares')
 const {
 	signupController,
 	verifyEmailController,
+	resendVerifyEmailController,
 } = require('../controllers/auth.controllers')
 
 // signup : POST API - "/api/auth/signup"
@@ -18,6 +20,13 @@ router.post('/signup', signupController)
 
 // verify-email : POST API - "/api/auth/verify-email"
 router.post('/verify-email', verifyEmailRateLimiter, verifyEmailController)
+
+// resend-verify-email : POST API - "/api/auth/resend-verify-email"
+router.post(
+	'/resend-verify-email',
+	resendVerifyEmailRateLimiter,
+	resendVerifyEmailController,
+)
 
 // exporting router
 module.exports = router
