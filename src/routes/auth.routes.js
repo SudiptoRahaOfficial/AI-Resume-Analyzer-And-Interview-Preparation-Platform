@@ -17,6 +17,7 @@ const {
 	resendVerifyEmailController,
 	signinController,
 	refreshTokenController,
+	signoutController,
 } = require('../controllers/auth.controllers')
 
 // signup : POST API - "/api/auth/signup"
@@ -42,6 +43,9 @@ router.post(
 
 // refresh-token : POST API - "/api/auth/refresh-token"
 router.post('/refresh-token', refreshTokenController)
+
+// signout : POST API - "/api/auth/signout"
+router.post('/signout', signoutController)
 
 // exporting router
 module.exports = router
