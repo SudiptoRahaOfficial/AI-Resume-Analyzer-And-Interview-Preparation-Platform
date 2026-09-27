@@ -1,5 +1,5 @@
 {
-	"name": "ai-resume-analyzer-and-interview-preparation-platform",
+	"name": "ai-resume-analyzer-and-interview-preparation-platform-backend",
 	"version": "1.0.0",
 	"description": "A Production-ready full stack GenAI platform for resume analysis, ATS optimization, skill-gap detection, and AI-powered interview preparation.",
 	"main": "server.js",
