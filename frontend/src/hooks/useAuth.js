@@ -14,8 +14,16 @@ import {
 // making useAuth custom hook
 export const useAuth = () => {
 	const context = useContext(AuthContext)
-	const { user, setUser, loading, setLoading, accessToken, setAccessToken } =
-		context
+	const {
+		user,
+		setUser,
+		loading,
+		setLoading,
+		accessToken,
+		setAccessToken,
+		isAuthenticated,
+		setIsAuthenticated,
+	} = context
 
 	const handleSignup = async ({ username, email, password }) => {
 		try {
@@ -78,6 +86,7 @@ export const useAuth = () => {
 
 			setUser(data.user)
 			setAccessToken(data.accessToken)
+			setIsAuthenticated(true)
 
 			return data
 		} finally {
@@ -90,11 +99,13 @@ export const useAuth = () => {
 			const data = await callRefreshTokenApi()
 
 			setAccessToken(data.accessToken)
+			setIsAuthenticated(true)
 
 			return data.accessToken
 		} catch (error) {
 			setUser(null)
 			setAccessToken(null)
+			setIsAuthenticated(false)
 
 			throw error
 		}
@@ -108,6 +119,7 @@ export const useAuth = () => {
 
 			setUser(null)
 			setAccessToken(null)
+			setIsAuthenticated(false)
 
 			return data
 		} finally {
@@ -123,6 +135,7 @@ export const useAuth = () => {
 
 			setUser(null)
 			setAccessToken(null)
+			setIsAuthenticated(false)
 
 			return data
 		} finally {
