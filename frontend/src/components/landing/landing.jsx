@@ -19,7 +19,7 @@ export default function LandingPage() {
 
 			{/* ================= NAVBAR ================= */}
 			<header className='sticky top-0 z-50 border-b border-white/10 bg-[#030712]/80 backdrop-blur-xl'>
-				<div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-6'>
+				<div className='relative mx-auto flex h-16 max-w-6xl items-center justify-between px-6'>
 					{/* Brand */}
 					<a
 						href='/'
@@ -29,7 +29,7 @@ export default function LandingPage() {
 					</a>
 
 					{/* Desktop Navigation */}
-					<nav className='hidden items-center gap-8 lg:flex'>
+					<nav className='absolute left-1/2 -translate-x-1/2 hidden items-center gap-8 lg:flex'>
 						<a
 							href='#features'
 							className='text-sm font-medium text-gray-400 transition hover:text-white'

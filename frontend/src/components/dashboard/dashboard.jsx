@@ -34,9 +34,12 @@ export default function Dashboard() {
 							Settings
 						</button>
 
-						<div className='flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/10 text-sm font-semibold text-cyan-300 ring-1 ring-cyan-400/20'>
+						<button
+							onClick={() => router.push('/profile')}
+							className='flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/10 text-sm font-semibold text-cyan-300 ring-1 ring-cyan-400/20 cursor-pointer'
+						>
 							SR
-						</div>
+						</button>
 					</div>
 				</div>
 			</header>
