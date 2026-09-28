@@ -153,12 +153,12 @@ export default function LandingPage() {
 			</header>
 
 			{/* ================= HERO ================= */}
-			<section className='relative z-10 mx-auto flex max-w-6xl flex-col items-center px-6 py-24 text-center'>
+			<section className='relative z-10 mx-auto flex max-w-6xl flex-col items-center px-6 py-14 md:py-24 text-center'>
 				<div className='mb-6 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-1 text-sm text-cyan-300'>
 					AI-Powered Interview Preparation Platform
 				</div>
 
-				<h2 className='max-w-4xl text-5xl font-bold leading-tight tracking-tight md:text-6xl'>
+				<h2 className='max-w-4xl text-5xl md:text-6xl font-bold leading-tight tracking-tight'>
 					Land More Interviews with{' '}
 					<span className='text-cyan-400'>AI</span>
 				</h2>
