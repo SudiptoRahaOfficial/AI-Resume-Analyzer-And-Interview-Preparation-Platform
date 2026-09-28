@@ -1,63 +1,12 @@
+// making client component
 'use client'
 
-import { useState } from 'react'
+// importing dependencis
 import { useRouter } from 'next/navigation'
 
 export default function Signin() {
+	// router for page navigation
 	const router = useRouter()
-
-	const [identifier, setIdentifier] = useState('')
-	const [password, setPassword] = useState('')
-	const [loading, setLoading] = useState(false)
-	const [error, setError] = useState('')
-
-	const handleSubmit = async (e) => {
-		e.preventDefault()
-		setError('')
-
-		const value = identifier.trim()
-
-		if (!value || !password) {
-			setError('Username or email and password are required')
-			return
-		}
-
-		setLoading(true)
-
-		try {
-			const isEmail = value.includes('@')
-
-			const payload = isEmail
-				? { email: value.toLowerCase(), password }
-				: { username: value, password }
-
-			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					credentials: 'include',
-					body: JSON.stringify(payload),
-				},
-			)
-
-			const data = await response.json()
-
-			if (!response.ok) {
-				throw new Error(data.message || 'Signin failed')
-			}
-
-			localStorage.setItem('accessToken', data.accessToken)
-
-			router.push('/dashboard')
-		} catch (err) {
-			setError(err.message)
-		} finally {
-			setLoading(false)
-		}
-	}
 
 	return (
 		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030712] px-6 py-12 text-white'>
@@ -99,7 +48,7 @@ export default function Signin() {
 
 					{/* Form */}
 					<form
-						onSubmit={handleSubmit}
+						// onSubmit={handleSubmit}
 						className='space-y-5'
 					>
 						{/* Identifier */}
@@ -111,7 +60,7 @@ export default function Signin() {
 							<input
 								type='text'
 								placeholder='Enter username or email'
-								value={identifier}
+								// value={identifier}
 								onChange={(e) => setIdentifier(e.target.value)}
 								className='w-full rounded-md border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-cyan-400/60 focus:bg-white/3 focus:ring-1 focus:ring-cyan-400/30'
 							/>
@@ -126,26 +75,26 @@ export default function Signin() {
 							<input
 								type='password'
 								placeholder='Enter password'
-								value={password}
+								// value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								className='w-full rounded-md border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-cyan-400/60 focus:bg-white/3 focus:ring-1 focus:ring-cyan-400/30'
 							/>
 						</div>
 
 						{/* Error */}
-						{error && (
+						{/* {error && (
 							<div className='rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-5 text-red-300'>
 								{error}
 							</div>
-						)}
+						)} */}
 
 						{/* Submit */}
 						<button
 							type='submit'
-							disabled={loading}
+							// disabled={loading}
 							className='w-full rounded-md bg-cyan-400 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 hover:shadow-lg hover:shadow-cyan-400/10 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer'
 						>
-							{loading ? 'Signing In...' : 'Sign In'}
+							{/* {loading ? 'Signing In...' : 'Sign In'} */}
 						</button>
 					</form>
 
