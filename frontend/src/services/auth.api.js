@@ -18,8 +18,16 @@ export async function callSignupApi({ username, email, password }) {
 
 		return response.data
 	} catch (error) {
+
+		console.log('========== SIGNUP API ERROR ==========')
+		console.log('error:', error)
+		console.log('error.response:', error.response)
+		console.log('error.response?.data:', error.response?.data)
+		console.log('error.message:', error.message)
+		console.log('======================================')
+
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Something went wrong',
 				success: false,
 			}
@@ -38,7 +46,7 @@ export async function callVerifyEmailApi({ otp, email }) {
 		return response.data
 	} catch (error) {
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Something went wrong',
 				success: false,
 			}
@@ -56,7 +64,7 @@ export async function callResendVerifyEmailApi({ email }) {
 		return response.data
 	} catch (error) {
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Something went wrong',
 				success: false,
 			}
@@ -76,7 +84,7 @@ export async function callSigninApi({ username, email, password }) {
 		return response.data
 	} catch (error) {
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Something went wrong',
 				success: false,
 			}
@@ -92,7 +100,7 @@ export async function callRefreshTokenApi() {
 		return response.data
 	} catch (error) {
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Unauthenticated',
 				success: false,
 			}
@@ -107,7 +115,7 @@ export async function callSignoutApi() {
 		return response.data
 	} catch (error) {
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Something went wrong',
 				success: false,
 			}
@@ -122,7 +130,7 @@ export async function callSignoutAllApi() {
 		return response.data
 	} catch (error) {
 		throw (
-			error.response?.data || {
+			error.response?.data ?? {
 				message: 'Something went wrong',
 				success: false,
 			}
