@@ -12,7 +12,12 @@ export default function VerifyEmail() {
 
 	// email extraction
 	const searchParams = useSearchParams()
-	const email = searchParams.get('email') || ''
+	const email = searchParams.get('email')
+	useEffect(() => {
+		if (!email) {
+			router.replace('/auth/signup')
+		}
+	}, [email])
 
 	// extracting from custom useAuth hook
 	const { handleVerifyEmail, handleResendOTP, loading } = useAuth()
