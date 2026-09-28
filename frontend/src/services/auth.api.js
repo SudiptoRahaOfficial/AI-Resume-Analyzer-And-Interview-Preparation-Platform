@@ -30,20 +30,37 @@ export async function callSignupApi({ username, email, password }) {
 // function for calling verify-email api
 export async function callVerifyEmailApi({ otp, email }) {
 	try {
-		const response = await api.post('/verify-email', { otp, email })
+		const response = await api.post('/verify-email', {
+			otp,
+			email,
+		})
+
 		return response.data
 	} catch (error) {
-		console.log(error)
+		throw (
+			error.response?.data || {
+				message: 'Something went wrong',
+				success: false,
+			}
+		)
 	}
 }
 
 // function for calling resend-verify-email api
 export async function callResendVerifyEmailApi({ email }) {
 	try {
-		const response = await api.post('/resend-verify-email', { email })
+		const response = await api.post('/resend-verify-email', {
+			email,
+		})
+
 		return response.data
 	} catch (error) {
-		console.log(error)
+		throw (
+			error.response?.data || {
+				message: 'Something went wrong',
+				success: false,
+			}
+		)
 	}
 }
 

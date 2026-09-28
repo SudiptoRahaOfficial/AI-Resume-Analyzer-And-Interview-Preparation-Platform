@@ -31,6 +31,37 @@ export const useAuth = () => {
 		}
 	}
 
+	const handleVerifyEmail = async ({ otp, email }) => {
+		try {
+			setLoading(true)
+
+			const data = await callVerifyEmailApi({
+				otp,
+				email,
+			})
+
+			setUser(data.user)
+
+			return data
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleResendOTP = async (email) => {
+		try {
+			setLoading(true)
+
+			const data = await callResendVerifyEmailApi({
+				email,
+			})
+
+			return data
+		} finally {
+			setLoading(false)
+		}
+	}
+
 	const handleSignin = async ({ identifier, password }) => {
 		setLoading(true)
 		const data = await callSigninApi({ identifier, password })
@@ -38,5 +69,12 @@ export const useAuth = () => {
 		setLoading(false)
 	}
 
-	return { user, loading, handleSignup, handleSignin }
+	return {
+		user,
+		loading,
+		handleSignup,
+		handleVerifyEmail,
+		handleResendOTP,
+		handleSignin,
+	}
 }
