@@ -453,7 +453,7 @@ async function signinController(req, res) {
 		// returning error response if password invalid
 		if (!isPasswordValid) {
 			return res.status(401).json({
-				message: 'Invalid email or password',
+				message: 'Invalid credentials',
 				success: false,
 			})
 		}
