@@ -10,9 +10,9 @@ export default function LandingPage() {
 	const [isOpen, setIsOpen] = useState(false)
 
 	return (
-		<main className='relative min-h-screen overflow-hidden bg-[#030712] text-white'>
+		<main className='relative min-h-screen bg-[#030712] text-white'>
 			{/* Background Glow */}
-			<div className='absolute inset-0'>
+			<div className='pointer-events-none absolute inset-0 overflow-x-hidden'>
 				<div className='absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl' />
 				<div className='absolute bottom-0 right-0 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl' />
 			</div>
@@ -37,16 +37,28 @@ export default function LandingPage() {
 							Features
 						</a>
 						<a
+							href='#about'
+							className='text-sm font-medium text-gray-400 transition hover:text-white'
+						>
+							About
+						</a>
+						<a
 							href='#workflow'
 							className='text-sm font-medium text-gray-400 transition hover:text-white'
 						>
 							Workflow
 						</a>
 						<a
-							href='#about'
+							href='#pricing'
 							className='text-sm font-medium text-gray-400 transition hover:text-white'
 						>
-							About
+							Pricing
+						</a>
+						<a
+							href='#testimonials'
+							className='text-sm font-medium text-gray-400 transition hover:text-white'
+						>
+							Testimonials
 						</a>
 					</nav>
 
@@ -89,6 +101,14 @@ export default function LandingPage() {
 							</a>
 
 							<a
+								href='#about'
+								onClick={() => setIsOpen(false)}
+								className='py-3 text-sm font-medium text-gray-300 transition hover:text-white'
+							>
+								About
+							</a>
+
+							<a
 								href='#workflow'
 								onClick={() => setIsOpen(false)}
 								className='py-3 text-sm font-medium text-gray-300 transition hover:text-white'
@@ -97,11 +117,19 @@ export default function LandingPage() {
 							</a>
 
 							<a
-								href='#about'
+								href='#pricing'
 								onClick={() => setIsOpen(false)}
 								className='py-3 text-sm font-medium text-gray-300 transition hover:text-white'
 							>
-								About
+								Pricing
+							</a>
+
+							<a
+								href='#testimonials'
+								onClick={() => setIsOpen(false)}
+								className='py-3 text-sm font-medium text-gray-300 transition hover:text-white'
+							>
+								Testimonials
 							</a>
 
 							<div className='mt-4 flex flex-col gap-3 border-t border-white/10 pt-4'>
@@ -160,7 +188,7 @@ export default function LandingPage() {
 			{/* ================= FEATURES ================= */}
 			<section
 				id='features'
-				className='relative z-10 mx-auto max-w-6xl px-6 pb-24'
+				className='relative z-10 mx-auto max-w-6xl px-6 pb-24 scroll-mt-20'
 			>
 				<div className='mb-12 text-center'>
 					<h3 className='text-3xl font-bold'>Everything You Need</h3>
@@ -266,7 +294,7 @@ export default function LandingPage() {
 			{/* ================= STATS ================= */}
 			<section
 				id='about'
-				className='relative z-10 mx-auto max-w-6xl px-6 pb-24'
+				className='relative z-10 mx-auto max-w-6xl px-6 pb-24 scroll-mt-20'
 			>
 				<div className='rounded-lg border border-white/10 bg-white/5 p-8 backdrop-blur-xl'>
 					<div className='grid gap-8 text-center md:grid-cols-4'>
@@ -312,7 +340,7 @@ export default function LandingPage() {
 			{/* ================= HOW IT WORKS ================= */}
 			<section
 				id='workflow'
-				className='relative z-10 mx-auto max-w-6xl px-6 pb-24'
+				className='relative z-10 mx-auto max-w-6xl px-6 pb-24 scroll-mt-20'
 			>
 				<div className='mx-auto max-w-6xl px-6'>
 					{/* Section Header */}
@@ -442,7 +470,7 @@ export default function LandingPage() {
 			</section>
 
 			{/* ================= CTA ================= */}
-			<section className='relative z-10 mx-auto max-w-6xl px-6 pb-24'>
+			<section className='relative z-10 mx-auto max-w-6xl px-6 pb-24 scroll-mt-20'>
 				<div className='relative overflow-hidden rounded-lg border border-white/10 bg-white/3'>
 					{/* Subtle Accent */}
 					<div className='absolute left-0 top-0 h-full w-1 bg-cyan-400' />
@@ -488,7 +516,7 @@ export default function LandingPage() {
 			{/* ================= PRICING ================= */}
 			<section
 				id='pricing'
-				className='relative z-10 mx-auto max-w-6xl px-6 pb-24'
+				className='relative z-10 mx-auto max-w-6xl px-6 pb-24 scroll-mt-20'
 			>
 				<div className='mb-14 text-center'>
 					<h3 className='text-3xl font-bold text-white'>
@@ -613,7 +641,7 @@ export default function LandingPage() {
 			{/* ================= TESTIMONIALS ================= */}
 			<section
 				id='testimonials'
-				className='relative z-10 mx-auto max-w-6xl px-6 pb-24'
+				className='relative z-10 mx-auto max-w-6xl px-6 pb-24 scroll-mt-20'
 			>
 				{/* Section Header */}
 				<div className='mb-14 text-center'>
