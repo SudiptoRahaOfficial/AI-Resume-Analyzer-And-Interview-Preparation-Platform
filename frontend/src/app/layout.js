@@ -1,3 +1,4 @@
+import Providers from '../providers'
 import '../styles/globals.css'
 
 export const metadata = {
@@ -13,7 +14,7 @@ export default function RootLayout({ children }) {
 			className={`h-full antialiased`}
 		>
 			<body className='min-h-full flex flex-col bg-gray-950 text-mist-200'>
-				{children}
+				<Providers>{children}</Providers>
 			</body>
 		</html>
 	)

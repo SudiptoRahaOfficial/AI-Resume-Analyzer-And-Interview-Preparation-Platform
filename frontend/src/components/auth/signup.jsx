@@ -2,11 +2,51 @@
 'use client'
 
 // importing dependencis
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function Signup() {
 	// router for page navigation
 	const router = useRouter()
+
+	// extracting from custom useAuth hook
+	const { handleSignup, loading } = useAuth()
+
+	// requried states
+	const [form, setForm] = useState({
+		username: '',
+		email: '',
+		password: '',
+	})
+	const [error, setError] = useState('')
+
+	// change function for input fields
+	const handleChange = (e) => {
+		const { name, value } = e.target
+
+		setForm((prev) => ({
+			...prev,
+			[name]: value,
+		}))
+	}
+
+	// function for signup form submit
+	const handleSubmit = async (e) => {
+		e.preventDefault()
+
+		setError('')
+
+		try {
+			const data = await handleSignup(form)
+
+			router.push(
+				`/auth/verify-email?email=${encodeURIComponent(data.user.email)}`,
+			)
+		} catch (err) {
+			setError(err.message)
+		}
+	}
 
 	return (
 		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030712] px-6 py-12 text-white'>
@@ -48,7 +88,7 @@ export default function Signup() {
 
 					{/* Form */}
 					<form
-						// onSubmit={handleSubmit}
+						onSubmit={handleSubmit}
 						className='space-y-5'
 					>
 						{/* Full Name */}
@@ -59,10 +99,10 @@ export default function Signup() {
 
 							<input
 								type='text'
-								name='name'
+								name='username'
 								placeholder='Enter username'
-								// value={form.name}
-								// onChange={handleChange}
+								value={form.username}
+								onChange={handleChange}
 								className='w-full rounded-md border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-cyan-400/60 focus:bg-white/3 focus:ring-1 focus:ring-cyan-400/30'
 							/>
 						</div>
@@ -77,8 +117,8 @@ export default function Signup() {
 								type='email'
 								name='email'
 								placeholder='Enter email address'
-								// value={form.email}
-								// onChange={handleChange}
+								value={form.email}
+								onChange={handleChange}
 								className='w-full rounded-md border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-cyan-400/60 focus:bg-white/3 focus:ring-1 focus:ring-cyan-400/30'
 							/>
 						</div>
@@ -93,26 +133,26 @@ export default function Signup() {
 								type='password'
 								name='password'
 								placeholder='Enter password'
-								// value={form.password}
-								// onChange={handleChange}
+								value={form.password}
+								onChange={handleChange}
 								className='w-full rounded-md border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-cyan-400/60 focus:bg-white/3 focus:ring-1 focus:ring-cyan-400/30'
 							/>
 						</div>
 
 						{/* Error */}
-						{/* {error && (
+						{error && (
 							<div className='rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-5 text-red-300'>
 								{error}
 							</div>
-						)} */}
+						)}
 
 						{/* Submit */}
 						<button
 							type='submit'
-							// disabled={loading}
+							disabled={loading}
 							className='w-full rounded-md bg-cyan-400 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 hover:shadow-lg hover:shadow-cyan-400/10 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer'
 						>
-							{/* {loading ? 'Creating Account...' : 'Create Account'} */}
+							{loading ? 'Creating Account...' : 'Create Account'}
 						</button>
 					</form>
 

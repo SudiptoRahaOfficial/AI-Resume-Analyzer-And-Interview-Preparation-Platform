@@ -15,9 +15,15 @@ export async function callSignupApi({ username, email, password }) {
 			email,
 			password,
 		})
+
 		return response.data
 	} catch (error) {
-		console.log(error)
+		throw (
+			error.response?.data || {
+				message: 'Something went wrong',
+				success: false,
+			}
+		)
 	}
 }
 
