@@ -21,6 +21,16 @@ export async function callSignupApi({ username, email, password }) {
 	}
 }
 
+// function for calling verify-email api
+export async function callVerifyEmailApi({ otp, email }) {
+	try {
+		const response = await api.post('verify-email', { otp, email })
+        return response.data
+	} catch (error) {
+		console.log(error)
+	}
+}
+
 // function for calling signin api
 export async function callSigninApi({ identifier, password }) {
 	try {
