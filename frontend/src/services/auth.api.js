@@ -99,3 +99,33 @@ export async function callRefreshTokenApi() {
 		)
 	}
 }
+
+// function for calling signout api
+export async function callSignoutApi() {
+	try {
+		const response = await api.post('/signout')
+		return response.data
+	} catch (error) {
+		throw (
+			error.response?.data || {
+				message: 'Something went wrong',
+				success: false,
+			}
+		)
+	}
+}
+
+// function for calling signout-all api
+export async function callSignoutAllApi() {
+	try {
+		const response = await api.post('/signout-all')
+		return response.data
+	} catch (error) {
+		throw (
+			error.response?.data || {
+				message: 'Something went wrong',
+				success: false,
+			}
+		)
+	}
+}

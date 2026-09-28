@@ -2,11 +2,45 @@
 'use client'
 
 // importing dependencis
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function SettingsPage() {
 	// router for page navigation
 	const router = useRouter()
+
+	// extracting from custom useAuth hook
+	const { handleSignout, handleSignoutAll, loading } = useAuth()
+
+	// required states
+	const [error, setError] = useState('')
+
+	// function for signout
+	const signout = async () => {
+		setError('')
+
+		try {
+			await handleSignout()
+
+			router.replace('/auth/signin')
+		} catch (err) {
+			setError(err.message)
+		}
+	}
+
+	// function for signout all
+	const signoutAll = async () => {
+		setError('')
+
+		try {
+			await handleSignoutAll()
+
+			router.replace('/auth/signin')
+		} catch (err) {
+			setError(err.message)
+		}
+	}
 
 	return (
 		<main className='relative min-h-screen overflow-hidden bg-[#030712] text-white'>
@@ -51,6 +85,13 @@ export default function SettingsPage() {
 						Manage your account security and active sessions.
 					</p>
 				</div>
+
+				{/* error */}
+				{error && (
+					<div className='mb-6 rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300'>
+						{error}
+					</div>
+				)}
 
 				{/* Security Section */}
 				<div className='space-y-6'>
@@ -100,6 +141,30 @@ export default function SettingsPage() {
 							</div>
 						</div>
 
+						{/* Sign Out */}
+						<div className='mb-6 rounded-lg border border-red-500/20 bg-linear-to-r from-red-500/8 to-transparent p-5'>
+							<div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
+								<div>
+									<h3 className='text-base font-semibold text-white'>
+										Sign Out
+									</h3>
+									<p className='mt-1 text-sm leading-6 text-gray-400'>
+										End the current session on this device
+										while keeping your other devices signed
+										in.
+									</p>
+								</div>
+
+								<button
+									onClick={signout}
+									disabled={loading}
+									className='mt-5 rounded-md bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-400 cursor-pointer'
+								>
+									{loading ? 'Signing Out...' : 'Sign Out'}
+								</button>
+							</div>
+						</div>
+
 						{/* Signout All */}
 						<div className='rounded-lg border border-red-500/20 bg-red-500/5 p-6'>
 							<h3 className='text-lg font-semibold text-white'>
@@ -112,8 +177,14 @@ export default function SettingsPage() {
 								on all devices.
 							</p>
 
-							<button className='mt-5 rounded-md bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-400 cursor-pointer'>
-								Sign Out All Devices
+							<button
+								onClick={signoutAll}
+								disabled={loading}
+								className='mt-5 rounded-md bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-400 cursor-pointer'
+							>
+								{loading
+									? 'Signing Out...'
+									: 'Sign Out All Devices'}
 							</button>
 						</div>
 					</div>

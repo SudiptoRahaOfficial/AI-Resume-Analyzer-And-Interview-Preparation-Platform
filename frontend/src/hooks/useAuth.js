@@ -7,6 +7,8 @@ import {
 	callResendVerifyEmailApi,
 	callSigninApi,
 	callRefreshTokenApi,
+	callSignoutApi,
+	callSignoutAllApi,
 } from '@/services/auth.api'
 
 // making useAuth custom hook
@@ -98,6 +100,36 @@ export const useAuth = () => {
 		}
 	}
 
+	const handleSignout = async () => {
+		try {
+			setLoading(true)
+
+			const data = await callSignoutApi()
+
+			setUser(null)
+			setAccessToken(null)
+
+			return data
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleSignoutAll = async () => {
+		try {
+			setLoading(true)
+
+			const data = await callSignoutAllApi()
+
+			setUser(null)
+			setAccessToken(null)
+
+			return data
+		} finally {
+			setLoading(false)
+		}
+	}
+
 	return {
 		user,
 		loading,
@@ -106,5 +138,7 @@ export const useAuth = () => {
 		handleResendOTP,
 		handleSignin,
 		refreshAccessToken,
+		handleSignout,
+		handleSignoutAll,
 	}
 }
