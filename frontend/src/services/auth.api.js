@@ -65,11 +65,37 @@ export async function callResendVerifyEmailApi({ email }) {
 }
 
 // function for calling signin api
-export async function callSigninApi({ identifier, password }) {
+export async function callSigninApi({ username, email, password }) {
 	try {
-		const response = await api.post('/signin', { identifier, password })
+		const response = await api.post('/signin', {
+			username,
+			email,
+			password,
+		})
+
 		return response.data
 	} catch (error) {
-		console.log(error)
+		throw (
+			error.response?.data || {
+				message: 'Something went wrong',
+				success: false,
+			}
+		)
+	}
+}
+
+// function for calling refresh-token api
+export async function callRefreshTokenApi() {
+	try {
+		const response = await api.post('/refresh-token')
+
+		return response.data
+	} catch (error) {
+		throw (
+			error.response?.data || {
+				message: 'Unauthenticated',
+				success: false,
+			}
+		)
 	}
 }

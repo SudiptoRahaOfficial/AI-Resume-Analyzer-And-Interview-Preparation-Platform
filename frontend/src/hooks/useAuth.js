@@ -6,12 +6,14 @@ import {
 	callVerifyEmailApi,
 	callResendVerifyEmailApi,
 	callSigninApi,
+	callRefreshTokenApi,
 } from '@/services/auth.api'
 
 // making useAuth custom hook
 export const useAuth = () => {
 	const context = useContext(AuthContext)
-	const { user, setUser, loading, setLoading } = context
+	const { user, setUser, loading, setLoading, accessToken, setAccessToken } =
+		context
 
 	const handleSignup = async ({ username, email, password }) => {
 		try {
@@ -62,11 +64,38 @@ export const useAuth = () => {
 		}
 	}
 
-	const handleSignin = async ({ identifier, password }) => {
-		setLoading(true)
-		const data = await callSigninApi({ identifier, password })
-		setUser(data.user)
-		setLoading(false)
+	const handleSignin = async ({ username, email, password }) => {
+		try {
+			setLoading(true)
+
+			const data = await callSigninApi({
+				username,
+				email,
+				password,
+			})
+
+			setUser(data.user)
+			setAccessToken(data.accessToken)
+
+			return data
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const refreshAccessToken = async () => {
+		try {
+			const data = await callRefreshTokenApi()
+
+			setAccessToken(data.accessToken)
+
+			return data.accessToken
+		} catch (error) {
+			setUser(null)
+			setAccessToken(null)
+
+			throw error
+		}
 	}
 
 	return {
@@ -76,5 +105,6 @@ export const useAuth = () => {
 		handleVerifyEmail,
 		handleResendOTP,
 		handleSignin,
+		refreshAccessToken,
 	}
 }

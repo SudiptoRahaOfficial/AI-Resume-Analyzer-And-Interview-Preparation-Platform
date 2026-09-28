@@ -12,9 +12,19 @@ export const AuthProvider = ({ children }) => {
 	// states
 	const [user, setUser] = useState(null)
 	const [loading, setLoading] = useState(false)
+	const [accessToken, setAccessToken] = useState(null)
 
 	return (
-		<AuthContext.Provider value={{ user, setUser, loading, setLoading }}>
+		<AuthContext.Provider
+			value={{
+				user,
+				setUser,
+				loading,
+				setLoading,
+				accessToken,
+				setAccessToken,
+			}}
+		>
 			{children}
 		</AuthContext.Provider>
 	)
