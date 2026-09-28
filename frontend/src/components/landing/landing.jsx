@@ -4,10 +4,14 @@
 // importing dependencis
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function LandingPage() {
 	// states
 	const [isOpen, setIsOpen] = useState(false)
+
+	// extracting from useAuth custom hook
+	const { isAuthenticated } = useAuth()
 
 	return (
 		<main className='relative min-h-screen bg-[#030712] text-white'>
@@ -64,12 +68,21 @@ export default function LandingPage() {
 
 					{/* Desktop Actions */}
 					<div className='hidden items-center gap-3 lg:flex'>
-						<a
-							href='/auth/signin'
-							className='rounded-sm border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
-						>
-							Sign In
-						</a>
+						{isAuthenticated ? (
+							<a
+								href='/dashboard'
+								className='rounded-sm border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
+							>
+								Dashboard
+							</a>
+						) : (
+							<a
+								href='/auth/signin'
+								className='rounded-sm border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
+							>
+								Sign In
+							</a>
+						)}
 
 						<a
 							href='/auth/signup'
@@ -133,12 +146,21 @@ export default function LandingPage() {
 							</a>
 
 							<div className='mt-4 flex flex-col gap-3 border-t border-white/10 pt-4'>
-								<a
-									href='/auth/signin'
-									className='rounded-sm border border-white/10 px-4 py-3 text-center text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
-								>
-									Sign In
-								</a>
+								{isAuthenticated ? (
+									<a
+										href='/dashboard'
+										className='rounded-sm border border-white/10 px-4 py-3 text-center text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
+									>
+										Dashboard
+									</a>
+								) : (
+									<a
+										href='/auth/signin'
+										className='rounded-sm border border-white/10 px-4 py-3 text-center text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
+									>
+										Sign In
+									</a>
+								)}
 
 								<a
 									href='/auth/signup'

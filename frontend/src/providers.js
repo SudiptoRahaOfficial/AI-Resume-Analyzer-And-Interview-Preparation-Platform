@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { AuthProvider } from '@/context/auth.context'
 import { useAuth } from '@/hooks/useAuth'
+import AuthInitializer from '@/components/common/auth-initializer'
 
 function TokenManager() {
 	const { accessToken, refreshAccessToken } = useAuth()
@@ -31,6 +32,7 @@ export default function Providers({ children }) {
 	return (
 		<AuthProvider>
 			<TokenManager />
+			<AuthInitializer />
 			{children}
 		</AuthProvider>
 	)

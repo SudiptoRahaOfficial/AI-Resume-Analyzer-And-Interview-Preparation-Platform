@@ -111,6 +111,24 @@ export const useAuth = () => {
 		}
 	}
 
+	const initializeAuth = async () => {
+		try {
+			setLoading(true)
+
+			const data = await callRefreshTokenApi()
+
+			setAccessToken(data.accessToken)
+			setUser(data.user)
+			setIsAuthenticated(true)
+		} catch (error) {
+			setUser(null)
+			setAccessToken(null)
+			setIsAuthenticated(false)
+		} finally {
+			setLoading(false)
+		}
+	}
+
 	const handleSignout = async () => {
 		try {
 			setLoading(true)
@@ -146,11 +164,14 @@ export const useAuth = () => {
 	return {
 		user,
 		loading,
+		accessToken,
+		isAuthenticated,
 		handleSignup,
 		handleVerifyEmail,
 		handleResendOTP,
 		handleSignin,
 		refreshAccessToken,
+		initializeAuth,
 		handleSignout,
 		handleSignoutAll,
 	}
