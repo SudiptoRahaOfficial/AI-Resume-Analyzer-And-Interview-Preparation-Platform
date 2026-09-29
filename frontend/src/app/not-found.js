@@ -33,14 +33,14 @@ export default function NotFound() {
 				<div className='mt-10 flex flex-col gap-3 sm:flex-row'>
 					<button
 						onClick={() => router.push('/')}
-						className='flex-1 rounded-md bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300'
+						className='flex-1 rounded-md bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 cursor-pointer'
 					>
 						Go Home
 					</button>
 
 					<button
 						onClick={() => router.back()}
-						className='flex-1 rounded-md border border-white/10 px-5 py-3 font-medium text-gray-300 transition hover:bg-white/5 hover:text-white'
+						className='flex-1 rounded-md border border-white/10 px-5 py-3 font-medium text-gray-300 transition hover:bg-white/5 hover:text-white cursor-pointer'
 					>
 						Go Back
 					</button>
