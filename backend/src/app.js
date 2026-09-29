@@ -7,7 +7,10 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+
+// importing routers
 const authRouter = require('./routes/auth.routes')
+const interviewRouter = require('./routes/interview.routes')
 
 // making app
 const app = express()
@@ -23,6 +26,7 @@ app.use(middlewares) // using middlewares
 
 // connecting all API routers
 app.use('/api/auth', authRouter)
+app.use('/api/interview', interviewRouter)
 
 // exporting app
 module.exports = app
