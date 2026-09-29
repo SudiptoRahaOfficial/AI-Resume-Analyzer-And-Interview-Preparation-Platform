@@ -39,6 +39,11 @@ if (!process.env.GOOGLE_USER) {
 	throw new Error('GOOGLE_USER is not defined in .env')
 }
 
+// gemini api key error
+if (!process.env.GEMINI_API_KEY) {
+	throw new Error('GEMINI_API_KEY is not defined in .env')
+}
+
 // configuration object
 const config = {
 	PORT: process.env.PORT,
@@ -52,6 +57,8 @@ const config = {
 	GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 	GOOGLE_REFRESH_TOKEN: process.env.GOOGLE_REFRESH_TOKEN,
 	GOOGLE_USER: process.env.GOOGLE_USER,
+
+	GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 }
 
 // exporting config object
