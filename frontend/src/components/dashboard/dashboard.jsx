@@ -2,6 +2,7 @@
 'use client'
 
 // importing dependencies
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
 	ArrowRight,
@@ -21,12 +22,57 @@ import {
 	Target,
 	TrendingUp,
 	UserRound,
+	LogOut,
 } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 
 // dashboard page
 export default function Dashboard() {
 	// router for page navigation
 	const router = useRouter()
+
+	// dropdown state & ref
+	const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+	const profileMenuRef = useRef(null)
+
+	// effect for dropdown functionalities
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (
+				profileMenuRef.current &&
+				!profileMenuRef.current.contains(event.target)
+			) {
+				setIsProfileMenuOpen(false)
+			}
+		}
+
+		const handleEscape = (event) => {
+			if (event.key === 'Escape') {
+				setIsProfileMenuOpen(false)
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+		document.addEventListener('keydown', handleEscape)
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+			document.removeEventListener('keydown', handleEscape)
+		}
+	}, [])
+
+	// extracting from custom useAuth hook
+	const { handleSignout } = useAuth()
+
+	// function for signout
+	const signout = async () => {
+		try {
+			await handleSignout()
+			router.replace('/auth/signin')
+		} catch (err) {
+			console.log(err.message)
+		}
+	}
 
 	// temporary dashboard data
 	// replace these values with API data when the dashboard API is implemented
@@ -129,33 +175,175 @@ export default function Dashboard() {
 						>
 							<Settings className='h-4 w-4' />
 						</button>
-
 						{/* Divider */}
 						<div className='mx-1 hidden h-6 w-px bg-white/10 sm:block' />
-
-						{/* Profile */}
-						<button
-							type='button'
-							onClick={() => router.push('/profile')}
-							aria-label='Open profile'
-							className='flex items-center gap-2 rounded-sm px-1.5 py-1 transition hover:bg-white/5 cursor-pointer'
+						{/* Profile menu */}
+						<div
+							ref={profileMenuRef}
+							className='relative'
 						>
-							<div className='flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/10 text-xs font-semibold text-cyan-300 ring-1 ring-cyan-400/20'>
-								SR
+							{/* Profile trigger */}
+							<button
+								type='button'
+								onClick={() =>
+									setIsProfileMenuOpen((prev) => !prev)
+								}
+								aria-label='Open account menu'
+								aria-haspopup='menu'
+								aria-expanded={isProfileMenuOpen}
+								className='flex cursor-pointer items-center gap-2 rounded-sm px-1.5 py-1 transition hover:bg-white/5'
+							>
+								{/* Avatar */}
+								<div className='flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/10 text-xs font-semibold text-cyan-300 ring-1 ring-cyan-400/20'>
+									SR
+								</div>
+
+								{/* User information */}
+								<div className='hidden text-left md:block'>
+									<p className='text-xs font-medium text-gray-200'>
+										Sudipto Raha
+									</p>
+
+									<p className='text-[11px] text-gray-500'>
+										Backend Developer
+									</p>
+								</div>
+
+								{/* Chevron */}
+								<ChevronRight
+									className={`hidden h-3.5 w-3.5 text-gray-600 transition-transform duration-200 md:block ${
+										isProfileMenuOpen
+											? '-rotate-90'
+											: 'rotate-90'
+									}`}
+								/>
+							</button>
+
+							{/* Dropdown */}
+							<div
+								className={`absolute right-0 top-[calc(100%+10px)] z-50 w-64 origin-top-right transition-all duration-200 ease-out ${
+									isProfileMenuOpen
+										? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
+										: 'pointer-events-none -translate-y-1 scale-95 opacity-0'
+								}`}
+								role='menu'
+								aria-hidden={!isProfileMenuOpen}
+							>
+								<div className='overflow-hidden rounded-lg border border-white/10 bg-[#0b1120]/95 p-1.5 shadow-2xl shadow-black/40 backdrop-blur-2xl'>
+									{/* Account header */}
+									<div className='px-3 py-3'>
+										<div className='flex items-center gap-3'>
+											<div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-400/10 text-xs font-semibold text-cyan-300 ring-1 ring-cyan-400/20'>
+												SR
+											</div>
+
+											<div className='min-w-0'>
+												<p className='truncate text-sm font-medium text-white'>
+													Sudipto Raha
+												</p>
+
+												<p className='truncate text-xs text-gray-500'>
+													sudipto@example.com
+												</p>
+											</div>
+										</div>
+									</div>
+
+									<div className='my-1 h-px bg-white/10' />
+
+									{/* Profile */}
+									<button
+										type='button'
+										role='menuitem'
+										onClick={() => {
+											setIsProfileMenuOpen(false)
+											router.push('/profile')
+										}}
+										className='group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-300 transition hover:bg-white/5 hover:text-white'
+									>
+										<UserRound className='h-4 w-4 text-gray-500 transition group-hover:text-gray-300' />
+
+										<span className='flex-1'>Profile</span>
+
+										<ChevronRight className='h-3.5 w-3.5 text-gray-600 transition-transform group-hover:translate-x-0.5' />
+									</button>
+
+									{/* Settings */}
+									<button
+										type='button'
+										role='menuitem'
+										onClick={() => {
+											setIsProfileMenuOpen(false)
+											router.push('/settings')
+										}}
+										className='group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-300 transition hover:bg-white/5 hover:text-white'
+									>
+										<Settings className='h-4 w-4 text-gray-500 transition group-hover:text-gray-300' />
+
+										<span className='flex-1'>Settings</span>
+
+										<ChevronRight className='h-3.5 w-3.5 text-gray-600 transition-transform group-hover:translate-x-0.5' />
+									</button>
+
+									{/* Resume Generator */}
+									<button
+										type='button'
+										role='menuitem'
+										onClick={() => {
+											setIsProfileMenuOpen(false)
+											router.push('/resume-generator')
+										}}
+										className='group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-300 transition hover:bg-white/5 hover:text-white'
+									>
+										<FileText className='h-4 w-4 text-gray-500 transition group-hover:text-gray-300' />
+
+										<span className='flex-1'>
+											Resume Generator
+										</span>
+
+										<ChevronRight className='h-3.5 w-3.5 text-gray-600 transition-transform group-hover:translate-x-0.5' />
+									</button>
+
+									{/* Interview Preparation */}
+									<button
+										type='button'
+										role='menuitem'
+										onClick={() => {
+											setIsProfileMenuOpen(false)
+											router.push(
+												'/interview-preparation',
+											)
+										}}
+										className='group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-300 transition hover:bg-white/5 hover:text-white'
+									>
+										<Sparkles className='h-4 w-4 text-gray-500 transition group-hover:text-gray-300' />
+
+										<span className='flex-1'>
+											Interview Preparation
+										</span>
+
+										<ChevronRight className='h-3.5 w-3.5 text-gray-600 transition-transform group-hover:translate-x-0.5' />
+									</button>
+
+									<div className='my-1 h-px bg-white/10' />
+
+									{/* Sign out */}
+									<button
+										type='button'
+										role='menuitem'
+										onClick={() => {
+											setIsProfileMenuOpen(false)
+											signout()
+										}}
+										className='group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-400/10 hover:text-red-300'
+									>
+										<LogOut className='h-4 w-4 text-red-400/70 transition group-hover:text-red-300' />
+
+										<span className='flex-1'>Sign Out</span>
+									</button>
+								</div>
 							</div>
-
-							<div className='hidden text-left md:block'>
-								<p className='text-xs font-medium text-gray-200'>
-									Sudipto Raha
-								</p>
-
-								<p className='text-[11px] text-gray-500'>
-									Backend Developer
-								</p>
-							</div>
-
-							<ChevronRight className='hidden h-3.5 w-3.5 rotate-90 text-gray-600 md:block' />
-						</button>
+						</div>
 					</div>
 				</div>
 			</header>
@@ -285,7 +473,7 @@ export default function Dashboard() {
 								<button
 									type='button'
 									onClick={() => router.push('/profile')}
-									className='flex w-full items-center justify-between rounded-sm border border-white/10 bg-white/2 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-white/15 hover:bg-white/5 hover:text-white'
+									className='flex w-full items-center justify-between rounded-sm border border-white/10 bg-white/2 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-white/15 hover:bg-white/5 hover:text-white cursor-pointer'
 								>
 									{/* Profile icon */}
 									<div className='hidden h-7 w-7 items-center justify-center rounded-sm bg-white/3 text-gray-500 sm:flex'>
