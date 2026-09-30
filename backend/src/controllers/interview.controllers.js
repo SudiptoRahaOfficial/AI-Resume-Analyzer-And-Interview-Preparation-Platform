@@ -88,7 +88,13 @@ async function generateInterviewReportController(req, res) {
 			return res.status(201).json({
 				message: 'Interview report generated successfully',
 				success: true,
-				interviewReport,
+				interviewReport: {
+					matchScore: interviewReport.matchScore,
+					technicalQuestions: interviewReport.technicalQuestions,
+					behavioralQuestions: interviewReport.behavioralQuestions,
+					skillGaps: interviewReport.skillGaps,
+					preparationPlan: interviewReport.preparationPlan,
+				},
 			})
 		} catch (error) {
 			// logging on interview report creation failure
