@@ -11,14 +11,17 @@ const technicalQuestionSchema = new Schema(
 	{
 		question: {
 			type: String,
+			trim: true,
 			required: [true, 'Technical question is required'],
 		},
 		intention: {
 			type: String,
+			trim: true,
 			required: [true, 'Intention is required'],
 		},
 		answer: {
 			type: String,
+			trim: true,
 			required: [true, 'Answer is required'],
 		},
 	},
@@ -30,14 +33,17 @@ const behavioralQuestionSchema = new Schema(
 	{
 		question: {
 			type: String,
+			trim: true,
 			required: [true, 'Technical question is required'],
 		},
 		intention: {
 			type: String,
+			trim: true,
 			required: [true, 'Intention is required'],
 		},
 		answer: {
 			type: String,
+			trim: true,
 			required: [true, 'Answer is required'],
 		},
 	},
@@ -49,6 +55,7 @@ const skillGapSchema = new Schema(
 	{
 		skill: {
 			type: String,
+			trim: true,
 			required: [true, 'Skill is required'],
 		},
 		priority: {
@@ -74,11 +81,13 @@ const preparationPlanSchema = new Schema(
 		},
 		focus: {
 			type: String,
+			trim: true,
 			required: [true, 'Focus is required'],
 		},
 		tasks: [
 			{
 				type: String,
+				trim: true,
 				required: [true, 'Task is required'],
 			},
 		],
@@ -89,12 +98,24 @@ const preparationPlanSchema = new Schema(
 // making schema
 const interviewReportSchema = new Schema(
 	{
+		user: {
+			type: Schema.Types.ObjectId,
+			ref: 'user',
+			required: true,
+		},
+		resume: {
+			type: String,
+			trim: true,
+		},
+		selfDescription: {
+			type: String,
+			trim: true,
+		},
 		jobDescription: {
 			type: String,
+			trim: true,
 			required: [true, 'Job description is required'],
 		},
-		resume: String,
-		selfDescription: String,
 		matchScore: {
 			type: Number,
 			min: 0,
