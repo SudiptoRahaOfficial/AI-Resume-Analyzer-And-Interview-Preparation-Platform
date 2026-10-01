@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { AuthProvider } from '@/context/auth.context'
+import { InterviewProvider } from '@/context/interview.context'
 import { useAuth } from '@/hooks/useAuth'
 import AuthInitializer from '@/components/common/auth-initializer'
 
@@ -31,9 +32,11 @@ function TokenManager() {
 export default function Providers({ children }) {
 	return (
 		<AuthProvider>
-			<TokenManager />
-			<AuthInitializer />
-			{children}
+			<InterviewProvider>
+				<TokenManager />
+				<AuthInitializer />
+				{children}
+			</InterviewProvider>
 		</AuthProvider>
 	)
 }

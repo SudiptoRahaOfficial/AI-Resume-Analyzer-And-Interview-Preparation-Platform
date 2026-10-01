@@ -89,6 +89,7 @@ async function generateReportController(req, res) {
 				message: 'Interview report generated successfully',
 				success: true,
 				interviewReport: {
+					jobTitle: interviewReport.jobTitle,
 					matchScore: interviewReport.matchScore,
 					technicalQuestions: interviewReport.technicalQuestions,
 					behavioralQuestions: interviewReport.behavioralQuestions,

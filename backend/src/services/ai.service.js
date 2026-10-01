@@ -130,6 +130,7 @@ const interviewReportJsonSchema = {
 		},
 	},
 	required: [
+		'jobTitle',
 		'matchScore',
 		'technicalQuestions',
 		'behavioralQuestions',

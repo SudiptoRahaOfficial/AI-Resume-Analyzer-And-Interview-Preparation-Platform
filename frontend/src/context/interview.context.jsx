@@ -2,7 +2,7 @@
 'use client'
 
 // importing dependencis
-import { createContext } from 'react'
+import { createContext, useState } from 'react'
 
 // creating InterviewContext
 const InterviewContext = createContext()
