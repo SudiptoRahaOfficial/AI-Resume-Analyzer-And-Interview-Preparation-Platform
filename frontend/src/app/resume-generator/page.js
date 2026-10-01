@@ -1,10 +1,10 @@
-import ResumesPage from '@/components/resumes/resumes'
+import ResumeGenerator from '@/components/resumeGenerator/resumeGenerator'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 
 export default function page() {
 	return (
 		<ProtectedRoute>
-			<ResumesPage />
+			<ResumeGenerator />
 		</ProtectedRoute>
 	)
 }

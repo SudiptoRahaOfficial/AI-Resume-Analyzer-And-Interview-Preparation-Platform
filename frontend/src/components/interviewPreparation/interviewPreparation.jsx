@@ -207,7 +207,7 @@ export default function InterviewPreparation() {
 								<input
 									ref={resumeInputRef}
 									type='file'
-									accept='.pdf,.doc,.docx'
+									accept='.pdf'
 									onChange={handleResumeChange}
 									className='hidden'
 								/>
