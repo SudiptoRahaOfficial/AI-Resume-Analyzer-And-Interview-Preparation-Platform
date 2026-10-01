@@ -12,6 +12,11 @@ const envConfig = require('../configs/env.config')
 const interviewReportJsonSchema = {
 	type: 'object',
 	properties: {
+		jobTitle: {
+			type: 'string',
+			description:
+				'The title of the job for which the interview report is generated',
+		},
 		matchScore: {
 			type: 'integer',
 			description:

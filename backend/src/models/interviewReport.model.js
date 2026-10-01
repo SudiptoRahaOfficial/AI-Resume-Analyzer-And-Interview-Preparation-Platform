@@ -116,6 +116,10 @@ const interviewReportSchema = new Schema(
 			trim: true,
 			required: [true, 'Job description is required'],
 		},
+		jobTitle: {
+			type: String,
+			required: [true, 'Job title is required'],
+		},
 		matchScore: {
 			type: Number,
 			min: 0,

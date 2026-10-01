@@ -8,7 +8,7 @@ const router = require('express').Router()
 const { authenticateUser } = require('../middlewares/auth.middlewares')
 const { upload } = require('../middlewares/multer.middleware')
 const {
-	generateInterviewReportController,
+	generateReportController,
 	getReportByIdController,
 	getReportsController,
 } = require('../controllers/interview.controllers')
@@ -18,7 +18,7 @@ router.post(
 	'/generate-report',
 	authenticateUser,
 	upload.single('resume'),
-	generateInterviewReportController,
+	generateReportController,
 )
 
 // get report by id : GET API - "/api/interview/reports/:reportId"

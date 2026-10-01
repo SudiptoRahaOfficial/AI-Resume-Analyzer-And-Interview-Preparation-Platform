@@ -12,7 +12,7 @@ const interviewReportModel = require('../models/interviewReport.model')
     - generate report controller
     - POST API - "/api/interview/generate-report"
  */
-async function generateInterviewReportController(req, res) {
+async function generateReportController(req, res) {
 	// extracting all data sent by client
 	const resumeFile = req.file
 	let { selfDescription, jobDescription } = req.body
@@ -129,7 +129,43 @@ async function generateInterviewReportController(req, res) {
     - GET API - "/api/interview/reports/:reportId"
  */
 async function getReportByIdController(req, res) {
-	res.send('get report by id')
+	// extracting reportId from req.params
+	const { reportId } = req.params
+
+	try {
+		// finding report according reportId and requested user
+		const report = await interviewReportModel.findOne({
+			_id: reportId,
+			user: req.user.id,
+		})
+
+		// failed response back if report not found
+		if (!report) {
+			return res.status(404).json({
+				message: 'Interview report not found.',
+				success: false,
+			})
+		}
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Interview report fetched successfully.',
+			success: true,
+			interviewReport: report,
+		})
+	} catch (error) {
+		// logging on unexpected query failure
+		console.error('Interview report finding query failed', {
+			error: error.message,
+			stack: error.stack,
+		})
+
+		// failed response back on unexpected query failure
+		return res.status(500).json({
+			message: 'Failed to find requested interview report.',
+			success: false,
+		})
+	}
 }
 
 /**
@@ -137,12 +173,47 @@ async function getReportByIdController(req, res) {
     - GET API - "/api/interview/reports"
  */
 async function getReportsController(req, res) {
-	res.send('get all reports of user')
+	try {
+		// finding reports according requested user
+		const reports = await interviewReportModel
+			.find({ user: req.user.id })
+			.sort({ createdAt: -1 })
+			.select(
+				'jobTitle matchScore technicalQuestions behavioralQuestions skillGaps updatedAt',
+			)
+
+		// failed response back if reports not found
+		if (!reports) {
+			return res.status(404).json({
+				message: 'Interview reports not found.',
+				success: false,
+			})
+		}
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Interview reports fetched successfully.',
+			success: true,
+			interviewReports: reports,
+		})
+	} catch (error) {
+		// logging on unexpected query failure
+		console.error('Interview reports finding query failed', {
+			error: error.message,
+			stack: error.stack,
+		})
+
+		// failed response back on unexpected query failure
+		return res.status(500).json({
+			message: 'Failed to find requested interview reports.',
+			success: false,
+		})
+	}
 }
 
 // exporting controllers
 module.exports = {
-	generateInterviewReportController,
+	generateReportController,
 	getReportByIdController,
 	getReportsController,
 }
