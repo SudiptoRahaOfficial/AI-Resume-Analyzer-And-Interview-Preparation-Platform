@@ -1,10 +1,10 @@
-import ResumeGenerator from '@/components/resume/resumeGenerator'
+import InterviewPreparationReport from '@/components/interview/interviewPreparationReport'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 
 export default function page() {
 	return (
 		<ProtectedRoute>
-			<ResumeGenerator />
+			<InterviewPreparationReport />
 		</ProtectedRoute>
 	)
 }
