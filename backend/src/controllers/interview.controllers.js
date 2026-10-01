@@ -9,7 +9,7 @@ const generateInterviewReport = require('../services/ai.service')
 const interviewReportModel = require('../models/interviewReport.model')
 
 /**
-    - generate-report controller
+    - generate report controller
     - POST API - "/api/interview/generate-report"
  */
 async function generateInterviewReportController(req, res) {
@@ -124,7 +124,25 @@ async function generateInterviewReportController(req, res) {
 	}
 }
 
+/**
+    - get report by id controller
+    - GET API - "/api/interview/reports/:reportId"
+ */
+async function getReportByIdController(req, res) {
+	res.send('get report by id')
+}
+
+/**
+    - get all reports controller
+    - GET API - "/api/interview/reports"
+ */
+async function getReportsController(req, res) {
+	res.send('get all reports of user')
+}
+
 // exporting controllers
 module.exports = {
 	generateInterviewReportController,
+	getReportByIdController,
+	getReportsController,
 }
