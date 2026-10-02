@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true)
 	const [accessToken, setAccessToken] = useState(null)
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
+	const [authInitialized, setAuthInitialized] = useState(false)
 
 	return (
 		<AuthContext.Provider
@@ -26,6 +27,8 @@ export const AuthProvider = ({ children }) => {
 				setAccessToken,
 				isAuthenticated,
 				setIsAuthenticated,
+				authInitialized,
+				setAuthInitialized,
 			}}
 		>
 			{children}

@@ -14,6 +14,9 @@ import {
 // making useAuth custom hook
 export const useAuth = () => {
 	const context = useContext(AuthContext)
+	if (!context) {
+		throw new Error('useAuth must be used inside AuthProvider')
+	}
 	const {
 		user,
 		setUser,
@@ -23,6 +26,8 @@ export const useAuth = () => {
 		setAccessToken,
 		isAuthenticated,
 		setIsAuthenticated,
+		authInitialized,
+		setAuthInitialized,
 	} = context
 
 	const handleSignup = async ({ username, email, password }) => {
@@ -125,6 +130,7 @@ export const useAuth = () => {
 			setAccessToken(null)
 			setIsAuthenticated(false)
 		} finally {
+			setAuthInitialized(true)
 			setLoading(false)
 		}
 	}
@@ -166,6 +172,7 @@ export const useAuth = () => {
 		loading,
 		accessToken,
 		isAuthenticated,
+		authInitialized,
 		handleSignup,
 		handleVerifyEmail,
 		handleResendOTP,

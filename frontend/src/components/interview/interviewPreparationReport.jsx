@@ -1,8 +1,9 @@
+// making client component
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-
+// importing dependencis
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import {
 	AlertCircle,
 	ArrowLeft,
@@ -24,11 +25,17 @@ import {
 	Target,
 	TrendingUp,
 } from 'lucide-react'
+import { useInterview } from '@/hooks/useInterview'
 
 // interview preparation report page
 export default function InterviewPreparationReport() {
+	const { report, loading, handleGetReportById } = useInterview()
+
 	// router for page navigation
 	const router = useRouter()
+
+	// params for getting report id
+	const params = useParams()
 
 	// active technical question
 	const [openTechnicalQuestion, setOpenTechnicalQuestion] = useState(0)
@@ -36,146 +43,87 @@ export default function InterviewPreparationReport() {
 	// active behavioral question
 	const [openBehavioralQuestion, setOpenBehavioralQuestion] = useState(null)
 
-	// generated interview report
-	// replace this object with your API response later
-	const interviewReport = {
-		matchScore: 45,
+	// page error
+	const [error, setError] = useState('')
 
-		technicalQuestions: [
-			{
-				question:
-					'Can you explain your experience with relational database design and how you optimize SQL queries for performance?',
-				intention:
-					'To assess technical depth in database management, data integrity enforcement, and querying skills based on the CIS/technical competencies listed.',
-				answer: 'Describe principles of normalization (1NF through 3NF), index usage (clustered vs non-clustered), query execution plans, and real-world examples of designing schemas and optimizing slow-running queries.',
-			},
-			{
-				question:
-					'Walk us through your approach to troubleshooting a critical software or system issue reported by an end-user.',
-				intention:
-					'To evaluate analytical problem-solving methodologies, diagnostic skills, and technical support structured approaches.',
-				answer: 'Outline a structured diagnostic workflow: reproduce the problem, inspect error logs and system metrics, isolate the root cause, develop and test a fix in a non-production environment, and document the resolution.',
-			},
-			{
-				question:
-					'How do you handle data migration or converting manual/legacy systems to modern automated architectures?',
-				intention:
-					'To gauge experience with systems conversion, data validation, risk mitigation, and software lifecycle integration.',
-				answer: 'Discuss data audit and cleansing, schema mapping, fallback strategies, running parallel systems during testing, and validating reconciliations before full cutover.',
-			},
-		],
+	// calling api
+	useEffect(() => {
+		if (!params.reportId) return
 
-		behavioralQuestions: [
-			{
-				question:
-					'Describe a time when you had to manage multiple high-priority tasks with competing deadlines. How did you prioritize?',
-				intention:
-					'To evaluate time management, organizational capability, and stress tolerance under pressure.',
-				answer: 'Use the STAR method: describe the conflicting priorities, explain the criteria used to prioritize (impact vs urgency), discuss communication with stakeholders, and share the successful outcome.',
-			},
-			{
-				question:
-					'Tell me about a situation where you had to bridge communication between technical staff and non-technical business stakeholders.',
-				intention:
-					'To determine interpersonal communication skills and the ability to translate complex technical jargon into actionable business terms.',
-				answer: 'Highlight a scenario where requirements or issues were translated clearly, using analogies, clear metrics, and active listening to achieve consensus and project success.',
-			},
-			{
-				question:
-					'Can you give an example of an operational inefficiency you identified and how you took initiative to improve it?',
-				intention:
-					'To verify proactivity, continuous improvement mindset, and leadership impact.',
-				answer: 'Focus on the specific process problem identified, the proposed automated or streamlined solution, how resistance to change was managed, and quantifiable results (e.g., hours saved or error reduction).',
-			},
-		],
+		const fetchReport = async () => {
+			try {
+				setError('')
 
-		skillGaps: [
-			{
-				skill: 'Targeted Role Specialization and Context',
-				priority: 'high',
-				severity: 'high',
-			},
-			{
-				skill: 'Modern Cloud and Distributed Systems (AWS/Azure/GCP)',
-				priority: 'high',
-				severity: 'medium',
-			},
-			{
-				skill: 'Detailed Quantifiable Production Project Metrics',
-				priority: 'medium',
-				severity: 'medium',
-			},
-		],
+				await handleGetReportById(params.reportId)
+			} catch (error) {
+				setError(error?.message ?? 'Failed to load interview report.')
+			}
+		}
 
-		preparationPlan: [
-			{
-				day: 1,
-				focus: 'Profile Consolidation and Resume Tailoring',
-				tasks: [
-					'Unify candidate profile into a single coherent career narrative rather than generic template content',
-					'Align technical summary and previous responsibilities with the exact target position requirements',
-				],
-			},
-			{
-				day: 2,
-				focus: 'Core Technical and Database Competencies',
-				tasks: [
-					'Review relational database schema design, indexing, and complex SQL joins/aggregations',
-					'Practice solving SQL problem sets on platforms like LeetCode or HackerRank',
-				],
-			},
-			{
-				day: 3,
-				focus: 'Systems Architecture and Modern Tools',
-				tasks: [
-					'Refresh concepts in system lifecycle management, API integrations, and cloud fundamentals',
-					'Review troubleshooting methodologies and system monitoring tools',
-				],
-			},
-			{
-				day: 4,
-				focus: 'Behavioral Story Banking (STAR Method)',
-				tasks: [
-					'Draft at least 5 STAR stories covering leadership, conflict resolution, deadlines, and innovation',
-					'Quantify outcomes with concrete metrics (e.g., percentages, hours saved, dollars managed)',
-				],
-			},
-			{
-				day: 5,
-				focus: 'Communication and Cross-Functional Alignment',
-				tasks: [
-					'Practice articulating complex technical topics in simple business language',
-					'Prepare structured responses for handling customer service and stakeholder expectations',
-				],
-			},
-			{
-				day: 6,
-				focus: 'Mock Technical & Behavioral Interview',
-				tasks: [
-					'Conduct a timed 60-minute mock interview simulating both technical probing and cultural fit',
-					'Record and critique answers for clarity, conciseness, and confidence',
-				],
-			},
-			{
-				day: 7,
-				focus: 'Final Review and Interview Readiness',
-				tasks: [
-					'Prepare thoughtful questions to ask the interviewer regarding team dynamics, technical roadmaps, and business goals',
-					'Conduct a final review of key project achievements and technical keywords',
-				],
-			},
-		],
+		fetchReport()
+	}, [params.reportId, handleGetReportById])
+
+	// initial loading
+	if (loading) {
+		return (
+			<main className='flex min-h-screen items-center justify-center bg-[#030712] text-white'>
+				<div className='flex flex-col items-center gap-3'>
+					<div className='flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-400/10'>
+						<Sparkles className='h-5 w-5 animate-pulse text-cyan-300' />
+					</div>
+
+					<p className='text-sm font-medium text-gray-300'>
+						Loading your interview report...
+					</p>
+
+					<p className='text-xs text-gray-600'>
+						Please wait a moment.
+					</p>
+				</div>
+			</main>
+		)
+	}
+
+	// Handle API errors
+	if (error || !report) {
+		return (
+			<main className='flex min-h-screen items-center justify-center bg-[#030712] px-5 text-white'>
+				<div className='w-full max-w-md rounded-xl border border-white/10 bg-white/2.5 p-6 text-center'>
+					<div className='mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-red-400/10'>
+						<AlertCircle className='h-5 w-5 text-red-300' />
+					</div>
+
+					<h1 className='mt-4 text-lg font-semibold text-white'>
+						Unable to load report
+					</h1>
+
+					<p className='mt-2 text-sm leading-6 text-gray-500'>
+						{error ||
+							'The requested interview report could not be found.'}
+					</p>
+
+					<button
+						type='button'
+						onClick={() => router.push('/interview-preparation')}
+						className='mt-5 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-cyan-400/20 hover:bg-cyan-400/5 hover:text-white'
+					>
+						<ArrowLeft className='h-3.5 w-3.5' />
+						Back to Interview Preparation
+					</button>
+				</div>
+			</main>
+		)
 	}
 
 	// score configuration
 	const score =
-		interviewReport.matchScore >= 70
+		report.matchScore >= 70
 			? {
 					label: 'Strong Match',
 					description:
 						'Your profile aligns well with the target role.',
 				}
-			: interviewReport.matchScore >= 50
+			: report.matchScore >= 50
 				? {
 						label: 'Moderate Match',
 						description:
@@ -285,7 +233,7 @@ export default function InterviewPreparationReport() {
 
 									<div className='mt-5 flex items-end gap-2'>
 										<span className='text-5xl font-semibold tracking-tight text-white'>
-											{interviewReport.matchScore}
+											{report.matchScore}
 										</span>
 
 										<span className='mb-1.5 text-sm text-gray-600'>
@@ -299,7 +247,7 @@ export default function InterviewPreparationReport() {
 										<div
 											className='h-full rounded-full bg-cyan-400'
 											style={{
-												width: `${interviewReport.matchScore}%`,
+												width: `${report.matchScore}%`,
 											}}
 										/>
 									</div>
@@ -323,9 +271,8 @@ export default function InterviewPreparationReport() {
 								</div>
 
 								<p className='mt-4 text-2xl font-semibold text-white'>
-									{interviewReport.technicalQuestions.length +
-										interviewReport.behavioralQuestions
-											.length}
+									{report.technicalQuestions.length +
+										report.behavioralQuestions.length}
 								</p>
 
 								<p className='mt-1 text-xs text-gray-600'>
@@ -339,7 +286,7 @@ export default function InterviewPreparationReport() {
 								</div>
 
 								<p className='mt-4 text-2xl font-semibold text-white'>
-									{interviewReport.skillGaps.length}
+									{report.skillGaps.length}
 								</p>
 
 								<p className='mt-1 text-xs text-gray-600'>
@@ -385,13 +332,13 @@ export default function InterviewPreparationReport() {
 							</div>
 
 							<span className='text-[11px] text-gray-600'>
-								{interviewReport.skillGaps.length} identified
+								{report.skillGaps.length} identified
 							</span>
 						</div>
 
 						{/* Skill gap cards */}
 						<div className='grid gap-3 p-4 md:grid-cols-3'>
-							{interviewReport.skillGaps.map((gap) => (
+							{report.skillGaps.map((gap) => (
 								<div
 									key={gap.skill}
 									className='rounded-md border border-white/10 bg-black/20 p-4'
@@ -453,92 +400,84 @@ export default function InterviewPreparationReport() {
 							</div>
 
 							<span className='text-[11px] text-gray-600'>
-								{interviewReport.technicalQuestions.length}{' '}
-								questions
+								{report.technicalQuestions.length} questions
 							</span>
 						</div>
 
 						<div className='space-y-2 p-4'>
-							{interviewReport.technicalQuestions.map(
-								(item, index) => {
-									const isOpen =
-										openTechnicalQuestion === index
+							{report.technicalQuestions.map((item, index) => {
+								const isOpen = openTechnicalQuestion === index
 
-									return (
-										<div
-											key={item.question}
-											className='overflow-hidden rounded-md border border-white/10 bg-black/20'
+								return (
+									<div
+										key={item.question}
+										className='overflow-hidden rounded-md border border-white/10 bg-black/20'
+									>
+										<button
+											type='button'
+											onClick={() =>
+												setOpenTechnicalQuestion(
+													isOpen ? null : index,
+												)
+											}
+											className='flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left'
 										>
-											<button
-												type='button'
-												onClick={() =>
-													setOpenTechnicalQuestion(
-														isOpen ? null : index,
-													)
-												}
-												className='flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left'
-											>
-												<span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-cyan-400/10 text-[11px] font-semibold text-cyan-300'>
-													{String(index + 1).padStart(
-														2,
-														'0',
-													)}
-												</span>
+											<span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-cyan-400/10 text-[11px] font-semibold text-cyan-300'>
+												{String(index + 1).padStart(
+													2,
+													'0',
+												)}
+											</span>
 
-												<span className='flex-1 text-sm font-medium leading-5 text-gray-300'>
-													{item.question}
-												</span>
+											<span className='flex-1 text-sm font-medium leading-5 text-gray-300'>
+												{item.question}
+											</span>
 
-												<ChevronDown
-													className={`h-4 w-4 shrink-0 text-gray-600 transition-transform ${
-														isOpen
-															? 'rotate-180'
-															: ''
-													}`}
-												/>
-											</button>
+											<ChevronDown
+												className={`h-4 w-4 shrink-0 text-gray-600 transition-transform ${
+													isOpen ? 'rotate-180' : ''
+												}`}
+											/>
+										</button>
 
-											{isOpen && (
-												<div className='border-t border-white/5 px-4 pb-4 pt-3'>
-													<div className='grid gap-3 lg:grid-cols-2'>
-														{/* Intention */}
-														<div className='rounded-md border border-white/5 bg-white/2 p-3.5'>
-															<div className='flex items-center gap-2'>
-																<Target className='h-3.5 w-3.5 text-gray-500' />
+										{isOpen && (
+											<div className='border-t border-white/5 px-4 pb-4 pt-3'>
+												<div className='grid gap-3 lg:grid-cols-2'>
+													{/* Intention */}
+													<div className='rounded-md border border-white/5 bg-white/2 p-3.5'>
+														<div className='flex items-center gap-2'>
+															<Target className='h-3.5 w-3.5 text-gray-500' />
 
-																<span className='text-[11px] font-medium uppercase tracking-wide text-gray-500'>
-																	What this
-																	tests
-																</span>
-															</div>
-
-															<p className='mt-2 text-xs leading-5 text-gray-500'>
-																{item.intention}
-															</p>
+															<span className='text-[11px] font-medium uppercase tracking-wide text-gray-500'>
+																What this tests
+															</span>
 														</div>
 
-														{/* Answer guidance */}
-														<div className='rounded-md border border-cyan-400/10 bg-cyan-400/2.5 p-3.5'>
-															<div className='flex items-center gap-2'>
-																<Lightbulb className='h-3.5 w-3.5 text-cyan-300' />
+														<p className='mt-2 text-xs leading-5 text-gray-500'>
+															{item.intention}
+														</p>
+													</div>
 
-																<span className='text-[11px] font-medium uppercase tracking-wide text-cyan-400'>
-																	How to
-																	approach
-																</span>
-															</div>
+													{/* Answer guidance */}
+													<div className='rounded-md border border-cyan-400/10 bg-cyan-400/2.5 p-3.5'>
+														<div className='flex items-center gap-2'>
+															<Lightbulb className='h-3.5 w-3.5 text-cyan-300' />
 
-															<p className='mt-2 text-xs leading-5 text-gray-400'>
-																{item.answer}
-															</p>
+															<span className='text-[11px] font-medium uppercase tracking-wide text-cyan-400'>
+																How to approach
+															</span>
 														</div>
+
+														<p className='mt-2 text-xs leading-5 text-gray-400'>
+															{item.answer}
+														</p>
 													</div>
 												</div>
-											)}
-										</div>
-									)
-								},
-							)}
+											</div>
+										)}
+									</div>
+								)
+							})}
 						</div>
 					</div>
 				</section>
@@ -563,90 +502,82 @@ export default function InterviewPreparationReport() {
 							</div>
 
 							<span className='text-[11px] text-gray-600'>
-								{interviewReport.behavioralQuestions.length}{' '}
-								questions
+								{report.behavioralQuestions.length} questions
 							</span>
 						</div>
 
 						<div className='space-y-2 p-4'>
-							{interviewReport.behavioralQuestions.map(
-								(item, index) => {
-									const isOpen =
-										openBehavioralQuestion === index
+							{report.behavioralQuestions.map((item, index) => {
+								const isOpen = openBehavioralQuestion === index
 
-									return (
-										<div
-											key={item.question}
-											className='overflow-hidden rounded-md border border-white/10 bg-black/20'
+								return (
+									<div
+										key={item.question}
+										className='overflow-hidden rounded-md border border-white/10 bg-black/20'
+									>
+										<button
+											type='button'
+											onClick={() =>
+												setOpenBehavioralQuestion(
+													isOpen ? null : index,
+												)
+											}
+											className='flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left'
 										>
-											<button
-												type='button'
-												onClick={() =>
-													setOpenBehavioralQuestion(
-														isOpen ? null : index,
-													)
-												}
-												className='flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left'
-											>
-												<span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-blue-400/10 text-[11px] font-semibold text-blue-300'>
-													{String(index + 1).padStart(
-														2,
-														'0',
-													)}
-												</span>
+											<span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-blue-400/10 text-[11px] font-semibold text-blue-300'>
+												{String(index + 1).padStart(
+													2,
+													'0',
+												)}
+											</span>
 
-												<span className='flex-1 text-sm font-medium leading-5 text-gray-300'>
-													{item.question}
-												</span>
+											<span className='flex-1 text-sm font-medium leading-5 text-gray-300'>
+												{item.question}
+											</span>
 
-												<ChevronDown
-													className={`h-4 w-4 shrink-0 text-gray-600 transition-transform ${
-														isOpen
-															? 'rotate-180'
-															: ''
-													}`}
-												/>
-											</button>
+											<ChevronDown
+												className={`h-4 w-4 shrink-0 text-gray-600 transition-transform ${
+													isOpen ? 'rotate-180' : ''
+												}`}
+											/>
+										</button>
 
-											{isOpen && (
-												<div className='border-t border-white/5 px-4 pb-4 pt-3'>
-													<div className='grid gap-3 lg:grid-cols-2'>
-														<div className='rounded-md border border-white/5 bg-white/2 p-3.5'>
-															<div className='flex items-center gap-2'>
-																<Target className='h-3.5 w-3.5 text-gray-500' />
+										{isOpen && (
+											<div className='border-t border-white/5 px-4 pb-4 pt-3'>
+												<div className='grid gap-3 lg:grid-cols-2'>
+													<div className='rounded-md border border-white/5 bg-white/2 p-3.5'>
+														<div className='flex items-center gap-2'>
+															<Target className='h-3.5 w-3.5 text-gray-500' />
 
-																<span className='text-[11px] font-medium uppercase tracking-wide text-gray-500'>
-																	What this
-																	tests
-																</span>
-															</div>
-
-															<p className='mt-2 text-xs leading-5 text-gray-500'>
-																{item.intention}
-															</p>
+															<span className='text-[11px] font-medium uppercase tracking-wide text-gray-500'>
+																What this tests
+															</span>
 														</div>
 
-														<div className='rounded-md border border-blue-400/10 bg-blue-400/2.5 p-3.5'>
-															<div className='flex items-center gap-2'>
-																<Lightbulb className='h-3.5 w-3.5 text-blue-300' />
+														<p className='mt-2 text-xs leading-5 text-gray-500'>
+															{item.intention}
+														</p>
+													</div>
 
-																<span className='text-[11px] font-medium uppercase tracking-wide text-blue-400'>
-																	How to
-																	approach
-																</span>
-															</div>
+													<div className='rounded-md border border-blue-400/10 bg-blue-400/2.5 p-3.5'>
+														<div className='flex items-center gap-2'>
+															<Lightbulb className='h-3.5 w-3.5 text-blue-300' />
 
-															<p className='mt-2 text-xs leading-5 text-gray-400'>
-																{item.answer}
-															</p>
+															<span className='text-[11px] font-medium uppercase tracking-wide text-blue-400'>
+																How to approach
+															</span>
 														</div>
+
+														<p className='mt-2 text-xs leading-5 text-gray-400'>
+															{item.answer}
+														</p>
 													</div>
 												</div>
-											)}
-										</div>
-									)
-								},
-							)}
+											</div>
+										)}
+									</div>
+								)
+							})}
 						</div>
 					</div>
 				</section>
@@ -683,74 +614,65 @@ export default function InterviewPreparationReport() {
 								<div className='absolute bottom-6 left-3.75 top-6 w-px bg-white/10' />
 
 								<div className='space-y-3'>
-									{interviewReport.preparationPlan.map(
-										(plan) => (
-											<div
-												key={plan.day}
-												className='relative flex gap-4'
-											>
-												{/* Day */}
-												<div className='relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/20 bg-[#030712] text-[10px] font-semibold text-cyan-300'>
-													{plan.day}
+									{report.preparationPlan.map((plan) => (
+										<div
+											key={plan.day}
+											className='relative flex gap-4'
+										>
+											{/* Day */}
+											<div className='relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/20 bg-[#030712] text-[10px] font-semibold text-cyan-300'>
+												{plan.day}
+											</div>
+
+											{/* Content */}
+											<div className='min-w-0 flex-1 rounded-md border border-white/10 bg-black/20 p-4'>
+												<div className='flex flex-col justify-between gap-2 sm:flex-row sm:items-center'>
+													<div>
+														<p className='text-[10px] font-medium uppercase tracking-wider text-cyan-400'>
+															Day {plan.day}
+														</p>
+
+														<h3 className='mt-1 text-sm font-semibold text-gray-200'>
+															{plan.focus}
+														</h3>
+													</div>
+
+													<span className='hidden h-7 w-7 items-center justify-center rounded-md bg-white/3 sm:flex'>
+														{plan.day === 1 ? (
+															<FileText className='h-3.5 w-3.5 text-gray-500' />
+														) : plan.day === 2 ? (
+															<BookOpen className='h-3.5 w-3.5 text-gray-500' />
+														) : plan.day === 3 ? (
+															<BriefcaseBusiness className='h-3.5 w-3.5 text-gray-500' />
+														) : plan.day === 4 ? (
+															<MessageSquareText className='h-3.5 w-3.5 text-gray-500' />
+														) : plan.day === 5 ? (
+															<Award className='h-3.5 w-3.5 text-gray-500' />
+														) : plan.day === 6 ? (
+															<Target className='h-3.5 w-3.5 text-gray-500' />
+														) : (
+															<GraduationCap className='h-3.5 w-3.5 text-gray-500' />
+														)}
+													</span>
 												</div>
 
-												{/* Content */}
-												<div className='min-w-0 flex-1 rounded-md border border-white/10 bg-black/20 p-4'>
-													<div className='flex flex-col justify-between gap-2 sm:flex-row sm:items-center'>
-														<div>
-															<p className='text-[10px] font-medium uppercase tracking-wider text-cyan-400'>
-																Day {plan.day}
+												<div className='mt-3 space-y-2'>
+													{plan.tasks.map((task) => (
+														<div
+															key={task}
+															className='flex items-start gap-2.5'
+														>
+															<Check className='mt-0.5 h-3.5 w-3.5 shrink-0 text-cyan-400' />
+
+															<p className='text-xs leading-5 text-gray-500'>
+																{task}
 															</p>
-
-															<h3 className='mt-1 text-sm font-semibold text-gray-200'>
-																{plan.focus}
-															</h3>
 														</div>
-
-														<span className='hidden h-7 w-7 items-center justify-center rounded-md bg-white/3 sm:flex'>
-															{plan.day === 1 ? (
-																<FileText className='h-3.5 w-3.5 text-gray-500' />
-															) : plan.day ===
-															  2 ? (
-																<BookOpen className='h-3.5 w-3.5 text-gray-500' />
-															) : plan.day ===
-															  3 ? (
-																<BriefcaseBusiness className='h-3.5 w-3.5 text-gray-500' />
-															) : plan.day ===
-															  4 ? (
-																<MessageSquareText className='h-3.5 w-3.5 text-gray-500' />
-															) : plan.day ===
-															  5 ? (
-																<Award className='h-3.5 w-3.5 text-gray-500' />
-															) : plan.day ===
-															  6 ? (
-																<Target className='h-3.5 w-3.5 text-gray-500' />
-															) : (
-																<GraduationCap className='h-3.5 w-3.5 text-gray-500' />
-															)}
-														</span>
-													</div>
-
-													<div className='mt-3 space-y-2'>
-														{plan.tasks.map(
-															(task) => (
-																<div
-																	key={task}
-																	className='flex items-start gap-2.5'
-																>
-																	<Check className='mt-0.5 h-3.5 w-3.5 shrink-0 text-cyan-400' />
-
-																	<p className='text-xs leading-5 text-gray-500'>
-																		{task}
-																	</p>
-																</div>
-															),
-														)}
-													</div>
+													))}
 												</div>
 											</div>
-										),
-									)}
+										</div>
+									))}
 								</div>
 							</div>
 						</div>

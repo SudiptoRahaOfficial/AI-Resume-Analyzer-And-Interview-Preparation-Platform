@@ -1,18 +1,13 @@
-// making client component
 'use client'
 
-// importing dependencis
 import { createContext, useState } from 'react'
 
-// creating InterviewContext
-const InterviewContext = createContext()
+export const InterviewContext = createContext(null)
 
-// making InterviewProvider
 export const InterviewProvider = ({ children }) => {
-	// states
 	const [report, setReport] = useState(null)
 	const [reports, setReports] = useState([])
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(false)
 
 	return (
 		<InterviewContext.Provider

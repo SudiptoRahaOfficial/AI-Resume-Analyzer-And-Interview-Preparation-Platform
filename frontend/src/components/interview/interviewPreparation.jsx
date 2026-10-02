@@ -1,9 +1,9 @@
+// making client component
 'use client'
 
+// importing dependencis
 import { useRef, useState } from 'react'
-
 import { useRouter } from 'next/navigation'
-
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -12,9 +12,13 @@ import {
 	Upload,
 	X,
 } from 'lucide-react'
+import { useInterview } from '@/hooks/useInterview'
 
 // interview preparation page
 export default function InterviewPreparation() {
+	// extracting requried state and function from hook
+	const { loading, handleGenerateReport } = useInterview()
+
 	// router for page navigation
 	const router = useRouter()
 
@@ -30,12 +34,29 @@ export default function InterviewPreparation() {
 	// job description state
 	const [jobDescription, setJobDescription] = useState('')
 
+	// error state
+	const [error, setError] = useState('')
+
 	// handle resume selection
+	const MAX_RESUME_SIZE = 3 * 1024 * 1024
 	const handleResumeChange = (event) => {
 		const file = event.target.files?.[0]
 
 		if (!file) return
 
+		if (file.type !== 'application/pdf') {
+			setError('Please select a PDF file.')
+			event.target.value = ''
+			return
+		}
+
+		if (file.size > MAX_RESUME_SIZE) {
+			setError('Resume must be smaller than 5 MB.')
+			event.target.value = ''
+			return
+		}
+
+		setError('')
 		setResume(file)
 	}
 
@@ -45,6 +66,41 @@ export default function InterviewPreparation() {
 
 		if (resumeInputRef.current) {
 			resumeInputRef.current.value = ''
+		}
+	}
+
+	// handle generate interview guide
+	const handleGenerate = async () => {
+		// clearing previous error
+		setError('')
+
+		// validating resume
+		if (!resume) {
+			setError('Please upload your resume before generating the report.')
+			return
+		}
+
+		// validating job description
+		if (!jobDescription.trim()) {
+			setError('Please provide the job description.')
+			return
+		}
+
+		try {
+			// calling generate report functionality
+			const data = await handleGenerateReport({
+				resumeFile: resume,
+				selfDescription,
+				jobDescription,
+			})
+
+			// navigating to generated report page
+			router.push(
+				`/interview-preparation-report/${data.interviewReport._id}`,
+			)
+		} catch (error) {
+			// showing api error
+			setError(error?.message ?? 'Failed to generate interview report.')
 		}
 	}
 
@@ -237,9 +293,10 @@ export default function InterviewPreparation() {
 							<div className='p-4'>
 								<textarea
 									value={selfDescription}
-									onChange={(event) =>
+									onChange={(event) => {
+										setError('')
 										setSelfDescription(event.target.value)
-									}
+									}}
 									placeholder='Describe your experience, strengths, technologies, projects, or anything else that may not be fully represented in your resume...'
 									className='h-37.5 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-3.5 py-3 text-xs leading-5 text-gray-300 outline-none transition placeholder:text-gray-700 focus:border-cyan-400/30 focus:bg-black/30 focus:ring-1 focus:ring-cyan-400/10'
 								/>
@@ -269,9 +326,10 @@ export default function InterviewPreparation() {
 							<div className='p-4'>
 								<textarea
 									value={jobDescription}
-									onChange={(event) =>
+									onChange={(event) => {
+										setError('')
 										setJobDescription(event.target.value)
-									}
+									}}
 									placeholder='Paste the job description of the position you are preparing for...'
 									className='h-37.5 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-3.5 py-3 text-xs leading-5 text-gray-300 outline-none transition placeholder:text-gray-700 focus:border-cyan-400/30 focus:bg-black/30 focus:ring-1 focus:ring-cyan-400/10'
 								/>
@@ -279,6 +337,15 @@ export default function InterviewPreparation() {
 						</div>
 					</div>
 				</section>
+
+				{/* error */}
+				{error && (
+					<div className='mx-auto mt-5 max-w-375'>
+						<div className='rounded-lg border border-red-400/10 bg-red-400/5 px-4 py-3'>
+							<p className='text-xs text-red-300'>{error}</p>
+						</div>
+					</div>
+				)}
 
 				{/* Generate section */}
 				<section className='mx-auto mt-5 max-w-375'>
@@ -302,11 +369,18 @@ export default function InterviewPreparation() {
 
 						<button
 							type='button'
+							onClick={handleGenerate}
+							disabled={loading}
 							className='group flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-cyan-400 px-6 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-cyan-300 active:scale-[0.99] sm:w-auto'
 						>
 							<Sparkles className='h-3.5 w-3.5' />
-							Generate Interview Guide
-							<ArrowRight className='h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5' />
+							{loading
+								? 'Generating...'
+								: 'Generate Interview Guide'}
+
+							{!loading && (
+								<ArrowRight className='h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5' />
+							)}
 						</button>
 					</div>
 				</section>

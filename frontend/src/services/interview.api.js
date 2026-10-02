@@ -1,4 +1,4 @@
-// importing dependencis
+// importing dependencies
 import axios from 'axios'
 
 // making axios instance
@@ -12,22 +12,23 @@ export async function callGenerateReportApi({
 	resumeFile,
 	selfDescription,
 	jobDescription,
+	accessToken,
 }) {
-	// making form data
 	const formData = new FormData()
+
 	formData.append('resume', resumeFile)
 	formData.append('selfDescription', selfDescription)
 	formData.append('jobDescription', jobDescription)
 
 	try {
-		// calling api
 		const response = await api.post('/generate-report', formData, {
-			headers: { 'Content-Type': 'multipart/from-data' },
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
 		})
-		// returning response
+
 		return response.data
 	} catch (error) {
-		// handling unexpected error
 		throw (
 			error.response?.data ?? {
 				message: 'Something went wrong',
@@ -37,15 +38,17 @@ export async function callGenerateReportApi({
 	}
 }
 
-// function for calling get report by id api
-export async function callGetReportByIdApi(reportId) {
+// function for calling get-report-by-id api
+export async function callGetReportByIdApi({ reportId, accessToken }) {
 	try {
-		// calling api
-		const response = await api.get(`/reports/${reportId}`)
-		// returning response
+		const response = await api.get(`/reports/${reportId}`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		})
+
 		return response.data
 	} catch (error) {
-		// handling unexpected error
 		throw (
 			error.response?.data ?? {
 				message: 'Something went wrong',
@@ -55,15 +58,17 @@ export async function callGetReportByIdApi(reportId) {
 	}
 }
 
-// function for calling get reports api
-export async function callGetReportsApi() {
+// function for calling get-reports api
+export async function callGetReportsApi({ accessToken }) {
 	try {
-		// calling api
-		const response = await api.get('/reports')
-		// returning response
+		const response = await api.get('/reports', {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		})
+
 		return response.data
 	} catch (error) {
-		// handling unexpected error
 		throw (
 			error.response?.data ?? {
 				message: 'Something went wrong',
