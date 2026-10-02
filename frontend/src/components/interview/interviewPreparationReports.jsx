@@ -210,21 +210,38 @@ export default function InterviewPreparationReports() {
 				<div className='absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-cyan-500/5 blur-3xl' />
 			</div>
 
+			{/* Header */}
+			<header className='sticky top-0 z-50 border-b border-white/10 bg-[#030712]/85 backdrop-blur-xl'>
+				<div className='mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6'>
+					{/* Brand */}
+					<button
+						type='button'
+						onClick={() => router.push('/')}
+						className='ml-14 flex cursor-pointer items-center gap-2.5 transition'
+					>
+						<span className='text-lg font-semibold tracking-tight text-white'>
+							ResumeAI
+						</span>
+					</button>
+
+					{/* Back */}
+					<button
+						type='button'
+						onClick={() => router.push('/dashboard')}
+						className='group mr-14 flex cursor-pointer items-center gap-2 text-sm text-gray-400 transition hover:text-white'
+					>
+						<ArrowLeft className='h-4 w-4 transition-transform group-hover:-translate-x-0.5' />
+
+						<span>Dashboard</span>
+					</button>
+				</div>
+			</header>
+
 			{/* Main container */}
 			<div className='relative mx-auto w-full max-w-375 px-4 py-6 sm:px-6 lg:px-8'>
-				{/* Header */}
-				<header className='flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between'>
-					{/* Left side */}
+				{/* page heading */}
+				<section className='flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between'>
 					<div>
-						<button
-							type='button'
-							onClick={() => router.push('/dashboard')}
-							className='mb-4 inline-flex cursor-pointer items-center gap-2 text-sm text-gray-400 transition hover:text-white'
-						>
-							<ArrowLeft className='h-4 w-4' />
-							Back to Dashboard
-						</button>
-
 						<div className='flex items-center gap-3'>
 							<div className='flex h-11 w-11 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-400/10'>
 								<FileText className='h-5 w-5 text-cyan-300' />
@@ -242,17 +259,7 @@ export default function InterviewPreparationReports() {
 							</div>
 						</div>
 					</div>
-
-					{/* Generate button */}
-					<button
-						type='button'
-						onClick={() => router.push('/interview-preparation')}
-						className='inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300'
-					>
-						<Sparkles className='h-4 w-4' />
-						Generate New Guide
-					</button>
-				</header>
+				</section>
 
 				{/* Statistics */}
 				<section className='mt-6 grid gap-3 sm:grid-cols-3'>
