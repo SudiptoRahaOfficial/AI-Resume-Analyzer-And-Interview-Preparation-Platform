@@ -159,7 +159,7 @@ async function generateInterviewReport({
 
 	// invokeing ai to generate response
 	const response = await ai.interactions.create({
-		model: 'gemini-3.8-flash',
+		model: 'gemini-3.5-flash',
 		input: prompt,
 		response_format: {
 			type: 'text',
