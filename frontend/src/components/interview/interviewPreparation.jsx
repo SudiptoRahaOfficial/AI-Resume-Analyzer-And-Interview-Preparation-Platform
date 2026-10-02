@@ -96,7 +96,7 @@ export default function InterviewPreparation() {
 
 			// navigating to generated report page
 			router.push(
-				`/interview-preparation-report/${data.interviewReport.id}`,
+				`/interview-preparation-reports/${data.interviewReport.id}`,
 			)
 		} catch (error) {
 			// showing api error

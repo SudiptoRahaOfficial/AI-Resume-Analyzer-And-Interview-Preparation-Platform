@@ -25,6 +25,7 @@ import {
 	LogOut,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { useInterview } from '@/hooks/useInterview'
 
 // dashboard page
 export default function Dashboard() {
@@ -74,6 +75,35 @@ export default function Dashboard() {
 		}
 	}
 
+	// extracting from custom useInterview hook
+	const {
+		reports,
+		loading: reportsLoading,
+		handleGetReports,
+	} = useInterview()
+
+	// effect for handleing get reports
+	useEffect(() => {
+		const fetchReports = async () => {
+			try {
+				await handleGetReports()
+			} catch (error) {
+				console.error('Failed to fetch interview reports:', error)
+			}
+		}
+
+		fetchReports()
+	}, [handleGetReports])
+
+	// function for formating report date
+	const formatReportDate = (date) => {
+		return new Date(date).toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+		})
+	}
+
 	// temporary dashboard data
 	// replace these values with API data when the dashboard API is implemented
 	const dashboardStats = {
@@ -82,37 +112,6 @@ export default function Dashboard() {
 		skillGaps: 12,
 		optimizedResumes: 3,
 	}
-
-	// temporary recent interview guides
-	const recentInterviewGuides = [
-		{
-			id: 1,
-			role: 'Backend Engineer',
-			matchScore: 82,
-			technicalQuestions: 25,
-			behavioralQuestions: 10,
-			skillGaps: 6,
-			createdAt: '2 days ago',
-		},
-		{
-			id: 2,
-			role: 'Node.js Developer',
-			matchScore: 74,
-			technicalQuestions: 20,
-			behavioralQuestions: 8,
-			skillGaps: 4,
-			createdAt: '5 days ago',
-		},
-		{
-			id: 3,
-			role: 'Full Stack Developer',
-			matchScore: 68,
-			technicalQuestions: 24,
-			behavioralQuestions: 10,
-			skillGaps: 7,
-			createdAt: '1 week ago',
-		},
-	]
 
 	// temporary recent resumes
 	const recentResumes = [
@@ -740,10 +739,12 @@ export default function Dashboard() {
 						</div>
 					</div>
 				</section>
+
 				{/* Recent work */}
 				<section className='grid gap-6 lg:grid-cols-2'>
-					{/* Recent interview guides */}
+					{/* Recent Interview Guides */}
 					<div className='rounded-lg border border-white/10 bg-white/5 p-6 backdrop-blur-xl'>
+						{/* Header */}
 						<div className='flex items-start justify-between gap-4'>
 							<div>
 								<h2 className='text-xl font-semibold'>
@@ -757,7 +758,9 @@ export default function Dashboard() {
 
 							<button
 								type='button'
-								onClick={() => router.push('/interview-prep')}
+								onClick={() =>
+									router.push('/interview-preparation-reports')
+								}
 								className='hidden items-center gap-1 text-sm font-medium text-cyan-300 transition hover:text-cyan-200 sm:flex cursor-pointer'
 							>
 								View all
@@ -765,63 +768,110 @@ export default function Dashboard() {
 							</button>
 						</div>
 
+						{/* Reports */}
 						<div className='mt-6 space-y-3'>
-							{recentInterviewGuides.map((guide) => (
-								<button
-									type='button'
-									key={guide.id}
-									onClick={() =>
-										router.push(
-											`/interview-prep/${guide.id}`,
-										)
-									}
-									className='group flex w-full cursor-pointer items-center justify-between gap-4 rounded-md border border-white/5 bg-black/20 p-4 text-left transition hover:border-cyan-400/20 hover:bg-white/5'
-								>
-									<div className='min-w-0'>
-										<div className='flex items-center gap-2'>
-											<BriefcaseBusiness className='h-4 w-4 shrink-0 text-cyan-300' />
+							{reportsLoading ? (
+								<div className='rounded-md border border-white/5 bg-black/20 p-6 text-center'>
+									<p className='text-sm text-gray-500'>
+										Loading interview guides...
+									</p>
+								</div>
+							) : reports.length === 0 ? (
+								<div className='rounded-md border border-white/5 bg-black/20 p-6 text-center'>
+									<Target className='mx-auto h-8 w-8 text-gray-600' />
 
-											<h3 className='truncate text-sm font-medium text-white'>
-												{guide.role}
-											</h3>
+									<p className='mt-3 text-sm font-medium text-gray-300'>
+										No interview guides yet
+									</p>
+
+									<p className='mt-1 text-xs text-gray-500'>
+										Generate your first interview
+										preparation guide to see it here.
+									</p>
+
+									<button
+										type='button'
+										onClick={() =>
+											router.push(
+												'/interview-preparation',
+											)
+										}
+										className='mt-4 inline-flex items-center gap-2 rounded-sm bg-cyan-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300'
+									>
+										Create Interview Guide
+										<ArrowRight className='h-3.5 w-3.5' />
+									</button>
+								</div>
+							) : (
+								reports.slice(0, 3).map((report) => (
+									<button
+										type='button'
+										key={report._id}
+										onClick={() =>
+											router.push(
+												`/interview-preparation-reports/${report._id}`,
+											)
+										}
+										className='group flex w-full cursor-pointer items-center justify-between gap-4 rounded-md border border-white/5 bg-black/20 p-4 text-left transition hover:border-cyan-400/20 hover:bg-white/5'
+									>
+										{/* Report information */}
+										<div className='min-w-0'>
+											<div className='flex items-center gap-2'>
+												<BriefcaseBusiness className='h-4 w-4 shrink-0 text-cyan-300' />
+
+												<h3 className='truncate text-sm font-medium text-white'>
+													{report.jobTitle}
+												</h3>
+											</div>
+
+											<div className='mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500'>
+												<span>
+													{report.technicalQuestions
+														?.length ?? 0}{' '}
+													technical
+												</span>
+
+												<span>
+													{report.behavioralQuestions
+														?.length ?? 0}{' '}
+													behavioral
+												</span>
+
+												<span>
+													{report.skillGaps?.length ??
+														0}{' '}
+													skill gaps
+												</span>
+											</div>
+
+											<div className='mt-2 flex items-center gap-1 text-xs text-gray-500'>
+												<Clock3 className='h-3 w-3' />
+
+												{formatReportDate(
+													report.updatedAt,
+												)}
+											</div>
 										</div>
 
-										<div className='mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500'>
-											<span>
-												{guide.technicalQuestions}{' '}
-												technical
+										{/* Match score */}
+										<div className='flex shrink-0 flex-col items-end gap-2'>
+											<span className='text-lg font-semibold text-cyan-300'>
+												{report.matchScore}%
 											</span>
 
-											<span>
-												{guide.behavioralQuestions}{' '}
-												behavioral
-											</span>
-
-											<span>
-												{guide.skillGaps} skill gaps
-											</span>
+											<ChevronRight className='h-4 w-4 text-gray-600 transition group-hover:translate-x-0.5 group-hover:text-cyan-300' />
 										</div>
-
-										<div className='mt-2 flex items-center gap-1 text-xs text-gray-500'>
-											<Clock3 className='h-3 w-3' />
-											{guide.createdAt}
-										</div>
-									</div>
-
-									<div className='flex shrink-0 flex-col items-end gap-2'>
-										<span className='text-lg font-semibold text-cyan-300'>
-											{guide.matchScore}%
-										</span>
-
-										<ChevronRight className='h-4 w-4 text-gray-600 transition group-hover:translate-x-0.5 group-hover:text-cyan-300' />
-									</div>
-								</button>
-							))}
+									</button>
+								))
+							)}
 						</div>
 
+						{/* Mobile view all */}
 						<button
 							type='button'
-							onClick={() => router.push('/interview-prep')}
+							onClick={() =>
+								router.push('/interview-preparation')
+							}
 							className='mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white sm:hidden'
 						>
 							View all guides
