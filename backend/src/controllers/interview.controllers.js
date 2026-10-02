@@ -5,7 +5,7 @@
 
 // importing dependencis
 const { PDFParse } = require('pdf-parse')
-const generateInterviewReport = require('../services/ai.service')
+const { generateInterviewReport } = require('../services/ai.service')
 const interviewReportModel = require('../models/interviewReport.model')
 
 /**

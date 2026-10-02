@@ -8,6 +8,9 @@ const { GoogleGenAI } = require('@google/genai')
 const z = require('zod')
 const envConfig = require('../configs/env.config')
 
+// making instance of ai
+const ai = new GoogleGenAI({ apiKey: envConfig.GEMINI_API_KEY })
+
 // making interview report json schema
 const interviewReportJsonSchema = {
 	type: 'object',
@@ -142,9 +145,6 @@ const interviewReportJsonSchema = {
 // making interview report schema
 const interviewReportSchema = z.fromJSONSchema(interviewReportJsonSchema)
 
-// making instance of ai
-const ai = new GoogleGenAI({ apiKey: envConfig.GEMINI_API_KEY })
-
 // function for generate interview report with geminiAi
 async function generateInterviewReport({
 	resume,
@@ -162,7 +162,7 @@ async function generateInterviewReport({
 		model: 'gemini-3.5-flash',
 		input: prompt,
 		response_format: {
-			type: 'text',
+			type: 'json_schema',
 			mime_type: 'application/json',
 			schema: interviewReportJsonSchema,
 		},
@@ -178,5 +178,53 @@ async function generateInterviewReport({
 	return interviewReport
 }
 
+// making resume pdf html json schema
+const resumePdfHtmlJsonSchema = {
+	type: 'object',
+	properties: {
+		resumePdfHtml: {
+			type: 'string',
+			description:
+				'The html content of the resume which can be converted to PDF using any library like puppeteer',
+		},
+	},
+	required: ['resumePdfHtml'],
+}
+
+// making resume pdf html schema
+const resumePdfHtmlSchema = z.fromJSONSchema(resumePdfHtmlJsonSchema)
+
+// function for generate resume pdf html with geminiAi
+async function generateResumePdfHtml(resume, selfDescription, jobDescription) {
+	// making prompt for ai as instructions
+	const prompt = `Generate html content of the resume for a candidate which can be converted to PDF using any library like puppeteer with the following details: 
+	Resume: ${resume}
+	Self Description: ${selfDescription}
+	Job Description: ${jobDescription}`
+
+	// invokeing ai to generate response
+	const response = await ai.interactions.create({
+		model: 'gemini-3.5-flash',
+		input: prompt,
+		response_format: {
+			type: 'json_schema',
+			mime_type: 'application/json',
+			schema: resumePdfHtmlJsonSchema,
+		},
+	})
+
+	// getting ai returned response in readable text format
+	const resumePdfHtml = resumePdfHtmlSchema.parse(
+		JSON.parse(response.output_text),
+	)
+
+	// returning generated resume pdf html
+	console.log(resumePdfHtml)
+	return resumePdfHtml
+}
+
 // exporting function
-module.exports = generateInterviewReport
+module.exports = {
+	generateInterviewReport,
+	generateResumePdfHtml,
+}
