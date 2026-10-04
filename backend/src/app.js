@@ -11,6 +11,7 @@ const cors = require('cors')
 // importing routers
 const authRouter = require('./routes/auth.routes')
 const interviewRouter = require('./routes/interview.routes')
+const resumeRouter = require('./routes/resume.routes')
 
 // making app
 const app = express()
@@ -27,6 +28,7 @@ app.use(middlewares) // using middlewares
 // connecting all API routers
 app.use('/api/auth', authRouter)
 app.use('/api/interview', interviewRouter)
+app.use('/api/resume', resumeRouter)
 
 // exporting app
 module.exports = app

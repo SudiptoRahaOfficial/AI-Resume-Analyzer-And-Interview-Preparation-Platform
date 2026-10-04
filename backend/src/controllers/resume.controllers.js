@@ -1,29 +1,31 @@
 /**
- * - file name: interview.controllers.js
- * - responsibility: responsible for all interview related api controllers
+ * - file name: resume.controllers.js
+ * - responsibility: responsible for all resume related api controllers
  */
 
 // importing dependencies
 const { PDFParse } = require('pdf-parse')
-const { generateInterviewReport } = require('../services/ai.service')
-const interviewReportModel = require('../models/interviewReport.model')
+const resumeModel = require('../models/resume.model')
+const { generateResume } = require('../utils/resume.utils')
 
 /**
-	- generate report controller
-	- POST API - "/api/interview/generate-report"
+	- generate resume controller
+	- POST API - "/api/resume/generate-resume"
  */
-async function generateReportController(req, res) {
+async function generateResumeController(req, res) {
 	// extracting all data sent by client
 	const resumeFile = req.file
 	let { selfDescription, jobDescription } = req.body
 
-	// validating required fields
+	// validating job description
 	if (!jobDescription) {
 		return res.status(400).json({
 			message: 'Job description is required',
 			success: false,
 		})
 	}
+
+	// validating resume source
 	if (!resumeFile && !selfDescription) {
 		return res.status(400).json({
 			message: 'Either resume file or self description is required',
@@ -55,12 +57,12 @@ async function generateReportController(req, res) {
 		}
 	}
 
-	// normalizing all data
-	resume = typeof resume === 'string' ? resume.trim() : ''
+	// normalizing all fields
 	selfDescription =
 		typeof selfDescription === 'string' ? selfDescription.trim() : ''
 	jobDescription =
 		typeof jobDescription === 'string' ? jobDescription.trim() : ''
+	resume = typeof resume === 'string' ? resume.trim() : ''
 
 	// validating normalized job description
 	if (!jobDescription) {
@@ -80,122 +82,119 @@ async function generateReportController(req, res) {
 	}
 
 	try {
-		// generating interview report by ai
-		const interviewReportByAi = await generateInterviewReport({
+		// generating ATS-optimized resume
+		const resumeByAi = await generateResume({
 			resume,
 			selfDescription,
 			jobDescription,
 		})
 
-		// creating interview report
-		const interviewReport = await interviewReportModel.create({
+		// creating resume document
+		const resumeDoc = await resumeModel.create({
 			user: req.user.id,
-			...interviewReportByAi,
+			jobTitle: resumeByAi.jobTitle,
+			resumePdf: resumeByAi.resumePdf,
+			resumeFileId: resumeByAi.resumeFileId,
+			resumeFilePath: resumeByAi.resumeFilePath,
 		})
 
 		// response back on success
 		return res.status(201).json({
-			message: 'Interview report generated successfully',
+			message: 'Resume generated successfully',
 			success: true,
-			interviewReport: {
-				id: interviewReport._id,
-				jobTitle: interviewReport.jobTitle,
-				matchScore: interviewReport.matchScore,
-				technicalQuestions: interviewReport.technicalQuestions,
-				behavioralQuestions: interviewReport.behavioralQuestions,
-				skillGaps: interviewReport.skillGaps,
-				preparationPlan: interviewReport.preparationPlan,
+			resume: {
+				id: resumeDoc._id,
+				jobTitle: resumeDoc.jobTitle,
+				resumePdf: resumeDoc.resumePdf,
 			},
 		})
 	} catch (error) {
-		// logging on unexpected interview report generation failure
-		console.error('Interview report generation failed', {
+		// logging on resume generation failure
+		console.error('Resume generation failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// failed response back on interview report generation failure
+		// failed response back on resume generation failure
 		return res.status(500).json({
-			message: 'Failed to generate interview report',
+			message: 'Failed to generate resume',
 			success: false,
 		})
 	}
 }
 
 /**
-	- get report by id controller
-	- GET API - "/api/interview/reports/:reportId"
+	- get resume by id controller
+	- GET API - "/api/resume/resumes/:resumeId"
  */
-async function getReportByIdController(req, res) {
-	// extracting reportId from req.params
-	const { reportId } = req.params
+async function getResumeByIdController(req, res) {
+	// extracting resumeId from req.params
+	const { resumeId } = req.params
 
 	try {
-		// finding report according reportId and requested user
-		const report = await interviewReportModel.findOne({
-			_id: reportId,
+		// finding resume according resumeId and requested user
+		const resume = await resumeModel.findOne({
+			_id: resumeId,
 			user: req.user.id,
 		})
 
-		// failed response back if report not found
-		if (!report) {
+		// failed response back if resume not found
+		if (!resume) {
 			return res.status(404).json({
-				message: 'Interview report not found.',
+				message: 'Resume not found.',
 				success: false,
 			})
 		}
 
 		// response back on success
 		return res.status(200).json({
-			message: 'Interview report fetched successfully.',
+			message: 'Resume fetched successfully.',
 			success: true,
-			interviewReport: report,
+			resume,
 		})
 	} catch (error) {
 		// logging on unexpected query failure
-		console.error('Interview report finding query failed', {
+		console.error('Resume finding query failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
 		// failed response back on unexpected query failure
 		return res.status(500).json({
-			message: 'Failed to find requested interview report.',
+			message: 'Failed to find requested resume.',
 			success: false,
 		})
 	}
 }
 
 /**
-	- get all reports controller
-	- GET API - "/api/interview/reports"
+	- get all resumes controller
+	- GET API - "/api/resume/resumes"
  */
-async function getReportsController(req, res) {
+async function getResumesController(req, res) {
 	try {
-		// finding reports according requested user
-		const reports = await interviewReportModel
+		// finding resumes according requested user
+		const resumes = await resumeModel
 			.find({ user: req.user.id })
 			.sort({ createdAt: -1 })
-			.select(
-				'jobTitle matchScore technicalQuestions behavioralQuestions skillGaps createdAt',
-			)
+			.select('jobTitle resumePdf createdAt')
 
 		// response back on success
 		return res.status(200).json({
-			message: 'Interview reports fetched successfully.',
+			message: 'Resumes fetched successfully.',
 			success: true,
-			interviewReports: reports,
+			resumes,
 		})
 	} catch (error) {
 		// logging on unexpected query failure
-		console.error('Interview reports finding query failed', {
+		console.error('Resumes finding query failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
 		// failed response back on unexpected query failure
 		return res.status(500).json({
-			message: 'Failed to find requested interview reports.',
+			message: 'Failed to find requested resumes.',
 			success: false,
 		})
 	}
@@ -203,7 +202,7 @@ async function getReportsController(req, res) {
 
 // exporting controllers
 module.exports = {
-	generateReportController,
-	getReportByIdController,
-	getReportsController,
+	generateResumeController,
+	getResumeByIdController,
+	getResumesController,
 }

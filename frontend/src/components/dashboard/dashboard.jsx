@@ -759,7 +759,9 @@ export default function Dashboard() {
 							<button
 								type='button'
 								onClick={() =>
-									router.push('/interview-preparation-reports')
+									router.push(
+										'/interview-preparation-reports',
+									)
 								}
 								className='hidden items-center gap-1 text-sm font-medium text-cyan-300 transition hover:text-cyan-200 sm:flex cursor-pointer'
 							>
@@ -848,7 +850,7 @@ export default function Dashboard() {
 												<Clock3 className='h-3 w-3' />
 
 												{formatReportDate(
-													report.updatedAt,
+													report.createdAt,
 												)}
 											</div>
 										</div>

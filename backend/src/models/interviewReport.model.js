@@ -101,20 +101,7 @@ const interviewReportSchema = new Schema(
 		user: {
 			type: Schema.Types.ObjectId,
 			ref: 'user',
-			required: true,
-		},
-		resume: {
-			type: String,
-			trim: true,
-		},
-		selfDescription: {
-			type: String,
-			trim: true,
-		},
-		jobDescription: {
-			type: String,
-			trim: true,
-			required: [true, 'Job description is required'],
+			required: [true, 'User is required'],
 		},
 		jobTitle: {
 			type: String,

@@ -1,43 +1,45 @@
 /**
-    - file name: pdf.service.js
-    - responsibility: responsible for generating PDF files from HTML content
+ * - file name: pdf.service.js
+ * - responsibility: responsible for PDF related services
  */
 
 // importing dependencies
 const puppeteer = require('puppeteer')
 
-// function for generate resume pdf from html
+// function for generating PDF from HTML
 async function generateResumePdfFromHtml(htmlContent) {
 	let browser
 
 	try {
-		// Validate html content
+		// validating HTML content
 		if (!htmlContent || typeof htmlContent !== 'string') {
-			throw new Error('HTML content is required to generate PDF')
+			throw new TypeError('HTML content is required to generate PDF')
 		}
 
-		// Launch puppeteer browser
+		// launching browser
 		browser = await puppeteer.launch()
 
-		// Create a new page
+		// creating new page
 		const page = await browser.newPage()
 
-		// Load the HTML content directly into the page
+		// setting HTML content
 		await page.setContent(htmlContent, {
 			waitUntil: 'networkidle0',
 		})
 
-		// Generate PDF from the HTML content
-		const pdfBuffer = await page.pdf({
+		// generating PDF
+		const pdfData = await page.pdf({
 			format: 'A4',
 			printBackground: true,
 			preferCSSPageSize: true,
 		})
 
-		// Return generated PDF buffer
+		// converting Puppeteer PDF data to Node.js Buffer
+		const pdfBuffer = Buffer.from(pdfData)
+
 		return pdfBuffer
 	} finally {
-		// Always close the browser
+		// closing browser
 		if (browser) {
 			await browser.close()
 		}

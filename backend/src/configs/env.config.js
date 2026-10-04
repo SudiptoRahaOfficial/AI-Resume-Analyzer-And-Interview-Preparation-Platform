@@ -44,6 +44,11 @@ if (!process.env.GEMINI_API_KEY) {
 	throw new Error('GEMINI_API_KEY is not defined in .env')
 }
 
+// imagekit private key error
+if (!process.env.IMAGEKIT_PRIVATE_KEY) {
+	throw new Error('IMAGEKIT_PRIVATE_KEY is not defined in .env')
+}
+
 // configuration object
 const config = {
 	PORT: process.env.PORT,
@@ -59,6 +64,8 @@ const config = {
 	GOOGLE_USER: process.env.GOOGLE_USER,
 
 	GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+
+	IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
 }
 
 // exporting config object

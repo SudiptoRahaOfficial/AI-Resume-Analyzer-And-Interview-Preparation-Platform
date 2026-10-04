@@ -603,12 +603,12 @@ export default function InterviewPreparationReports() {
 
 												<span>
 													{formatReportDate(
-														report.updatedAt,
+														report.createdAt,
 													)}
 												</span>
 
 												{formatReportTime(
-													report.updatedAt,
+													report.createdAt,
 												) && (
 													<>
 														<span className='text-gray-700'>
@@ -619,7 +619,7 @@ export default function InterviewPreparationReports() {
 
 														<span>
 															{formatReportTime(
-																report.updatedAt,
+																report.createdAt,
 															)}
 														</span>
 													</>

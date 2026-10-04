@@ -162,7 +162,7 @@ async function generateInterviewReport({
 		model: 'gemini-3.5-flash',
 		input: prompt,
 		response_format: {
-			type: 'json_schema',
+			type: 'text',
 			mime_type: 'application/json',
 			schema: interviewReportJsonSchema,
 		},
@@ -185,19 +185,28 @@ const resumePdfHtmlJsonSchema = {
 		resumePdfHtml: {
 			type: 'string',
 			description:
-				'The html content of the resume which can be converted to PDF using any library like puppeteer',
+				'The html content of the ATS-optimized resume which can be converted to PDF using any library like puppeteer',
+		},
+		jobTitle: {
+			type: 'string',
+			description:
+				'The title of the job for which the resume is generated',
 		},
 	},
-	required: ['resumePdfHtml'],
+	required: ['resumePdfHtml', 'jobTitle'],
 }
 
 // making resume pdf html schema
 const resumePdfHtmlSchema = z.fromJSONSchema(resumePdfHtmlJsonSchema)
 
 // function for generate resume pdf html with geminiAi
-async function generateResumePdfHtml(resume, selfDescription, jobDescription) {
+async function generateResumePdfHtml({
+	resume,
+	selfDescription,
+	jobDescription,
+}) {
 	// making prompt for ai as instructions
-	const prompt = `Generate html content of the resume for a candidate which can be converted to PDF using any library like puppeteer with the following details: 
+	const prompt = `Generate html content of the ATS-optimized resume for a candidate which can be converted to PDF using any library like puppeteer with the following details: 
 	Resume: ${resume}
 	Self Description: ${selfDescription}
 	Job Description: ${jobDescription}`
@@ -207,7 +216,7 @@ async function generateResumePdfHtml(resume, selfDescription, jobDescription) {
 		model: 'gemini-3.5-flash',
 		input: prompt,
 		response_format: {
-			type: 'json_schema',
+			type: 'text',
 			mime_type: 'application/json',
 			schema: resumePdfHtmlJsonSchema,
 		},
