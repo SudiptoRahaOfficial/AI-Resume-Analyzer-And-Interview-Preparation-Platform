@@ -12,6 +12,7 @@ const cors = require('cors')
 const authRouter = require('./routes/auth.routes')
 const interviewRouter = require('./routes/interview.routes')
 const resumeRouter = require('./routes/resume.routes')
+const dashboardRouter = require('./routes/dashboard.routes')
 
 // making app
 const app = express()
@@ -29,6 +30,7 @@ app.use(middlewares) // using middlewares
 app.use('/api/auth', authRouter)
 app.use('/api/interview', interviewRouter)
 app.use('/api/resume', resumeRouter)
+app.use('/api/dashboard', dashboardRouter)
 
 // exporting app
 module.exports = app
