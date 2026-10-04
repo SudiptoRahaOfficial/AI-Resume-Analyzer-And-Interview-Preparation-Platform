@@ -1,14 +1,14 @@
 // importing dependencies
 import axios from 'axios'
 
-// making axios instance
+// creating axios instance
 const api = axios.create({
-	baseURL: 'http://localhost:3000/api/interview',
+	baseURL: 'http://localhost:3000/api/resume',
 	withCredentials: true,
 })
 
-// function for calling generate-report api
-export async function callGenerateReportApi({
+// generate resume api
+export async function callGenerateResumeApi({
 	resumeFile,
 	selfDescription,
 	jobDescription,
@@ -16,7 +16,6 @@ export async function callGenerateReportApi({
 }) {
 	const formData = new FormData()
 
-	// Resume PDF is optional according to backend.
 	if (resumeFile) {
 		formData.append('resume', resumeFile)
 	}
@@ -25,7 +24,7 @@ export async function callGenerateReportApi({
 	formData.append('jobDescription', jobDescription)
 
 	try {
-		const response = await api.post('/generate-report', formData, {
+		const response = await api.post('/generate-resume', formData, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},
@@ -42,10 +41,10 @@ export async function callGenerateReportApi({
 	}
 }
 
-// function for calling get-report-by-id api
-export async function callGetReportByIdApi({ reportId, accessToken }) {
+// get resume by id api
+export async function callGetResumeByIdApi({ resumeId, accessToken }) {
 	try {
-		const response = await api.get(`/reports/${reportId}`, {
+		const response = await api.get(`/resumes/${resumeId}`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},
@@ -62,10 +61,10 @@ export async function callGetReportByIdApi({ reportId, accessToken }) {
 	}
 }
 
-// function for calling get-reports api
-export async function callGetReportsApi({ accessToken }) {
+// get all resumes of a user
+export async function callGetResumesApi({ accessToken }) {
 	try {
-		const response = await api.get('/reports', {
+		const response = await api.get('/resumes', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},

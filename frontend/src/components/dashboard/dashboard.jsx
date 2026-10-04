@@ -13,19 +13,19 @@ import {
 	Clock3,
 	Download,
 	FileText,
+	ClipboardList,
 	LayoutDashboard,
 	Lightbulb,
 	MessageSquareText,
-	Plus,
 	Settings,
 	Sparkles,
 	Target,
-	TrendingUp,
 	UserRound,
 	LogOut,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useInterview } from '@/hooks/useInterview'
+import { useResume } from '@/hooks/useResume'
 
 // dashboard page
 export default function Dashboard() {
@@ -104,39 +104,39 @@ export default function Dashboard() {
 		})
 	}
 
-	// temporary dashboard data
-	// replace these values with API data when the dashboard API is implemented
-	const dashboardStats = {
-		interviewGuides: 4,
-		averageMatchScore: 78,
-		skillGaps: 12,
-		optimizedResumes: 3,
-	}
+	const { resumes, loading: resumesLoading, handleGetResumes } = useResume()
 
-	// temporary recent resumes
-	const recentResumes = [
-		{
-			id: 1,
-			name: 'Backend Developer Resume',
-			targetRole: 'Node.js • Express.js • MongoDB',
-			status: 'ATS Optimized',
-			createdAt: 'Yesterday',
-		},
-		{
-			id: 2,
-			name: 'Software Engineer Resume',
-			targetRole: 'JavaScript • Node.js • REST APIs',
-			status: 'ATS Optimized',
-			createdAt: '4 days ago',
-		},
-		{
-			id: 3,
-			name: 'Full Stack Developer Resume',
-			targetRole: 'React • Node.js • MongoDB',
-			status: 'ATS Optimized',
-			createdAt: '1 week ago',
-		},
-	]
+	useEffect(() => {
+		const fetchResumes = async () => {
+			try {
+				await handleGetResumes()
+			} catch (error) {
+				console.error('Failed to fetch dashboard resumes:', error)
+			}
+		}
+
+		fetchResumes()
+	}, [handleGetResumes])
+
+	const recentResumes = resumes.slice(0, 3)
+
+	const formatResumeDate = (date) => {
+		if (!date) {
+			return 'Unknown date'
+		}
+
+		const parsedDate = new Date(date)
+
+		if (Number.isNaN(parsedDate.getTime())) {
+			return 'Unknown date'
+		}
+
+		return parsedDate.toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+		})
+	}
 
 	return (
 		<main className='relative min-h-screen overflow-hidden bg-[#030712] text-white'>
@@ -653,89 +653,59 @@ export default function Dashboard() {
 						</p>
 					</div>
 
-					<div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
-						{/* Interview guides */}
+					<div className='grid gap-4 sm:grid-cols-2'>
+						{/* Interview Guides */}
 						<div className='rounded-lg border border-white/10 bg-white/5 p-5 backdrop-blur-xl'>
 							<div className='flex items-center justify-between'>
-								<div className='flex h-10 w-10 items-center justify-center rounded-md bg-cyan-400/10'>
-									<Target className='h-5 w-5 text-cyan-300' />
+								<div>
+									<p className='text-sm font-medium text-gray-400'>
+										Interview Guides
+									</p>
+
+									{dashboardStatsLoading ? (
+										<div className='mt-3 h-8 w-12 animate-pulse rounded bg-white/10' />
+									) : (
+										<p className='mt-2 text-3xl font-semibold text-white'>
+											{dashboardStats.interviewGuides}
+										</p>
+									)}
+
+									<p className='mt-2 text-xs text-gray-500'>
+										Recently generated interview guides
+									</p>
 								</div>
 
-								<span className='text-xs text-gray-500'>
-									All time
-								</span>
-							</div>
-
-							<p className='mt-5 text-sm text-gray-400'>
-								Interview Guides
-							</p>
-
-							<p className='mt-1 text-3xl font-bold'>
-								{dashboardStats.interviewGuides}
-							</p>
-						</div>
-
-						{/* Match score */}
-						<div className='rounded-lg border border-white/10 bg-white/5 p-5 backdrop-blur-xl'>
-							<div className='flex items-center justify-between'>
 								<div className='flex h-10 w-10 items-center justify-center rounded-md bg-blue-400/10'>
-									<TrendingUp className='h-5 w-5 text-blue-300' />
+									<ClipboardList className='h-5 w-5 text-blue-300' />
 								</div>
-
-								<span className='text-xs text-gray-500'>
-									Average
-								</span>
 							</div>
-
-							<p className='mt-5 text-sm text-gray-400'>
-								Match Score
-							</p>
-
-							<p className='mt-1 text-3xl font-bold'>
-								{dashboardStats.averageMatchScore}%
-							</p>
 						</div>
 
-						{/* Skill gaps */}
+						{/* Generated Resumes */}
 						<div className='rounded-lg border border-white/10 bg-white/5 p-5 backdrop-blur-xl'>
 							<div className='flex items-center justify-between'>
-								<div className='flex h-10 w-10 items-center justify-center rounded-md bg-amber-400/10'>
-									<Lightbulb className='h-5 w-5 text-amber-300' />
+								<div>
+									<p className='text-sm font-medium text-gray-400'>
+										Generated Resumes
+									</p>
+
+									{dashboardStatsLoading ? (
+										<div className='mt-3 h-8 w-12 animate-pulse rounded bg-white/10' />
+									) : (
+										<p className='mt-2 text-3xl font-semibold text-white'>
+											{dashboardStats.generatedResumes}
+										</p>
+									)}
+
+									<p className='mt-2 text-xs text-gray-500'>
+										Recently generated resumes
+									</p>
 								</div>
 
-								<span className='text-xs text-gray-500'>
-									Identified
-								</span>
-							</div>
-
-							<p className='mt-5 text-sm text-gray-400'>
-								Skill Gaps
-							</p>
-
-							<p className='mt-1 text-3xl font-bold'>
-								{dashboardStats.skillGaps}
-							</p>
-						</div>
-
-						{/* Optimized resumes */}
-						<div className='rounded-lg border border-white/10 bg-white/5 p-5 backdrop-blur-xl'>
-							<div className='flex items-center justify-between'>
-								<div className='flex h-10 w-10 items-center justify-center rounded-md bg-emerald-400/10'>
-									<FileText className='h-5 w-5 text-emerald-300' />
+								<div className='flex h-10 w-10 items-center justify-center rounded-md bg-blue-400/10'>
+									<FileText className='h-5 w-5 text-blue-300' />
 								</div>
-
-								<span className='text-xs text-gray-500'>
-									Generated
-								</span>
 							</div>
-
-							<p className='mt-5 text-sm text-gray-400'>
-								Optimized Resumes
-							</p>
-
-							<p className='mt-1 text-3xl font-bold'>
-								{dashboardStats.optimizedResumes}
-							</p>
 						</div>
 					</div>
 				</section>
@@ -896,65 +866,141 @@ export default function Dashboard() {
 
 							<button
 								type='button'
-								onClick={() => router.push('/resume')}
-								className='hidden items-center gap-1 text-sm font-medium text-blue-300 transition hover:text-blue-200 sm:flex cursor-pointer'
+								onClick={() => router.push('/resumes')}
+								className='hidden cursor-pointer items-center gap-1 text-sm font-medium text-blue-300 transition hover:text-blue-200 sm:flex'
 							>
 								View all
 								<ChevronRight className='h-4 w-4' />
 							</button>
 						</div>
 
-						<div className='mt-6 space-y-3'>
-							{recentResumes.map((resume) => (
-								<div
-									key={resume.id}
-									className='group flex items-center justify-between gap-4 rounded-md border border-white/5 bg-black/20 p-4 transition hover:border-blue-400/20 hover:bg-white/5'
+						{/* Loading state */}
+						{resumesLoading && (
+							<div className='mt-6 flex items-center justify-center rounded-md border border-white/5 bg-black/20 py-10'>
+								<div className='flex items-center gap-3'>
+									<div className='h-4 w-4 animate-spin rounded-full border-2 border-white/10 border-t-blue-400' />
+
+									<p className='text-sm text-gray-500'>
+										Loading resumes...
+									</p>
+								</div>
+							</div>
+						)}
+
+						{/* Empty state */}
+						{!resumesLoading && resumes.length === 0 && (
+							<div className='mt-6 rounded-md border border-white/5 bg-black/20 px-5 py-8 text-center'>
+								<div className='mx-auto flex h-10 w-10 items-center justify-center rounded-md bg-blue-400/10'>
+									<FileText className='h-5 w-5 text-blue-300' />
+								</div>
+
+								<h3 className='mt-3 text-sm font-medium text-white'>
+									No resumes yet
+								</h3>
+
+								<p className='mt-1 text-xs leading-5 text-gray-500'>
+									Create your first AI-optimized resume to get
+									started.
+								</p>
+
+								<button
+									type='button'
+									onClick={() =>
+										router.push('/resume-generator')
+									}
+									className='mt-4 inline-flex cursor-pointer items-center gap-2 rounded-md bg-blue-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-blue-300'
 								>
-									<div className='flex min-w-0 items-center gap-3'>
-										<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-blue-400/10'>
-											<FileText className='h-5 w-5 text-blue-300' />
-										</div>
+									Create Resume
+									<ArrowRight className='h-3.5 w-3.5' />
+								</button>
+							</div>
+						)}
 
-										<div className='min-w-0'>
-											<h3 className='truncate text-sm font-medium text-white'>
-												{resume.name}
-											</h3>
+						{/* Recent resumes */}
+						{!resumesLoading && resumes.length > 0 && (
+							<div className='mt-6 space-y-3'>
+								{recentResumes.map((resume) => (
+									<div
+										key={resume._id}
+										role='button'
+										tabIndex={0}
+										onClick={() =>
+											router.push(
+												`/resumes/${resume._id}`,
+											)
+										}
+										onKeyDown={(event) => {
+											if (
+												event.key === 'Enter' ||
+												event.key === ' '
+											) {
+												router.push(
+													`/resume/${resume._id}`,
+												)
+											}
+										}}
+										className='group flex items-center justify-between gap-4 rounded-md border border-white/5 bg-black/20 p-4 transition hover:border-blue-400/20 hover:bg-white/5 cursor-pointer'
+									>
+										<div className='flex min-w-0 items-center gap-3'>
+											{/* Resume icon */}
+											<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-blue-400/10'>
+												<FileText className='h-5 w-5 text-blue-300' />
+											</div>
 
-											<p className='mt-1 truncate text-xs text-gray-500'>
-												{resume.targetRole}
-											</p>
+											{/* Resume information */}
+											<div className='min-w-0'>
+												<h3 className='truncate text-sm font-medium text-white'>
+													{resume.jobTitle ||
+														'Generated Resume'}
+												</h3>
 
-											<div className='mt-2 flex items-center gap-2'>
-												<span className='rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300'>
-													{resume.status}
-												</span>
+												<p className='mt-1 truncate text-xs text-gray-500'>
+													AI-generated resume
+												</p>
 
-												<span className='text-[10px] text-gray-600'>
-													{resume.createdAt}
-												</span>
+												<div className='mt-2 flex items-center gap-2'>
+													<span className='rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300'>
+														Ready
+													</span>
+
+													<span className='text-[10px] text-gray-600'>
+														{formatResumeDate(
+															resume.createdAt,
+														)}
+													</span>
+												</div>
 											</div>
 										</div>
+
+										{/* Download */}
+										<a
+											href={resume.resumePdf}
+											download
+											aria-label={`Download ${resume.jobTitle || 'resume'}`}
+											onClick={(event) =>
+												event.stopPropagation()
+											}
+											target='_blank'
+											className='flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-white/10 text-gray-400 transition hover:bg-white/5 hover:text-white'
+										>
+											<Download className='h-4 w-4' />
+										</a>
 									</div>
+								))}
+							</div>
+						)}
 
-									<button
-										type='button'
-										aria-label={`Download ${resume.name}`}
-										className='flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-white/10 text-gray-400 transition hover:bg-white/5 hover:text-white'
-									>
-										<Download className='h-4 w-4' />
-									</button>
-								</div>
-							))}
-						</div>
-
-						<button
-							type='button'
-							onClick={() => router.push('/resume')}
-							className='mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white sm:hidden'
-						>
-							View all resumes
-							<ArrowRight className='h-4 w-4' />
-						</button>
+						{/* Mobile view all */}
+						{!resumesLoading && resumes.length > 0 && (
+							<button
+								type='button'
+								onClick={() => router.push('/resumes')}
+								className='mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white sm:hidden'
+							>
+								View all resumes
+								<ArrowRight className='h-4 w-4' />
+							</button>
+						)}
 					</div>
 				</section>
 				{/* Mobile settings */}

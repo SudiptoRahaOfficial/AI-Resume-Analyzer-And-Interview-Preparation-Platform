@@ -51,7 +51,7 @@ export default function InterviewPreparation() {
 		}
 
 		if (file.size > MAX_RESUME_SIZE) {
-			setError('Resume must be smaller than 5 MB.')
+			setError('Resume must be smaller than 3 MB.')
 			event.target.value = ''
 			return
 		}
