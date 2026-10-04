@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { AuthProvider } from '@/context/auth.context'
+import { DashboardProvider } from '@/context/dashboard.context'
 import { InterviewProvider } from '@/context/interview.context'
 import { ResumeProvider } from '@/context/resume.context'
 import { useAuth } from '@/hooks/useAuth'
@@ -33,13 +34,15 @@ function TokenManager() {
 export default function Providers({ children }) {
 	return (
 		<AuthProvider>
-			<InterviewProvider>
-				<ResumeProvider>
-					<TokenManager />
-					<AuthInitializer />
-					{children}
-				</ResumeProvider>
-			</InterviewProvider>
+			<DashboardProvider>
+				<InterviewProvider>
+					<ResumeProvider>
+						<TokenManager />
+						<AuthInitializer />
+						{children}
+					</ResumeProvider>
+				</InterviewProvider>
+			</DashboardProvider>
 		</AuthProvider>
 	)
 }

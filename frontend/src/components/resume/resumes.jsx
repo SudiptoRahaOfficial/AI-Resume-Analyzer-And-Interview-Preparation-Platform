@@ -446,7 +446,24 @@ export default function ResumesPage() {
 								return (
 									<div
 										key={resume._id}
-										className='group relative flex min-h-65 w-full flex-col rounded-lg border border-white/10 bg-white/2.5 p-5 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-cyan-400/20 hover:bg-white/4'
+										role='button'
+										tabIndex={0}
+										onClick={() =>
+											router.push(
+												`/resumes/${resume._id}`,
+											)
+										}
+										onKeyDown={(event) => {
+											if (
+												event.key === 'Enter' ||
+												event.key === ' '
+											) {
+												router.push(
+													`/resumes/${resume._id}`,
+												)
+											}
+										}}
+										className='group relative flex min-h-65 w-full flex-col rounded-lg border border-white/10 bg-white/2.5 p-5 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-cyan-400/20 hover:bg-white/4 cursor-pointer'
 									>
 										{/* Card top */}
 										<div className='flex items-start justify-between gap-4'>
@@ -533,6 +550,7 @@ export default function ResumesPage() {
 													onClick={(event) =>
 														event.stopPropagation()
 													}
+													target='_blank'
 													className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-white/10 text-gray-500 transition hover:border-cyan-400/20 hover:bg-cyan-400/5 hover:text-cyan-300'
 													title='Download resume'
 												>
