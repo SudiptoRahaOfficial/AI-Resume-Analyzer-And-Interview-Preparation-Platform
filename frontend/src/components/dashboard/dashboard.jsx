@@ -121,12 +121,8 @@ const WORKSPACE_FEATURES = {
 
 /**
  * Formats a date into the dashboard's standard date format.
- *
  * Invalid or missing dates are handled gracefully instead of allowing
  * "Invalid Date" to appear in the UI.
- *
- * @param {string|Date} date - Date value returned by the API.
- * @returns {string} Formatted date string.
  */
 const formatDashboardDate = (date) => {
 	if (!date) {
@@ -169,7 +165,7 @@ function DashboardHeader() {
 				<button
 					type='button'
 					onClick={() => router.push(DASHBOARD_ROUTES.home)}
-					className='ml-14 flex cursor-pointer items-center gap-2.5 transition'
+					className='ml-0 flex cursor-pointer items-center gap-2.5 transition sm:ml-6 lg:ml-14'
 				>
 					<span className='text-lg font-semibold tracking-tight text-white'>
 						ResumeAI
@@ -859,7 +855,7 @@ function ActivityStatCard({ label, description, value, loading, icon: Icon }) {
 }
 
 /**
- * Recent activity section containing interview guides and resumes.
+ * Contains the recent interview guides and recent resumes sections.
  */
 function RecentWorkSection({
 	reports,
@@ -868,14 +864,12 @@ function RecentWorkSection({
 	resumesLoading,
 }) {
 	return (
-		<section className='grid gap-6 lg:grid-cols-2'>
-			{/* Recent interview guides. */}
+		<section className='grid w-full min-w-0 gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6'>
 			<RecentInterviewGuides
 				reports={reports}
 				loading={reportsLoading}
 			/>
 
-			{/* Recent generated resumes. */}
 			<RecentResumes
 				resumes={resumes}
 				loading={resumesLoading}
@@ -885,19 +879,22 @@ function RecentWorkSection({
 }
 
 /**
- * Recent interview guide list.
+ * Displays the user's most recent interview guides.
+ *
+ * Responsive behavior:
+ * - Full width at every breakpoint.
+ * - Compact padding on mobile.
+ * - Prevents child content from creating horizontal overflow.
  *
  * @param {Object} props - Component properties.
- * @param {Array} props.reports - Interview reports returned by the API.
- * @param {boolean} props.loading - Whether reports are loading.
+ * @param {Array} props.reports - Interview reports.
+ * @param {boolean} props.loading - Loading state.
  */
 function RecentInterviewGuides({ reports, loading }) {
-	// Access navigation for report and creation actions.
 	const router = useRouter()
 
 	return (
-		<div className='rounded-lg border border-white/10 bg-white/5 p-6 backdrop-blur-xl'>
-			{/* Section header. */}
+		<section className='min-w-0 w-full overflow-hidden rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-xl sm:p-5 lg:p-6'>
 			<RecentSectionHeader
 				title='Recent Interview Guides'
 				description='Continue preparing for your target roles.'
@@ -906,8 +903,7 @@ function RecentInterviewGuides({ reports, loading }) {
 				accent='cyan'
 			/>
 
-			{/* Interview reports content. */}
-			<div className='mt-6 space-y-3'>
+			<div className='mt-5 min-w-0 space-y-3 sm:mt-6'>
 				{loading ? (
 					<RecentLoadingState message='Loading interview guides...' />
 				) : reports.length === 0 ? (
@@ -930,30 +926,17 @@ function RecentInterviewGuides({ reports, loading }) {
 					))
 				)}
 			</div>
-
-			{/* Mobile "view all" action.
-			 *
-			 * This intentionally preserves the current route behavior
-			 * of the existing dashboard implementation.
-			 */}
-			<button
-				type='button'
-				onClick={() =>
-					router.push(DASHBOARD_ROUTES.interviewPreparation)
-				}
-				className='mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white sm:hidden'
-			>
-				View all guides
-				<ArrowRight className='h-4 w-4' />
-			</button>
-		</div>
+		</section>
 	)
 }
 
 /**
  * Header used by recent activity sections.
  *
- * @param {Object} props - Component properties.
+ * Responsive behavior:
+ * - Stacks title, description, and action on mobile.
+ * - Keeps the action visible at every breakpoint.
+ * - Places the action on the right on larger screens.
  */
 function RecentSectionHeader({
 	title,
@@ -962,28 +945,31 @@ function RecentSectionHeader({
 	viewAllLabel,
 	accent,
 }) {
-	// Navigation is required for the desktop "View all" action.
 	const router = useRouter()
 
-	// Define explicit accent variants for Tailwind compatibility.
 	const accentStyles = {
 		cyan: 'text-cyan-300 hover:text-cyan-200',
 		blue: 'text-blue-300 hover:text-blue-200',
 	}
 
 	return (
-		<div className='flex items-start justify-between gap-4'>
-			<div>
-				<h2 className='text-xl font-semibold'>{title}</h2>
+		<div className='flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
+			{/* Title and description */}
+			<div className='min-w-0 flex-1'>
+				<h2 className='text-lg font-semibold tracking-tight text-white sm:text-xl'>
+					{title}
+				</h2>
 
-				<p className='mt-1 text-sm text-gray-400'>{description}</p>
+				<p className='mt-1 max-w-xl text-xs leading-5 text-gray-400 sm:text-sm'>
+					{description}
+				</p>
 			</div>
 
-			{/* Desktop "View all" action. */}
+			{/* View all action */}
 			<button
 				type='button'
 				onClick={() => router.push(viewAllRoute)}
-				className={`hidden cursor-pointer items-center gap-1 text-sm font-medium transition sm:flex ${accentStyles[accent]}`}
+				className={`inline-flex w-fit shrink-0 cursor-pointer items-center gap-1 self-start rounded-md border border-white/10 px-3 py-2 text-xs font-medium transition hover:bg-white/5 sm:border-0 sm:px-0 sm:py-0 sm:text-sm ${accentStyles[accent]}`}
 			>
 				{viewAllLabel}
 
@@ -1001,8 +987,14 @@ function RecentSectionHeader({
  */
 function RecentLoadingState({ message }) {
 	return (
-		<div className='rounded-md border border-white/5 bg-black/20 p-6 text-center'>
-			<p className='text-sm text-gray-500'>{message}</p>
+		<div className='flex min-h-28 items-center justify-center rounded-md border border-white/5 bg-black/20 px-4 py-8 sm:min-h-32'>
+			<div className='flex items-center gap-3'>
+				<div className='h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-white/10 border-t-cyan-400' />
+
+				<p className='text-center text-xs text-gray-500 sm:text-sm'>
+					{message}
+				</p>
+			</div>
 		</div>
 	)
 }
@@ -1010,26 +1002,36 @@ function RecentLoadingState({ message }) {
 /**
  * Empty state for interview reports.
  *
+ * Responsive behavior:
+ * - Uses compact spacing on mobile.
+ * - Keeps text readable at all viewport sizes.
+ *
  * @param {Object} props - Component properties.
  * @param {Function} props.onCreate - Callback for creating a report.
  */
 function InterviewEmptyState({ onCreate }) {
 	return (
-		<div className='rounded-md border border-white/5 bg-black/20 p-6 text-center'>
-			<Target className='mx-auto h-8 w-8 text-gray-600' />
+		<div className='rounded-md border border-white/5 bg-black/20 px-4 py-7 text-center sm:px-5 sm:py-8'>
+			{/* Empty-state icon. */}
+			<div className='mx-auto flex h-9 w-9 items-center justify-center rounded-md bg-cyan-400/10 sm:h-10 sm:w-10'>
+				<Target className='h-4.5 w-4.5 text-cyan-300 sm:h-5 sm:w-5' />
+			</div>
 
-			<p className='mt-3 text-sm font-medium text-gray-300'>
+			{/* Empty-state heading. */}
+			<h3 className='mt-3 text-sm font-medium text-white'>
 				No interview guides yet
-			</p>
+			</h3>
 
-			<p className='mt-1 text-xs text-gray-500'>
+			{/* Empty-state description. */}
+			<p className='mx-auto mt-1 max-w-sm text-xs leading-5 text-gray-500'>
 				Generate your first interview preparation guide to see it here.
 			</p>
 
+			{/* Empty-state action. */}
 			<button
 				type='button'
 				onClick={onCreate}
-				className='mt-4 inline-flex cursor-pointer items-center gap-2 rounded-sm bg-cyan-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300'
+				className='mt-4 inline-flex cursor-pointer items-center gap-2 rounded-md bg-cyan-400 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300'
 			>
 				Create Interview Guide
 				<ArrowRight className='h-3.5 w-3.5' />
@@ -1039,54 +1041,65 @@ function InterviewEmptyState({ onCreate }) {
 }
 
 /**
- * Individual interview report item.
+ * Displays an individual interview report.
+ *
+ * Responsive behavior:
+ * - Content area can shrink correctly.
+ * - Long job titles are truncated.
+ * - Metadata wraps naturally.
+ * - Match score remains visible without causing overflow.
  *
  * @param {Object} props - Component properties.
- * @param {Object} props.report - Interview report data.
- * @param {Function} props.onClick - Navigation callback.
+ * @param {Object} props.report - Interview report.
+ * @param {Function} props.onClick - Click handler.
  */
 function InterviewReportItem({ report, onClick }) {
 	return (
 		<button
 			type='button'
 			onClick={onClick}
-			className='group flex w-full cursor-pointer items-center justify-between gap-4 rounded-md border border-white/5 bg-black/20 p-4 text-left transition hover:border-cyan-400/20 hover:bg-white/5'
+			className='group flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-md border border-white/5 bg-black/20 p-3 text-left transition hover:border-cyan-400/20 hover:bg-white/5 sm:gap-4 sm:p-4'
 		>
-			{/* Report information. */}
-			<div className='min-w-0'>
-				<div className='flex items-center gap-2'>
+			{/* Report information */}
+			<div className='min-w-0 flex-1'>
+				{/* Job title */}
+				<div className='flex min-w-0 items-center gap-2'>
 					<BriefcaseBusiness className='h-4 w-4 shrink-0 text-cyan-300' />
 
-					<h3 className='truncate text-sm font-medium text-white'>
-						{report.jobTitle}
+					<h3 className='min-w-0 flex-1 truncate text-sm font-medium text-white'>
+						{report.jobTitle || 'Interview Guide'}
 					</h3>
 				</div>
 
-				{/* Report content counts. */}
-				<div className='mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500'>
-					<span>
+				{/* Report statistics */}
+				<div className='mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-gray-500 sm:gap-x-3 sm:text-xs'>
+					<span className='whitespace-nowrap'>
 						{report.technicalQuestions?.length ?? 0} technical
 					</span>
 
-					<span>
+					<span className='whitespace-nowrap'>
 						{report.behavioralQuestions?.length ?? 0} behavioral
 					</span>
 
-					<span>{report.skillGaps?.length ?? 0} skill gaps</span>
+					<span className='whitespace-nowrap'>
+						{report.skillGaps?.length ?? 0} skill gaps
+					</span>
 				</div>
 
-				{/* Report creation date. */}
-				<div className='mt-2 flex items-center gap-1 text-xs text-gray-500'>
-					<Clock3 className='h-3 w-3' />
+				{/* Created date */}
+				<div className='mt-2 flex min-w-0 items-center gap-1 text-[11px] text-gray-500 sm:text-xs'>
+					<Clock3 className='h-3 w-3 shrink-0' />
 
-					{formatDashboardDate(report.createdAt)}
+					<span className='truncate'>
+						{formatDashboardDate(report.createdAt)}
+					</span>
 				</div>
 			</div>
 
-			{/* Report match score. */}
-			<div className='flex shrink-0 flex-col items-end gap-2'>
-				<span className='text-lg font-semibold text-cyan-300'>
-					{report.matchScore}%
+			{/* Match score */}
+			<div className='flex shrink-0 flex-col items-end gap-1'>
+				<span className='text-base font-semibold text-cyan-300 sm:text-lg'>
+					{report.matchScore ?? 0}%
 				</span>
 
 				<ChevronRight className='h-4 w-4 text-gray-600 transition group-hover:translate-x-0.5 group-hover:text-cyan-300' />
@@ -1096,22 +1109,20 @@ function InterviewReportItem({ report, onClick }) {
 }
 
 /**
- * Recent generated resumes list.
+ * Displays the user's most recently generated resumes.
  *
- * @param {Object} props - Component properties.
- * @param {Array} props.resumes - Resume data returned by the API.
- * @param {boolean} props.loading - Whether resumes are loading.
+ * Responsive behavior:
+ * - Full width at every breakpoint.
+ * - Prevents resume items from overflowing.
+ * - Uses compact mobile spacing.
  */
 function RecentResumes({ resumes, loading }) {
-	// Access navigation for resume actions.
 	const router = useRouter()
 
-	// Limit dashboard rendering to the most recent resumes.
 	const recentResumes = resumes.slice(0, RECENT_ITEM_LIMIT)
 
 	return (
-		<div className='rounded-lg border border-white/10 bg-white/5 p-6 backdrop-blur-xl'>
-			{/* Section header. */}
+		<section className='min-w-0 w-full overflow-hidden rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-xl sm:p-5 lg:p-6'>
 			<RecentSectionHeader
 				title='Recent Resumes'
 				description='Your latest ATS-optimized resumes.'
@@ -1120,20 +1131,20 @@ function RecentResumes({ resumes, loading }) {
 				accent='blue'
 			/>
 
-			{/* Loading state. */}
+			{/* Loading state */}
 			{loading && (
-				<div className='mt-6 flex items-center justify-center rounded-md border border-white/5 bg-black/20 py-10'>
+				<div className='mt-5 flex min-h-28 items-center justify-center rounded-md border border-white/5 bg-black/20 px-4 py-8 sm:mt-6'>
 					<div className='flex items-center gap-3'>
-						<div className='h-4 w-4 animate-spin rounded-full border-2 border-white/10 border-t-blue-400' />
+						<div className='h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-white/10 border-t-blue-400' />
 
-						<p className='text-sm text-gray-500'>
+						<p className='text-center text-xs text-gray-500 sm:text-sm'>
 							Loading resumes...
 						</p>
 					</div>
 				</div>
 			)}
 
-			{/* Empty state. */}
+			{/* Empty state */}
 			{!loading && resumes.length === 0 && (
 				<ResumeEmptyState
 					onCreate={() =>
@@ -1142,9 +1153,9 @@ function RecentResumes({ resumes, loading }) {
 				/>
 			)}
 
-			{/* Recent resume items. */}
+			{/* Resume list */}
 			{!loading && resumes.length > 0 && (
-				<div className='mt-6 space-y-3'>
+				<div className='mt-5 min-w-0 space-y-3 sm:mt-6'>
 					{recentResumes.map((resume) => (
 						<ResumeItem
 							key={resume._id}
@@ -1158,19 +1169,7 @@ function RecentResumes({ resumes, loading }) {
 					))}
 				</div>
 			)}
-
-			{/* Mobile "view all" action. */}
-			{!loading && resumes.length > 0 && (
-				<button
-					type='button'
-					onClick={() => router.push(DASHBOARD_ROUTES.resumes)}
-					className='mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white sm:hidden'
-				>
-					View all resumes
-					<ArrowRight className='h-4 w-4' />
-				</button>
-			)}
-		</div>
+		</section>
 	)
 }
 
@@ -1208,20 +1207,18 @@ function ResumeEmptyState({ onCreate }) {
 }
 
 /**
- * Individual generated resume item.
+ * Displays an individual generated resume.
+ *
+ * Responsive behavior:
+ * - Main content is allowed to shrink.
+ * - Long job titles are truncated.
+ * - Download button never gets pushed outside the card.
  *
  * @param {Object} props - Component properties.
  * @param {Object} props.resume - Resume data.
- * @param {Function} props.onOpen - Callback for opening the resume.
+ * @param {Function} props.onOpen - Resume click handler.
  */
 function ResumeItem({ resume, onOpen }) {
-	/**
-	 * Handles keyboard navigation for the resume item.
-	 *
-	 * Space and Enter behave like a mouse click.
-	 *
-	 * @param {KeyboardEvent} event - Keyboard event.
-	 */
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault()
@@ -1235,18 +1232,18 @@ function ResumeItem({ resume, onOpen }) {
 			tabIndex={0}
 			onClick={onOpen}
 			onKeyDown={handleKeyDown}
-			className='group flex cursor-pointer items-center justify-between gap-4 rounded-md border border-white/5 bg-black/20 p-4 transition hover:border-blue-400/20 hover:bg-white/5'
+			className='group flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-md border border-white/5 bg-black/20 p-3 transition hover:border-blue-400/20 hover:bg-white/5 sm:gap-4 sm:p-4'
 		>
-			{/* Resume identity and metadata. */}
-			<div className='flex min-w-0 items-center gap-3'>
-				{/* Resume icon. */}
-				<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-blue-400/10'>
-					<FileText className='h-5 w-5 text-blue-300' />
+			{/* Resume information */}
+			<div className='flex min-w-0 flex-1 items-center gap-3'>
+				{/* Resume icon */}
+				<div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-blue-400/10 sm:h-10 sm:w-10'>
+					<FileText className='h-4 w-4 text-blue-300 sm:h-5 sm:w-5' />
 				</div>
 
-				{/* Resume information. */}
-				<div className='min-w-0'>
-					<h3 className='truncate text-sm font-medium text-white'>
+				{/* Resume details */}
+				<div className='min-w-0 flex-1'>
+					<h3 className='min-w-0 truncate text-sm font-medium text-white'>
 						{resume.jobTitle || 'Generated Resume'}
 					</h3>
 
@@ -1254,24 +1251,19 @@ function ResumeItem({ resume, onOpen }) {
 						AI-generated resume
 					</p>
 
-					{/* Resume status and creation date. */}
-					<div className='mt-2 flex items-center gap-2'>
-						<span className='rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300'>
+					<div className='mt-2 flex min-w-0 flex-wrap items-center gap-2'>
+						<span className='shrink-0 rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300'>
 							Ready
 						</span>
 
-						<span className='text-[10px] text-gray-600'>
+						<span className='truncate text-[10px] text-gray-600'>
 							{formatDashboardDate(resume.createdAt)}
 						</span>
 					</div>
 				</div>
 			</div>
 
-			{/* Resume PDF download action.
-			 *
-			 * stopPropagation prevents the download action from also
-			 * triggering the parent resume navigation.
-			 */}
+			{/* Download button */}
 			<a
 				href={resume.resumePdf}
 				download
@@ -1279,31 +1271,10 @@ function ResumeItem({ resume, onOpen }) {
 				rel='noopener noreferrer'
 				aria-label={`Download ${resume.jobTitle || 'resume'}`}
 				onClick={(event) => event.stopPropagation()}
-				className='flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-white/10 text-gray-400 transition hover:bg-white/5 hover:text-white'
+				className='flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-white/10 text-gray-400 transition hover:bg-white/5 hover:text-white sm:h-9 sm:w-9'
 			>
-				<Download className='h-4 w-4' />
+				<Download className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
 			</a>
-		</div>
-	)
-}
-
-/**
- * Mobile-only settings shortcut.
- */
-function MobileSettings() {
-	// Access navigation for the settings route.
-	const router = useRouter()
-
-	return (
-		<div className='mt-6 sm:hidden'>
-			<button
-				type='button'
-				onClick={() => router.push(DASHBOARD_ROUTES.settings)}
-				className='flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 py-3 text-sm font-medium text-gray-400 transition hover:bg-white/5 hover:text-white'
-			>
-				<Settings className='h-4 w-4' />
-				Settings
-			</button>
 		</div>
 	)
 }
@@ -1419,7 +1390,7 @@ export default function Dashboard() {
 			<DashboardHeader />
 
 			{/* Main dashboard content container. */}
-			<div className='relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12'>
+			<div className='relative z-10 mx-auto w-full max-w-7xl min-w-0 px-4 py-8 sm:px-6 sm:py-10 lg:py-12'>
 				{/* Welcome and authenticated user summary. */}
 				<WelcomeSection />
 
@@ -1439,9 +1410,6 @@ export default function Dashboard() {
 					resumes={resumes}
 					resumesLoading={resumesLoading}
 				/>
-
-				{/* Mobile settings shortcut. */}
-				<MobileSettings />
 			</div>
 		</main>
 	)
