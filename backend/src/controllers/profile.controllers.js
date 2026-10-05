@@ -5,6 +5,7 @@
 
 // importing dependencies
 const mongoose = require('mongoose')
+const { uploadImage } = require('../services/storage.service')
 const profileModel = require('../models/profile.model')
 
 // constants
@@ -81,7 +82,6 @@ async function createProfileController(req, res) {
 			bio,
 			phone,
 			location,
-			profileImage,
 			profession,
 			experience,
 			skills,
@@ -187,6 +187,13 @@ async function createProfileController(req, res) {
 					success: false,
 				})
 			}
+		}
+
+		// uploading profile pic to cloud storage & getting url
+		let profileImage = ''
+		if (req.file) {
+			const uploadedProfilePic = await uploadImage(req.file.buffer)
+			profileImage = uploadedProfilePic.url
 		}
 
 		// validating profile image
