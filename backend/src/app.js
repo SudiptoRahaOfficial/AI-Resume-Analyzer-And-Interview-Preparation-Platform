@@ -11,6 +11,7 @@ const envConfig = require('./configs/env.config')
 
 // importing routers
 const authRouter = require('./routes/auth.routes')
+const profileRouter = require('./routes/profile.routes')
 const interviewRouter = require('./routes/interview.routes')
 const resumeRouter = require('./routes/resume.routes')
 const dashboardRouter = require('./routes/dashboard.routes')
@@ -32,6 +33,7 @@ app.use(middlewares) // using middlewares
 
 // connecting all API routers
 app.use('/api/auth', authRouter)
+app.use('/api/profile', profileRouter)
 app.use('/api/interview', interviewRouter)
 app.use('/api/resume', resumeRouter)
 app.use('/api/dashboard', dashboardRouter)
