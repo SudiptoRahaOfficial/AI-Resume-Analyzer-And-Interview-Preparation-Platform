@@ -3,7 +3,7 @@ import axios from 'axios'
 
 // making axios instance
 const api = axios.create({
-	baseURL: 'http://localhost:3000/api/dashboard',
+	baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/dashboard`,
 	withCredentials: true,
 })
 

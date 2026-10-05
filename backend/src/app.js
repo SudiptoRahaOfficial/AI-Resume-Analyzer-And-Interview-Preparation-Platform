@@ -7,6 +7,7 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const envConfig = require('./configs/env.config')
 
 // importing routers
 const authRouter = require('./routes/auth.routes')
@@ -22,7 +23,10 @@ const middlewares = [
 	express.urlencoded({ extended: true }), // accept form-data
 	express.json(), // accept json-data
 	cookieParser(), // parse cookies from incoming requests
-	cors({ origin: 'http://localhost:3001', credentials: true }),
+	cors({
+		origin: [envConfig.TRUSTED_ORIGIN_1, envConfig.TRUSTED_ORIGIN_2],
+		credentials: true,
+	}),
 ]
 app.use(middlewares) // using middlewares
 

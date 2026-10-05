@@ -12,6 +12,14 @@ if (!process.env.PORT) {
 	throw new Error('PORT is not defined in .env')
 }
 
+// trusted origin errors
+if (!process.env.TRUSTED_ORIGIN_1) {
+	throw new Error('TRUSTED_ORIGIN_1 is not defined in .env')
+}
+if (!process.env.TRUSTED_ORIGIN_2) {
+	throw new Error('TRUSTED_ORIGIN_2 is not defined in .env')
+}
+
 // db connection uri error
 if (!process.env.MONGO_DB_URI) {
 	throw new Error('MONGO_DB_URI is not defined in .env')
@@ -52,6 +60,9 @@ if (!process.env.IMAGEKIT_PRIVATE_KEY) {
 // configuration object
 const config = {
 	PORT: process.env.PORT,
+
+	TRUSTED_ORIGIN_1: process.env.TRUSTED_ORIGIN_1,
+	TRUSTED_ORIGIN_2: process.env.TRUSTED_ORIGIN_2,
 
 	MONGO_DB_URI: process.env.MONGO_DB_URI,
 

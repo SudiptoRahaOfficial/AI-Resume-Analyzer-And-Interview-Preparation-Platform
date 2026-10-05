@@ -3,7 +3,7 @@ import axios from 'axios'
 
 // creating axios instance
 const api = axios.create({
-	baseURL: 'http://localhost:3000/api/resume',
+	baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/resume`,
 	withCredentials: true,
 })
 
