@@ -1,5 +1,5 @@
-/*
-    - file name: ai.service.js
+/**
+	- file name: ai.service.js
     - responsibility: responsible for ai services
  */
 

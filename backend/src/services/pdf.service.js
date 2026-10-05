@@ -1,6 +1,6 @@
 /**
- * - file name: pdf.service.js
- * - responsibility: responsible for PDF related services
+	- file name: pdf.service.js
+	- responsibility: responsible for PDF related services
  */
 
 // importing dependencies

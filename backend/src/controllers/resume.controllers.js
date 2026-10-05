@@ -1,6 +1,6 @@
 /**
- * - file name: resume.controllers.js
- * - responsibility: responsible for all resume related api controllers
+	- file name: resume.controllers.js
+	- responsibility: responsible for all resume related api controllers
  */
 
 // importing dependencies

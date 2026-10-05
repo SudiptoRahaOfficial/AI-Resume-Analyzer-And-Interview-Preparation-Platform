@@ -1,4 +1,4 @@
-/*
+/**
 	- file name: auth.middlewares.js
 	- responsibility: responsible for all auth related middlewares
  */

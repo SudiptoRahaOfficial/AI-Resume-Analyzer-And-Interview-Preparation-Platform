@@ -1,12 +1,12 @@
 /**
- * - file name: resume.utils.js
- * - responsibility: responsible for all resume related util functions
+	- file name: resume.utils.js
+	- responsibility: responsible for all resume related util functions
  */
 
 // importing dependencies
 const { generateResumePdfHtml } = require('../services/ai.service')
 const { generateResumePdfFromHtml } = require('../services/pdf.service')
-const uploadFile = require('../services/storage.service')
+const { uploadPdf } = require('../services/storage.service')
 
 // function for generating resume
 async function generateResume({ resume, selfDescription, jobDescription }) {
@@ -24,7 +24,7 @@ async function generateResume({ resume, selfDescription, jobDescription }) {
 	const resumePdf = await generateResumePdfFromHtml(resumePdfHtml)
 
 	// uploading generated PDF to ImageKit
-	const uploadedResume = await uploadFile(resumePdf)
+	const uploadedResume = await uploadPdf(resumePdf)
 
 	// returning resume information
 	return {

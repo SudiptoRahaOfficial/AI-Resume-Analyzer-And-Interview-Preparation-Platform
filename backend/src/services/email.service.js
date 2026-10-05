@@ -1,4 +1,4 @@
-/*
+/**
     - file name: email.service.js
     - responsibility: responsible for email services
  */

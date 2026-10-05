@@ -1,6 +1,6 @@
 /**
- * - file name: interview.controllers.js
- * - responsibility: responsible for all interview related api controllers
+	- file name: interview.controllers.js
+	- responsibility: responsible for all interview related api controllers
  */
 
 // importing dependencies

@@ -6,7 +6,7 @@
 // importing dependencis
 const router = require('express').Router()
 const { authenticateUser } = require('../middlewares/auth.middlewares')
-const { upload } = require('../middlewares/multer.middleware')
+const { getPdfBuffer } = require('../middlewares/multer.middlewares')
 const {
 	generateReportController,
 	getReportByIdController,
@@ -17,7 +17,7 @@ const {
 router.post(
 	'/generate-report',
 	authenticateUser,
-	upload.single('resume'),
+	getPdfBuffer.single('resume'),
 	generateReportController,
 )
 
