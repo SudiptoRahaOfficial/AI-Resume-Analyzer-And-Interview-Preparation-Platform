@@ -88,6 +88,58 @@ async function createProfileController(req, res) {
 			socialLinks,
 		} = req.body
 
+		// parsing location JSON string into an object
+		let parsedLocation = location
+
+		if (typeof location === 'string') {
+			try {
+				parsedLocation = JSON.parse(location)
+			} catch {
+				return res.status(400).json({
+					message: 'Location must be a valid JSON object',
+					success: false,
+				})
+			}
+		}
+
+		// parsing social links JSON string into an array
+		let parsedSocialLinks = socialLinks
+
+		if (typeof socialLinks === 'string') {
+			try {
+				parsedSocialLinks = JSON.parse(socialLinks)
+			} catch {
+				return res.status(400).json({
+					message: 'Social links must be a valid JSON array',
+					success: false,
+				})
+			}
+		}
+
+		// parsing skills JSON string into an array
+		let parsedSkills = skills
+
+		if (typeof skills === 'string') {
+			try {
+				parsedSkills = JSON.parse(skills)
+			} catch {
+				return res.status(400).json({
+					message: 'Skills must be a valid JSON array',
+					success: false,
+				})
+			}
+		}
+
+		// parsing experience string into a number
+		let parsedExperience = experience
+		if (typeof experience === 'string') {
+			if (experience.trim() === '') {
+				parsedExperience = undefined
+			} else {
+				parsedExperience = Number(experience)
+			}
+		}
+
 		// validating first name
 		if (firstName !== undefined && !isNonEmptyString(firstName)) {
 			return res.status(400).json({
@@ -145,11 +197,11 @@ async function createProfileController(req, res) {
 		}
 
 		// validating location
-		if (location !== undefined) {
+		if (parsedLocation !== undefined) {
 			if (
-				typeof location !== 'object' ||
-				location === null ||
-				Array.isArray(location)
+				typeof parsedLocation !== 'object' ||
+				parsedLocation === null ||
+				Array.isArray(parsedLocation)
 			) {
 				return res.status(400).json({
 					message: 'Location must be an object',
@@ -157,8 +209,8 @@ async function createProfileController(req, res) {
 				})
 			}
 
-			// extracting city & location from location object
-			const { city, country } = location
+			// extracting city & country from location object
+			const { city, country } = parsedLocation
 
 			// validating location city
 			if (city !== undefined && typeof city !== 'string') {
@@ -189,29 +241,6 @@ async function createProfileController(req, res) {
 			}
 		}
 
-		// uploading profile pic to cloud storage & getting url
-		let profileImage = ''
-		if (req.file) {
-			const uploadedProfilePic = await uploadImage(req.file.buffer)
-			profileImage = uploadedProfilePic.url
-		}
-
-		// validating profile image
-		if (profileImage !== undefined) {
-			if (typeof profileImage !== 'string') {
-				return res.status(400).json({
-					message: 'Profile image must be a string',
-					success: false,
-				})
-			}
-			if (profileImage.trim() && !isValidUrl(profileImage.trim())) {
-				return res.status(400).json({
-					message: 'Profile image must be a valid HTTP or HTTPS URL',
-					success: false,
-				})
-			}
-		}
-
 		// validating profession
 		if (profession !== undefined) {
 			if (!isNonEmptyString(profession)) {
@@ -229,17 +258,18 @@ async function createProfileController(req, res) {
 		}
 
 		// validating experience
-		if (experience !== undefined) {
+		if (parsedExperience !== undefined) {
 			if (
-				typeof experience !== 'number' ||
-				!Number.isFinite(experience)
+				typeof parsedExperience !== 'number' ||
+				!Number.isFinite(parsedExperience)
 			) {
 				return res.status(400).json({
 					message: 'Experience must be a valid number',
 					success: false,
 				})
 			}
-			if (experience < 0 || experience > 50) {
+
+			if (parsedExperience < 0 || parsedExperience > 50) {
 				return res.status(400).json({
 					message: 'Experience must be between 0 and 50 years',
 					success: false,
@@ -248,21 +278,21 @@ async function createProfileController(req, res) {
 		}
 
 		// validating skills
-		if (skills !== undefined) {
-			if (!Array.isArray(skills)) {
+		if (parsedSkills !== undefined) {
+			if (!Array.isArray(parsedSkills)) {
 				return res.status(400).json({
 					message: 'Skills must be an array',
 					success: false,
 				})
 			}
-			if (skills.length > MAX_SKILLS) {
+			if (parsedSkills.length > MAX_SKILLS) {
 				return res.status(400).json({
 					message: `You can add a maximum of ${MAX_SKILLS} skills`,
 					success: false,
 				})
 			}
 
-			for (const skill of skills) {
+			for (const skill of parsedSkills) {
 				if (!isNonEmptyString(skill)) {
 					return res.status(400).json({
 						message: 'Every skill must be a non-empty string',
@@ -279,21 +309,22 @@ async function createProfileController(req, res) {
 		}
 
 		// validating social links
-		if (socialLinks !== undefined) {
-			if (!Array.isArray(socialLinks)) {
+		if (parsedSocialLinks !== undefined) {
+			if (!Array.isArray(parsedSocialLinks)) {
 				return res.status(400).json({
 					message: 'Social links must be an array',
 					success: false,
 				})
 			}
-			if (socialLinks.length > MAX_SOCIAL_LINKS) {
+
+			if (parsedSocialLinks.length > MAX_SOCIAL_LINKS) {
 				return res.status(400).json({
 					message: `You can add a maximum of ${MAX_SOCIAL_LINKS} social links`,
 					success: false,
 				})
 			}
 
-			for (const socialLink of socialLinks) {
+			for (const socialLink of parsedSocialLinks) {
 				if (
 					typeof socialLink !== 'object' ||
 					socialLink === null ||
@@ -323,6 +354,7 @@ async function createProfileController(req, res) {
 						success: false,
 					})
 				}
+
 				if (!isValidUrl(url.trim())) {
 					return res.status(400).json({
 						message:
@@ -331,6 +363,27 @@ async function createProfileController(req, res) {
 					})
 				}
 			}
+		}
+
+		// uploading profile pic to cloud storage & getting url
+		let profileImage = ''
+		if (req.file) {
+			const uploadedProfilePic = await uploadImage(req.file.buffer)
+			profileImage = uploadedProfilePic.url
+		}
+
+		// validating profile image
+		if (typeof profileImage !== 'string') {
+			return res.status(400).json({
+				message: 'Profile image must be a string',
+				success: false,
+			})
+		}
+		if (profileImage.trim() && !isValidUrl(profileImage.trim())) {
+			return res.status(400).json({
+				message: 'Profile image must be a valid HTTP or HTTPS URL',
+				success: false,
+			})
 		}
 
 		// preparing all profile data
@@ -343,15 +396,15 @@ async function createProfileController(req, res) {
 			bio: typeof bio === 'string' ? bio.trim() : undefined,
 			phone: typeof phone === 'string' ? phone.trim() : undefined,
 			location:
-				location !== undefined
+				parsedLocation !== undefined
 					? {
 							city:
-								typeof location.city === 'string'
-									? location.city.trim()
+								typeof parsedLocation.city === 'string'
+									? parsedLocation.city.trim()
 									: undefined,
 							country:
-								typeof location.country === 'string'
-									? location.country.trim()
+								typeof parsedLocation.country === 'string'
+									? parsedLocation.country.trim()
 									: undefined,
 						}
 					: undefined,
@@ -361,12 +414,12 @@ async function createProfileController(req, res) {
 					: undefined,
 			profession:
 				typeof profession === 'string' ? profession.trim() : undefined,
-			experience,
-			skills: Array.isArray(skills)
-				? [...new Set(skills.map((skill) => skill.trim()))]
+			experience: parsedExperience,
+			skills: Array.isArray(parsedSkills)
+				? [...new Set(parsedSkills.map((skill) => skill.trim()))]
 				: undefined,
-			socialLinks: Array.isArray(socialLinks)
-				? socialLinks.map((socialLink) => ({
+			socialLinks: Array.isArray(parsedSocialLinks)
+				? parsedSocialLinks.map((socialLink) => ({
 						platform: socialLink.platform.trim(),
 						url: socialLink.url.trim(),
 					}))
