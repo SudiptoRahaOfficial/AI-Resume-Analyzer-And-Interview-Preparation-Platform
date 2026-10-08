@@ -694,9 +694,482 @@ style="width:100%;max-width:560px;background:#ffffff;">
 	await sendEmail(userEmail, subject, text, html)
 }
 
+// function for sending email on email verification success
+async function sendVerificationSuccessEmail(userEmail, userName) {
+	const subject = 'Your ResumeAI Email Has Been Verified'
+
+	const text = `Hello ${userName},
+
+Your email has been successfully verified.
+
+Your ResumeAI account is now active and you can access AI-powered resume analysis and interview preparation.
+
+Thank you for joining ResumeAI. We're excited to have you on board!
+
+If you did not verify your ResumeAI account, please contact us immediately.
+
+Best regards,
+
+The ResumeAI Team`
+
+	const html = `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email Verified Successfully</title>
+
+<style>
+  body, table, td, p, h1 {
+    margin:0;
+    padding:0;
+    font-family:Arial, Helvetica, sans-serif;
+  }
+
+  @media only screen and (max-width:600px){
+
+    .container{
+      width:100%!important;
+    }
+
+    .content{
+      padding:34px 24px!important;
+    }
+
+    .header{
+      padding:28px 24px!important;
+    }
+
+    .footer{
+      padding:24px!important;
+    }
+
+    .title{
+      font-size:30px!important;
+    }
+
+    .status-title{
+      font-size:18px!important;
+    }
+
+  }
+</style>
+
+</head>
+
+<body style="margin:0;padding:0;background:#f4f5f7;">
+
+<table
+  width="100%"
+  cellpadding="0"
+  cellspacing="0"
+  border="0"
+  style="background:#f4f5f7;padding:48px 16px;"
+>
+
+<tr>
+<td align="center">
+
+<table
+  class="container"
+  width="560"
+  cellpadding="0"
+  cellspacing="0"
+  border="0"
+  style="width:100%;max-width:560px;background:#ffffff;"
+>
+
+  <!-- Header -->
+  <tr>
+
+    <td
+      class="header"
+      style="padding:30px 36px;border-bottom:1px solid #eeeeee;"
+    >
+
+      <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+      >
+
+        <tr>
+
+          <td align="left">
+
+            <p
+              style="
+                font-size:15px;
+                font-weight:700;
+                letter-spacing:-0.2px;
+                color:#111827;
+              "
+            >
+              Resume<span style="color:#0891b2;">AI</span>
+            </p>
+
+          </td>
+
+          <td align="right">
+
+            <p
+              style="
+                font-size:11px;
+                font-weight:600;
+                letter-spacing:1.4px;
+                text-transform:uppercase;
+                color:#9ca3af;
+              "
+            >
+              Account
+            </p>
+
+          </td>
+
+        </tr>
+
+      </table>
+
+    </td>
+
+  </tr>
+
+
+  <!-- Content -->
+  <tr>
+
+    <td
+      class="content"
+      style="padding:48px 44px 44px 44px;"
+    >
+
+      <!-- Label -->
+      <p
+        style="
+          font-size:12px;
+          font-weight:700;
+          letter-spacing:1.5px;
+          text-transform:uppercase;
+          color:#0891b2;
+        "
+      >
+        Account Verification
+      </p>
+
+
+      <!-- Title -->
+      <h1
+        class="title"
+        style="
+          margin-top:14px;
+          font-size:34px;
+          line-height:1.2;
+          font-weight:700;
+          letter-spacing:-1px;
+          color:#111827;
+        "
+      >
+        Your email is verified
+      </h1>
+
+
+      <!-- Greeting -->
+      <p
+        style="
+          margin-top:20px;
+          font-size:15px;
+          line-height:1.8;
+          color:#4b5563;
+        "
+      >
+        Hello <strong style="color:#111827;">${userName}</strong>,
+      </p>
+
+
+      <!-- Main Message -->
+      <p
+        style="
+          margin-top:16px;
+          font-size:15px;
+          line-height:1.8;
+          color:#4b5563;
+        "
+      >
+        Your email address has been successfully verified and your
+        <strong style="color:#111827;">ResumeAI</strong>
+        account is now active.
+      </p>
+
+
+      <!-- Verification Status -->
+      <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="margin-top:34px;"
+      >
+
+        <tr>
+
+          <td
+            style="
+              padding:22px 0;
+              border-top:1px solid #e5e7eb;
+              border-bottom:1px solid #e5e7eb;
+            "
+          >
+
+            <table
+              width="100%"
+              cellpadding="0"
+              cellspacing="0"
+              border="0"
+            >
+
+              <tr>
+
+                <!-- Status Icon -->
+                <td
+                  width="46"
+                  valign="top"
+                >
+
+                  <table
+                    width="32"
+                    height="32"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                  >
+
+                    <tr>
+
+                      <td
+                        align="center"
+                        valign="middle"
+                        style="
+                          width:32px;
+                          height:32px;
+                          background:#ecfdf5;
+                          border:1px solid #bbf7d0;
+                          border-radius:50%;
+                          font-size:15px;
+                          font-weight:700;
+                          color:#16a34a;
+                        "
+                      >
+                        ✓
+                      </td>
+
+                    </tr>
+
+                  </table>
+
+                </td>
+
+
+                <!-- Status Content -->
+                <td valign="top">
+
+                  <p
+                    class="status-title"
+                    style="
+                      font-size:16px;
+                      line-height:1.4;
+                      font-weight:700;
+                      color:#111827;
+                    "
+                  >
+                    Email verification complete
+                  </p>
+
+                  <p
+                    style="
+                      margin-top:5px;
+                      font-size:13px;
+                      line-height:1.6;
+                      color:#6b7280;
+                    "
+                  >
+                    Your account is ready to use.
+                  </p>
+
+                </td>
+
+              </tr>
+
+            </table>
+
+          </td>
+
+        </tr>
+
+      </table>
+
+
+      <!-- Access Message -->
+      <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="margin-top:26px;"
+      >
+
+        <tr>
+
+          <td
+            style="
+              padding:0 0 0 14px;
+              border-left:2px solid #0891b2;
+            "
+          >
+
+            <p
+              style="
+                font-size:13px;
+                line-height:1.7;
+                color:#374151;
+              "
+            >
+              <strong>You can now access ResumeAI.</strong><br/>
+              Start using AI-powered resume analysis and interview preparation.
+            </p>
+
+          </td>
+
+        </tr>
+
+      </table>
+
+
+      <!-- Security -->
+      <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="margin-top:26px;"
+      >
+
+        <tr>
+
+          <td
+            style="
+              padding:0 0 0 14px;
+              border-left:2px solid #d1d5db;
+            "
+          >
+
+            <p
+              style="
+                font-size:13px;
+                line-height:1.7;
+                color:#6b7280;
+              "
+            >
+              <strong style="color:#374151;">
+                Security Notice
+              </strong><br/>
+              If you did not verify your ResumeAI account, please contact us immediately.
+            </p>
+
+          </td>
+
+        </tr>
+
+      </table>
+
+
+      <!-- Closing -->
+      <p
+        style="
+          margin-top:30px;
+          font-size:14px;
+          line-height:1.8;
+          color:#6b7280;
+        "
+      >
+        Thank you for joining ResumeAI. We're excited to have you on board!
+      </p>
+
+
+      <!-- Signature -->
+      <p
+        style="
+          margin-top:32px;
+          font-size:14px;
+          line-height:1.8;
+          color:#374151;
+        "
+      >
+        Best regards,<br/>
+        <strong>ResumeAI Team</strong>
+      </p>
+
+    </td>
+
+  </tr>
+
+
+  <!-- Footer -->
+  <tr>
+
+    <td
+      class="footer"
+      style="
+        padding:26px 36px;
+        border-top:1px solid #eeeeee;
+        background:#fafafa;
+      "
+    >
+
+      <p
+        style="
+          font-size:11px;
+          line-height:1.7;
+          color:#9ca3af;
+        "
+      >
+        This is an automated email from ResumeAI. Please do not reply to this message.
+      </p>
+
+      <p
+        style="
+          margin-top:7px;
+          font-size:11px;
+          color:#c4c7cc;
+        "
+      >
+        © ${new Date().getFullYear()} ResumeAI. All rights reserved.
+      </p>
+
+    </td>
+
+  </tr>
+
+</table>
+
+</td>
+</tr>
+
+</table>
+
+</body>
+</html>
+`
+
+	await sendEmail(userEmail, subject, text, html)
+}
+
 // exporting email sending functions
 module.exports = {
 	sendSignupEmail,
 	sendSigninEmail,
 	sendOTPEmail,
+	sendVerificationSuccessEmail,
 }
