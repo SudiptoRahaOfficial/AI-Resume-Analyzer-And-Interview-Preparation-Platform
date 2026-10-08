@@ -16,6 +16,7 @@ const {
 	sendSignupEmail,
 	sendSigninEmail,
 	sendOTPEmail,
+	sendVerificationSuccessEmail,
 } = require('../services/email.service')
 
 /**
@@ -257,6 +258,22 @@ async function verifyEmailController(req, res) {
 
 		// deleting all OTPs belonging to the user
 		await otpModel.deleteMany({ user: otpDoc.user })
+
+		try {
+			// sending email to user on email verification success
+			await sendVerificationSuccessEmail(user.email, user.username)
+		} catch (emailError) {
+			// logging email delivery failure
+			console.error('Verification success email delivery failed', {
+				userId: user._id.toString(),
+				email: user.email,
+				error: emailError.message,
+				stack: emailError.stack,
+			})
+
+			// throwing email error
+			throw emailError
+		}
 
 		// response back on success
 		return res.status(200).json({
@@ -512,6 +529,9 @@ async function signinController(req, res) {
 				error: emailError.message,
 				stack: emailError.stack,
 			})
+
+			// throwing email error
+			throw emailError
 		}
 
 		// response back on success
