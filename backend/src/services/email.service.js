@@ -81,99 +81,145 @@ The AI Resume Analyzer Team`
 
   @media only screen and (max-width:600px){
     .container{width:100%!important;}
-    .content{padding:28px 22px!important;}
-    .header{padding:28px 22px!important;}
-    .otp{font-size:28px!important;letter-spacing:6px!important;}
-    .title{font-size:24px!important;}
+    .content{padding:34px 24px!important;}
+    .header{padding:28px 24px!important;}
+    .footer{padding:24px!important;}
+    .title{font-size:30px!important;}
+    .otp{font-size:30px!important;letter-spacing:7px!important;}
   }
 </style>
 </head>
 
-<body style="margin:0;padding:0;background:#0b1120;">
+<body style="margin:0;padding:0;background:#f4f5f7;">
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0b1120;padding:32px 12px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0"
+style="background:#f4f5f7;padding:48px 16px;">
+
 <tr>
 <td align="center">
 
-<table class="container" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background:#111827;border:1px solid #1f2937;border-radius:18px;overflow:hidden;">
+<table class="container"
+width="560"
+cellpadding="0"
+cellspacing="0"
+border="0"
+style="width:100%;max-width:560px;background:#ffffff;">
 
   <!-- Header -->
   <tr>
-    <td class="header" align="center" style="padding:34px 28px;background:#0f172a;border-bottom:1px solid #1f2937;">
-      <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#22d3ee;">
-        ResumeAI
-      </p>
+    <td class="header"
+    style="padding:30px 36px;border-bottom:1px solid #eeeeee;">
 
-      <h1 class="title" style="margin-top:10px;font-size:28px;font-weight:700;color:#ffffff;">
-        Verify Your Email
-      </h1>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td align="left">
 
-      <p style="margin-top:10px;font-size:14px;line-height:1.7;color:#94a3b8;">
-        AI-Powered Interview Preparation Platform
-      </p>
+            <p style="font-size:15px;font-weight:700;letter-spacing:-0.2px;color:#111827;">
+              Resume<span style="color:#0891b2;">AI</span>
+            </p>
+
+          </td>
+
+          <td align="right">
+
+            <p style="font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:#9ca3af;">
+              Account
+            </p>
+
+          </td>
+        </tr>
+      </table>
+
     </td>
   </tr>
 
   <!-- Content -->
   <tr>
-    <td class="content" style="padding:38px 32px;background:#111827;">
+    <td class="content"
+    style="padding:48px 44px 44px 44px;">
 
-      <p style="font-size:16px;line-height:1.7;color:#e5e7eb;">
-        Hello <strong>${userName}</strong>,
+      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0891b2;">
+        Email Verification
       </p>
 
-      <p style="margin-top:18px;font-size:15px;line-height:1.8;color:#cbd5e1;">
-        Welcome to <strong style="color:#ffffff;">ResumeAI</strong>. You're one step away from accessing AI-powered resume analysis and interview preparation.
+      <h1 class="title"
+      style="margin-top:14px;font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-1px;color:#111827;">
+        Verify your email
+      </h1>
+
+      <p style="margin-top:20px;font-size:15px;line-height:1.8;color:#4b5563;">
+        Hello <strong style="color:#111827;">${userName}</strong>,
       </p>
 
-      <p style="margin-top:18px;font-size:15px;line-height:1.8;color:#cbd5e1;">
+      <p style="margin-top:16px;font-size:15px;line-height:1.8;color:#4b5563;">
+        Welcome to <strong style="color:#111827;">ResumeAI</strong>. You're one step away from accessing AI-powered resume analysis and interview preparation.
+      </p>
+
+      <p style="margin-top:16px;font-size:15px;line-height:1.8;color:#4b5563;">
         Use the verification code below to activate your account:
       </p>
 
-      <!-- OTP Card -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
+      <!-- OTP -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:36px;">
+
         <tr>
-          <td align="center" style="background:#0b1220;border:1px solid #22d3ee33;border-radius:14px;padding:24px 12px;">
-            <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#67e8f9;">
+          <td
+          style="padding:22px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
+
+            <p style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;">
               Verification Code
             </p>
 
-            <p class="otp" style="margin-top:12px;font-size:36px;font-weight:700;letter-spacing:8px;color:#22d3ee;">
+            <p class="otp"
+            style="margin-top:13px;font-size:38px;line-height:1;font-weight:700;letter-spacing:9px;color:#111827;">
               ${otp}
             </p>
+
           </td>
         </tr>
+
       </table>
 
       <!-- Expiry -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:26px;">
+
         <tr>
-          <td style="background:#082f49;border-left:4px solid #22d3ee;border-radius:6px;padding:14px;">
-            <p style="font-size:14px;line-height:1.7;color:#bae6fd;">
+          <td style="padding:0 0 0 14px;border-left:2px solid #0891b2;">
+
+            <p style="font-size:13px;line-height:1.7;color:#374151;">
               <strong>This code expires in 3 minutes.</strong><br/>
               Enter it on the verification page before it expires.
             </p>
+
           </td>
         </tr>
+
       </table>
 
       <!-- Security -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:26px;">
+
         <tr>
-          <td style="background:#1f2937;border-left:4px solid #22c55e;border-radius:6px;padding:14px;">
-            <p style="font-size:14px;line-height:1.7;color:#d1fae5;">
-              <strong>Security Notice</strong><br/>
+          <td style="padding:0 0 0 14px;border-left:2px solid #d1d5db;">
+
+            <p style="font-size:13px;line-height:1.7;color:#6b7280;">
+              <strong style="color:#374151;">Security Notice</strong><br/>
               Never share this verification code with anyone. ResumeAI will never ask for your OTP by email, phone, or chat.
             </p>
+
           </td>
         </tr>
+
       </table>
 
-      <p style="font-size:15px;line-height:1.8;color:#cbd5e1;">
+      <p style="margin-top:30px;font-size:14px;line-height:1.8;color:#6b7280;">
         If you didn't create a ResumeAI account, you can safely ignore this email. No further action is required.
       </p>
 
-      <p style="margin-top:30px;font-size:15px;line-height:1.8;color:#e5e7eb;">
+      <p style="margin-top:32px;font-size:14px;line-height:1.8;color:#374151;">
         Best regards,<br/>
         <strong>ResumeAI Team</strong>
       </p>
@@ -183,14 +229,17 @@ The AI Resume Analyzer Team`
 
   <!-- Footer -->
   <tr>
-    <td align="center" style="background:#0f172a;border-top:1px solid #1f2937;padding:24px 28px;">
-      <p style="font-size:12px;line-height:1.7;color:#64748b;">
+    <td class="footer"
+    style="padding:26px 36px;border-top:1px solid #eeeeee;background:#fafafa;">
+
+      <p style="font-size:11px;line-height:1.7;color:#9ca3af;">
         This is an automated email from ResumeAI. Please do not reply to this message.
       </p>
 
-      <p style="margin-top:8px;font-size:12px;color:#475569;">
+      <p style="margin-top:7px;font-size:11px;color:#c4c7cc;">
         © ${new Date().getFullYear()} ResumeAI. All rights reserved.
       </p>
+
     </td>
   </tr>
 
@@ -239,99 +288,163 @@ The AI Resume Analyzer Team`
 
   @media only screen and (max-width:600px){
     .container{width:100%!important;}
-    .header{padding:28px 22px!important;}
-    .content{padding:28px 22px!important;}
-    .otp{font-size:28px!important;}
-    .title{font-size:24px!important;}
+    .content{padding:34px 24px!important;}
+    .header{padding:28px 24px!important;}
+    .footer{padding:24px!important;}
+    .title{font-size:30px!important;}
   }
 </style>
 </head>
 
-<body style="margin:0;padding:0;background:#0b1120;">
+<body style="margin:0;padding:0;background:#f4f5f7;">
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0b1120;padding:32px 12px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0"
+style="background:#f4f5f7;padding:48px 16px;">
+
 <tr>
 <td align="center">
 
-<table class="container" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background:#111827;border:1px solid #1f2937;border-radius:18px;overflow:hidden;">
+<table class="container"
+width="560"
+cellpadding="0"
+cellspacing="0"
+border="0"
+style="width:100%;max-width:560px;background:#ffffff;">
 
   <!-- Header -->
   <tr>
-    <td class="header" align="center" style="padding:34px 28px;background:#0f172a;border-bottom:1px solid #1f2937;">
-      <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#22d3ee;">
-        ResumeAI
-      </p>
+    <td class="header"
+    style="padding:30px 36px;border-bottom:1px solid #eeeeee;">
 
-      <h1 class="title" style="margin-top:10px;font-size:28px;font-weight:700;color:#ffffff;">
-        Security Alert
-      </h1>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
 
-      <p style="margin-top:10px;font-size:14px;line-height:1.7;color:#94a3b8;">
-        New Sign-In Detected
-      </p>
+          <td align="left">
+
+            <p style="font-size:15px;font-weight:700;letter-spacing:-0.2px;color:#111827;">
+              Resume<span style="color:#0891b2;">AI</span>
+            </p>
+
+          </td>
+
+          <td align="right">
+
+            <p style="font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:#9ca3af;">
+              Security
+            </p>
+
+          </td>
+
+        </tr>
+      </table>
+
     </td>
   </tr>
 
   <!-- Content -->
   <tr>
-    <td class="content" style="padding:38px 32px;background:#111827;">
+    <td class="content"
+    style="padding:48px 44px 44px 44px;">
 
-      <p style="font-size:16px;line-height:1.7;color:#e5e7eb;">
-        Hello <strong>${userName}</strong>,
+      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0891b2;">
+        Account Activity
       </p>
 
-      <p style="margin-top:18px;font-size:15px;line-height:1.8;color:#cbd5e1;">
-        We detected a new sign-in to your <strong style="color:#ffffff;">ResumeAI</strong> account.
+      <h1 class="title"
+      style="margin-top:14px;font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-1px;color:#111827;">
+        New sign-in detected
+      </h1>
+
+      <p style="margin-top:20px;font-size:15px;line-height:1.8;color:#4b5563;">
+        Hello <strong style="color:#111827;">${userName}</strong>,
       </p>
 
-      <!-- Alert Card -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0;">
+      <p style="margin-top:16px;font-size:15px;line-height:1.8;color:#4b5563;">
+        We detected a new sign-in to your <strong style="color:#111827;">ResumeAI</strong> account.
+      </p>
+
+      <!-- Activity -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:34px;">
+
         <tr>
-          <td align="center" style="background:#0b1220;border:1px solid #22d3ee33;border-radius:14px;padding:24px 16px;">
-            <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#67e8f9;">
-              Account Activity
-            </p>
+          <td style="padding:20px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
 
-            <p style="margin-top:12px;font-size:20px;font-weight:700;color:#ffffff;">
-              🔐 New Sign-In Detected
-            </p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
 
-            <p style="margin-top:10px;font-size:14px;line-height:1.7;color:#cbd5e1;">
-              A successful login was made to your ResumeAI account.
-            </p>
+              <tr>
+                <td width="42" valign="top">
+
+                  <table width="30" height="30" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center"
+                      style="width:30px;height:30px;background:#ecfeff;border-radius:50%;font-size:14px;color:#0891b2;">
+                        ✓
+                      </td>
+                    </tr>
+                  </table>
+
+                </td>
+
+                <td valign="top">
+
+                  <p style="font-size:14px;font-weight:700;color:#111827;">
+                    Successful sign-in
+                  </p>
+
+                  <p style="margin-top:5px;font-size:13px;line-height:1.6;color:#6b7280;">
+                    A successful login was made to your ResumeAI account.
+                  </p>
+
+                </td>
+              </tr>
+
+            </table>
+
           </td>
         </tr>
+
       </table>
 
-      <!-- Success Notice -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+      <!-- Success -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:26px;">
+
         <tr>
-          <td style="background:#082f49;border-left:4px solid #22d3ee;border-radius:6px;padding:14px;">
-            <p style="font-size:14px;line-height:1.7;color:#bae6fd;">
+          <td style="padding:0 0 0 14px;border-left:2px solid #22c55e;">
+
+            <p style="font-size:13px;line-height:1.7;color:#374151;">
               <strong>If this was you:</strong><br/>
               No further action is required. Your account is secure.
             </p>
+
           </td>
         </tr>
+
       </table>
 
       <!-- Warning -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:26px;">
+
         <tr>
-          <td style="background:#2b0d12;border-left:4px solid #ef4444;border-radius:6px;padding:14px;">
-            <p style="font-size:14px;line-height:1.7;color:#fecaca;">
-              <strong>Didn't sign in?</strong><br/>
+          <td style="padding:0 0 0 14px;border-left:2px solid #f59e0b;">
+
+            <p style="font-size:13px;line-height:1.7;color:#4b5563;">
+              <strong style="color:#92400e;">Didn't sign in?</strong><br/>
               Change your password immediately and review your active sessions to protect your account.
             </p>
+
           </td>
         </tr>
+
       </table>
 
-      <p style="font-size:15px;line-height:1.8;color:#cbd5e1;">
+      <p style="margin-top:30px;font-size:14px;line-height:1.8;color:#6b7280;">
         ResumeAI sends this notification whenever a new login is detected to help keep your account secure.
       </p>
 
-      <p style="margin-top:30px;font-size:15px;line-height:1.8;color:#e5e7eb;">
+      <p style="margin-top:32px;font-size:14px;line-height:1.8;color:#374151;">
         Best regards,<br/>
         <strong>ResumeAI Team</strong>
       </p>
@@ -341,14 +454,17 @@ The AI Resume Analyzer Team`
 
   <!-- Footer -->
   <tr>
-    <td align="center" style="background:#0f172a;border-top:1px solid #1f2937;padding:24px 28px;">
-      <p style="font-size:12px;line-height:1.7;color:#64748b;">
+    <td class="footer"
+    style="padding:26px 36px;border-top:1px solid #eeeeee;background:#fafafa;">
+
+      <p style="font-size:11px;line-height:1.7;color:#9ca3af;">
         This is an automated security notification from ResumeAI. Please do not reply to this email.
       </p>
 
-      <p style="margin-top:8px;font-size:12px;color:#475569;">
+      <p style="margin-top:7px;font-size:11px;color:#c4c7cc;">
         © ${new Date().getFullYear()} ResumeAI. All rights reserved.
       </p>
+
     </td>
   </tr>
 
@@ -397,95 +513,151 @@ The AI Resume Analyzer Team`
 
   @media only screen and (max-width:600px){
     .container{width:100%!important;}
-    .header{padding:28px 22px!important;}
-    .content{padding:28px 22px!important;}
-    .otp{font-size:28px!important;letter-spacing:6px!important;}
-    .title{font-size:24px!important;}
+    .content{padding:34px 24px!important;}
+    .header{padding:28px 24px!important;}
+    .footer{padding:24px!important;}
+    .title{font-size:30px!important;}
+    .otp{font-size:30px!important;letter-spacing:7px!important;}
   }
 </style>
 </head>
 
-<body style="margin:0;padding:0;background:#0b1120;">
+<body style="margin:0;padding:0;background:#f4f5f7;">
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0b1120;padding:32px 12px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0"
+style="background:#f4f5f7;padding:48px 16px;">
+
 <tr>
 <td align="center">
 
-<table class="container" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background:#111827;border:1px solid #1f2937;border-radius:18px;overflow:hidden;">
+<table class="container"
+width="560"
+cellpadding="0"
+cellspacing="0"
+border="0"
+style="width:100%;max-width:560px;background:#ffffff;">
 
   <!-- Header -->
   <tr>
-    <td class="header" align="center" style="padding:34px 28px;background:#0f172a;border-bottom:1px solid #1f2937;">
-      <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#22d3ee;">
-        ResumeAI
-      </p>
+    <td class="header"
+    style="padding:30px 36px;border-bottom:1px solid #eeeeee;">
 
-      <h1 class="title" style="margin-top:10px;font-size:28px;font-weight:700;color:#ffffff;">
-        New Verification Code
-      </h1>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
 
-      <p style="margin-top:10px;font-size:14px;line-height:1.7;color:#94a3b8;">
-        Email Verification
-      </p>
+        <tr>
+
+          <td align="left">
+
+            <p style="font-size:15px;font-weight:700;letter-spacing:-0.2px;color:#111827;">
+              Resume<span style="color:#0891b2;">AI</span>
+            </p>
+
+          </td>
+
+          <td align="right">
+
+            <p style="font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:#9ca3af;">
+              Account
+            </p>
+
+          </td>
+
+        </tr>
+
+      </table>
+
     </td>
   </tr>
 
   <!-- Content -->
   <tr>
-    <td class="content" style="padding:38px 32px;background:#111827;">
+    <td class="content"
+    style="padding:48px 44px 44px 44px;">
 
-      <p style="font-size:16px;line-height:1.7;color:#e5e7eb;">
-        Hello <strong>${userName}</strong>,
+      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0891b2;">
+        Email Verification
       </p>
 
-      <p style="margin-top:18px;font-size:15px;line-height:1.8;color:#cbd5e1;">
-        As requested, we've generated a new email verification code for your <strong style="color:#ffffff;">ResumeAI</strong> account.
+      <h1 class="title"
+      style="margin-top:14px;font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-1px;color:#111827;">
+        New verification code
+      </h1>
+
+      <p style="margin-top:20px;font-size:15px;line-height:1.8;color:#4b5563;">
+        Hello <strong style="color:#111827;">${userName}</strong>,
       </p>
 
-      <!-- OTP Card -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
+      <p style="margin-top:16px;font-size:15px;line-height:1.8;color:#4b5563;">
+        As requested, we've generated a new email verification code for your <strong style="color:#111827;">ResumeAI</strong> account.
+      </p>
+
+      <!-- OTP -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:36px;">
+
         <tr>
-          <td align="center" style="background:#0b1220;border:1px solid #22d3ee33;border-radius:14px;padding:24px 12px;">
-            <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#67e8f9;">
+
+          <td
+          style="padding:22px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
+
+            <p style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;">
               Verification Code
             </p>
 
-            <p class="otp" style="margin-top:12px;font-size:36px;font-weight:700;letter-spacing:8px;color:#22d3ee;">
+            <p class="otp"
+            style="margin-top:13px;font-size:38px;line-height:1;font-weight:700;letter-spacing:9px;color:#111827;">
               ${otp}
             </p>
+
           </td>
+
         </tr>
+
       </table>
 
       <!-- Expiry -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:26px;">
+
         <tr>
-          <td style="background:#082f49;border-left:4px solid #22d3ee;border-radius:6px;padding:14px;">
-            <p style="font-size:14px;line-height:1.7;color:#bae6fd;">
+
+          <td style="padding:0 0 0 14px;border-left:2px solid #0891b2;">
+
+            <p style="font-size:13px;line-height:1.7;color:#374151;">
               <strong>This code expires in 3 minutes.</strong><br/>
               Use the latest code only. Any previous verification code is no longer valid.
             </p>
+
           </td>
+
         </tr>
+
       </table>
 
       <!-- Security -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="margin-top:26px;">
+
         <tr>
-          <td style="background:#1f2937;border-left:4px solid #22c55e;border-radius:6px;padding:14px;">
-            <p style="font-size:14px;line-height:1.7;color:#d1fae5;">
-              <strong>Security Notice</strong><br/>
+
+          <td style="padding:0 0 0 14px;border-left:2px solid #d1d5db;">
+
+            <p style="font-size:13px;line-height:1.7;color:#6b7280;">
+              <strong style="color:#374151;">Security Notice</strong><br/>
               Never share this verification code with anyone. ResumeAI will never ask for your OTP by email, phone, or chat.
             </p>
+
           </td>
+
         </tr>
+
       </table>
 
-      <p style="font-size:15px;line-height:1.8;color:#cbd5e1;">
+      <p style="margin-top:30px;font-size:14px;line-height:1.8;color:#6b7280;">
         If you didn't request a new verification code, you can safely ignore this email.
       </p>
 
-      <p style="margin-top:30px;font-size:15px;line-height:1.8;color:#e5e7eb;">
+      <p style="margin-top:32px;font-size:14px;line-height:1.8;color:#374151;">
         Best regards,<br/>
         <strong>ResumeAI Team</strong>
       </p>
@@ -495,14 +667,17 @@ The AI Resume Analyzer Team`
 
   <!-- Footer -->
   <tr>
-    <td align="center" style="background:#0f172a;border-top:1px solid #1f2937;padding:24px 28px;">
-      <p style="font-size:12px;line-height:1.7;color:#64748b;">
+    <td class="footer"
+    style="padding:26px 36px;border-top:1px solid #eeeeee;background:#fafafa;">
+
+      <p style="font-size:11px;line-height:1.7;color:#9ca3af;">
         This is an automated email from ResumeAI. Please do not reply to this message.
       </p>
 
-      <p style="margin-top:8px;font-size:12px;color:#475569;">
+      <p style="margin-top:7px;font-size:11px;color:#c4c7cc;">
         © ${new Date().getFullYear()} ResumeAI. All rights reserved.
       </p>
+
     </td>
   </tr>
 
