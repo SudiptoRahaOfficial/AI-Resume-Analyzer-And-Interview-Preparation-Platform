@@ -1,4 +1,3 @@
-import LandingHeader from '@/components/landing/landingHeader'
 import Hero from '@/components/landing/hero'
 import Features from '@/components/landing/features'
 import HowItWorks from '@/components/landing/howItWorks'
@@ -6,12 +5,10 @@ import CTA from '@/components/landing/cta'
 import Pricing from '@/components/landing/pricing'
 import Testimonials from '@/components/landing/testimonials'
 import FAQ from '@/components/landing/faq'
-import Footer from '@/components/shared/footer'
 
-export default function Landing() {
+export default function LandingPage() {
 	return (
 		<>
-			<LandingHeader />
 			<Hero />
 			<Features />
 			<HowItWorks />
@@ -19,7 +16,6 @@ export default function Landing() {
 			<Pricing />
 			<Testimonials />
 			<FAQ />
-			<Footer />
 		</>
 	)
 }
