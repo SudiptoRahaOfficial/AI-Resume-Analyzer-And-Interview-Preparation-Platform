@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
+import ArrowUpIcon from '@/components/common/ArrowUpIcon'
 
 const footerGroups = [
 	{
@@ -77,42 +79,6 @@ const socialLinks = [
 		),
 	},
 ]
-
-function ArrowRightIcon() {
-	return (
-		<svg
-			viewBox='0 0 24 24'
-			fill='none'
-			stroke='currentColor'
-			strokeWidth='1.8'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-			className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5'
-			aria-hidden='true'
-		>
-			<path d='M5 12h14' />
-			<path d='m12 5 7 7-7 7' />
-		</svg>
-	)
-}
-
-function ArrowUpIcon() {
-	return (
-		<svg
-			viewBox='0 0 24 24'
-			fill='none'
-			stroke='currentColor'
-			strokeWidth='1.8'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-			className='h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5'
-			aria-hidden='true'
-		>
-			<path d='M12 19V5' />
-			<path d='m5 12 7-7 7 7' />
-		</svg>
-	)
-}
 
 export default function Footer() {
 	const [email, setEmail] = useState('')

@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
 
-export default function LandingHeader() {
+export default function Header() {
 	const [menuOpen, setMenuOpen] = useState(false)
 	const closeMenu = () => setMenuOpen(false)
 
@@ -58,24 +59,10 @@ export default function LandingHeader() {
 
 						<Link
 							href='/signup'
-							className='inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950'
+							className='group inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/20 transition-colors duration-200 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030712] motion-reduce:transition-none'
 						>
 							Get Started
-							<svg
-								xmlns='http://www.w3.org/2000/svg'
-								width='16'
-								height='16'
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='2'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-								aria-hidden='true'
-							>
-								<path d='M5 12h14' />
-								<path d='m12 5 7 7-7 7' />
-							</svg>
+							<ArrowRightIcon />
 						</Link>
 					</div>
 
