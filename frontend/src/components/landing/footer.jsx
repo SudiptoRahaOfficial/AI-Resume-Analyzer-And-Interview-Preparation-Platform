@@ -16,19 +16,19 @@ const footerGroups = [
 	{
 		title: 'Product',
 		links: [
-			{ label: 'Features', href: '#features' },
-			{ label: 'How It Works', href: '#how-it-works' },
-			{ label: 'Pricing', href: '#pricing' },
-			{ label: 'Testimonials', href: '#testimonials' },
+			{ label: 'Features', href: '/#features' },
+			{ label: 'How It Works', href: '/#how-it-works' },
+			{ label: 'Pricing', href: '/#pricing' },
+			{ label: 'Testimonials', href: '/#testimonials' },
 		],
 	},
 	{
 		title: 'Resources',
 		links: [
-			{ label: 'Resume Analysis', href: '#features' },
-			{ label: 'Interview Preparation', href: '#features' },
-			{ label: 'ATS Optimization', href: '#features' },
-			{ label: 'Career Preparation', href: '#how-it-works' },
+			{ label: 'Resume Analysis', href: '/#features' },
+			{ label: 'Interview Preparation', href: '/#features' },
+			{ label: 'ATS Optimization', href: '/#features' },
+			{ label: 'Career Preparation', href: '/#how-it-works' },
 		],
 	},
 ]

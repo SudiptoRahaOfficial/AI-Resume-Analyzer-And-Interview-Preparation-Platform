@@ -1,10 +1,10 @@
-import LandingHeader from '@/components/landing/landingHeader'
-import Footer from '@/components/shared/footer'
+import Header from '@/components/landing/header'
+import Footer from '@/components/landing/footer'
 
 export default function LandingLayout({ children }) {
 	return (
 		<>
-			<LandingHeader />
+			<Header />
 			<main>{children}</main>
 			<Footer />
 		</>
