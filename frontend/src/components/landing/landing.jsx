@@ -1,4 +1,4 @@
-import Header from '@/components/landing/header'
+import LandingHeader from '@/components/landing/landingHeader'
 import Hero from '@/components/landing/hero'
 import Features from '@/components/landing/features'
 import HowItWorks from '@/components/landing/howItWorks'
@@ -6,12 +6,12 @@ import CTA from '@/components/landing/cta'
 import Pricing from '@/components/landing/pricing'
 import Testimonials from '@/components/landing/testimonials'
 import FAQ from '@/components/landing/faq'
-import Footer from '@/components/landing/footer'
+import Footer from '@/components/shared/footer'
 
 export default function Landing() {
 	return (
 		<>
-			<Header />
+			<LandingHeader />
 			<Hero />
 			<Features />
 			<HowItWorks />
