@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	/* config options here */
+	// Allow access to Next.js development resources from your LAN IP.
+	allowedDevOrigins: ['192.168.1.103'],
+
+	// Existing configuration
 	cacheComponents: true,
 	partialPrefetching: true,
 	reactCompiler: true,
+
 	turbopack: {
 		rules: {
 			'*.css': {
