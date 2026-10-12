@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import ArrowRightIcon from '@/components/shared/ArrowRightIcon'
-import CheckIcon from '@/components/shared/CheckIcon'
+import ArrowRightIcon from '@/components/landing/landing-icons/ArrowRightIcon'
+import CheckIcon from '@/components/landing/landing-icons/CheckIcon'
 
 const plans = [
 	{

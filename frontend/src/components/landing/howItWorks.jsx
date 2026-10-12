@@ -1,10 +1,10 @@
 'use client'
 
-import UploadIcon from '@/components/shared/UploadIcon'
-import SelfDescriptionIcon from '@/components/shared/SelfDescriptionIcon'
-import JobDescriptionIcon from '@/components/shared/JobDescriptionIcon'
-import InterviewIcon from '@/components/shared/InterviewIcon'
-import ResumeIcon from '@/components/shared/ResumeIcon'
+import UploadIcon from '@/components/landing/landing-icons/UploadIcon'
+import SelfDescriptionIcon from '@/components/landing/landing-icons/SelfDescriptionIcon'
+import JobDescriptionIcon from '@/components/landing/landing-icons/JobDescriptionIcon'
+import InterviewIcon from '@/components/landing/landing-icons/InterviewIcon'
+import ResumeIcon from '@/components/landing/landing-icons/ResumeIcon'
 
 const steps = [
 	{

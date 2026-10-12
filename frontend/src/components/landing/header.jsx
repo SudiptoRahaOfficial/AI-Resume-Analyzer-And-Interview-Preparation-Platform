@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import ArrowRightIcon from '@/components/shared/ArrowRightIcon'
+import ArrowRightIcon from '@/components/landing/landing-icons/ArrowRightIcon'
 
 export default function Header() {
 	const [menuOpen, setMenuOpen] = useState(false)
