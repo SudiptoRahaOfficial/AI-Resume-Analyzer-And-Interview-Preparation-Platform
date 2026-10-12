@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	// Allow access to Next.js development resources from your LAN IP.
-	allowedDevOrigins: ['192.168.1.103'],
+	allowedDevOrigins: ['192.168.1.100'],
 
 	// Existing configuration
 	cacheComponents: true,

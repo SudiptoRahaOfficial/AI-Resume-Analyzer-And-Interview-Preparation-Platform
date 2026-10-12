@@ -145,38 +145,6 @@ export default function DashboardSidebar({ open, onClose }) {
 						</Link>
 					</nav>
 				</div>
-
-				<div className='shrink-0 border-t border-slate-800/70 p-4'>
-					<div className='rounded-xl border border-indigo-400/15 bg-linear-to-br from-indigo-500/10 to-blue-500/4 p-4'>
-						<div className='mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/15 text-indigo-300'>
-							<DashboardIcon
-								name='sparkles'
-								size={17}
-							/>
-						</div>
-
-						<p className='text-sm font-semibold text-white'>
-							Your next opportunity
-						</p>
-
-						<p className='mt-1 text-xs leading-5 text-slate-400'>
-							Prepare strategically and make every application
-							count.
-						</p>
-
-						<Link
-							href='/interview-preparation'
-							onClick={onClose}
-							className='mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-300 transition-colors hover:text-indigo-200'
-						>
-							Start preparing
-							<DashboardIcon
-								name='arrow'
-								size={14}
-							/>
-						</Link>
-					</div>
-				</div>
 			</aside>
 		</>
 	)

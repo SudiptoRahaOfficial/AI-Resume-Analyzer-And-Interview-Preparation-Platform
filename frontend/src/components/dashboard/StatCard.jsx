@@ -9,14 +9,6 @@ const styles = {
 		icon: 'border-blue-400/15 bg-blue-500/10 text-blue-300',
 		glow: 'from-blue-500/[0.07]',
 	},
-	violet: {
-		icon: 'border-violet-400/15 bg-violet-500/10 text-violet-300',
-		glow: 'from-violet-500/[0.07]',
-	},
-	emerald: {
-		icon: 'border-emerald-400/15 bg-emerald-500/10 text-emerald-300',
-		glow: 'from-emerald-500/[0.06]',
-	},
 }
 
 export default function StatCard({ stat }) {

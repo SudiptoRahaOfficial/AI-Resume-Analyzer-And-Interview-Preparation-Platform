@@ -12,25 +12,11 @@ const stats = [
 		color: 'indigo',
 	},
 	{
-		label: 'Average Match Score',
-		value: '78%',
-		detail: 'Across analyzed resumes',
-		icon: 'target',
-		color: 'blue',
-	},
-	{
-		label: 'Skill Gaps Identified',
-		value: '12',
-		detail: 'Areas to focus on',
-		icon: 'layers',
-		color: 'violet',
-	},
-	{
 		label: 'Optimized Resumes',
 		value: '03',
 		detail: 'Ready for your next application',
 		icon: 'file-check',
-		color: 'emerald',
+		color: 'blue',
 	},
 ]
 
@@ -66,7 +52,7 @@ export default function StatisticsSection() {
 				</Link>
 			</div>
 
-			<div className='grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4'>
+			<div className='grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4'>
 				{stats.map((stat) => (
 					<StatCard
 						key={stat.label}
