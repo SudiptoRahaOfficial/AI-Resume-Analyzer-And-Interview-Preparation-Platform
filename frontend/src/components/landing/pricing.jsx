@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
+import CheckIcon from '@/components/common/CheckIcon'
 
 const plans = [
 	{
@@ -65,46 +67,6 @@ const plans = [
 		highlighted: false,
 	},
 ]
-
-function CheckIcon({ className = '' }) {
-	return (
-		<svg
-			xmlns='http://www.w3.org/2000/svg'
-			width='17'
-			height='17'
-			viewBox='0 0 24 24'
-			fill='none'
-			stroke='currentColor'
-			strokeWidth='2'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-			aria-hidden='true'
-			className={className}
-		>
-			<path d='m5 12 4 4L19 6' />
-		</svg>
-	)
-}
-
-function ArrowIcon() {
-	return (
-		<svg
-			xmlns='http://www.w3.org/2000/svg'
-			width='17'
-			height='17'
-			viewBox='0 0 24 24'
-			fill='none'
-			stroke='currentColor'
-			strokeWidth='2'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-			aria-hidden='true'
-		>
-			<path d='M5 12h14' />
-			<path d='m12 5 7 7-7 7' />
-		</svg>
-	)
-}
 
 export default function Pricing() {
 	return (
@@ -203,7 +165,7 @@ export default function Pricing() {
 									}`}
 								>
 									{plan.cta}
-									<ArrowIcon />
+									<ArrowRightIcon />
 								</Link>
 
 								{/* Included features */}

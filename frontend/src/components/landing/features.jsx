@@ -1,5 +1,9 @@
 'use client'
 
+import InterviewIcon from '@/components/common/InterviewIcon'
+import ResumeIcon from '@/components/common/ResumeIcon'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
+
 const features = [
 	{
 		id: 'interview-preparation',
@@ -8,12 +12,7 @@ const features = [
 		description:
 			'Prepare for your next interview with job-specific technical and behavioral questions, identify skill gaps, and follow a personalized day wise preparation plan tailored to your target role.',
 		href: '#how-it-works',
-		icon: (
-			<>
-				<path d='M12 3 4 7v5c0 5 3.4 7.9 8 9 4.6-1.1 8-4 8-9V7l-8-4Z' />
-				<path d='m9 12 2 2 4-4' />
-			</>
-		),
+		icon: <InterviewIcon />,
 	},
 	{
 		id: 'resume-optimization',
@@ -22,15 +21,7 @@ const features = [
 		description:
 			'Tailor your resume to any job description in seconds. Generate a professional, ATS-friendly resume tailored to your target role, uncover missing keywords, and download a job-ready PDF instantly.',
 		href: '#how-it-works',
-		icon: (
-			<>
-				<path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z' />
-				<path d='M14 2v6h6' />
-				<path d='M8 13h8' />
-				<path d='M8 17h5' />
-				<path d='m8 9 1 1 2-2' />
-			</>
-		),
+		icon: <ResumeIcon />,
 	},
 ]
 
@@ -86,20 +77,7 @@ export default function Features() {
 
 								{/* Icon */}
 								<div className='mb-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-indigo-400/20 bg-indigo-500/10 text-indigo-400 transition-colors duration-300 group-hover:bg-indigo-500/20 sm:mb-0 sm:h-11 sm:w-11'>
-									<svg
-										xmlns='http://www.w3.org/2000/svg'
-										width='22'
-										height='22'
-										viewBox='0 0 24 24'
-										fill='none'
-										stroke='currentColor'
-										strokeWidth='1.7'
-										strokeLinecap='round'
-										strokeLinejoin='round'
-										aria-hidden='true'
-									>
-										{feature.icon}
-									</svg>
+									{feature.icon}
 								</div>
 
 								{/* Content */}
@@ -121,22 +99,7 @@ export default function Features() {
 										className='mt-3 inline-flex w-fit items-center gap-2 text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400'
 									>
 										Learn More
-										<svg
-											xmlns='http://www.w3.org/2000/svg'
-											width='15'
-											height='15'
-											viewBox='0 0 24 24'
-											fill='none'
-											stroke='currentColor'
-											strokeWidth='2'
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											aria-hidden='true'
-											className='transition-transform duration-200 group-hover:translate-x-1'
-										>
-											<path d='M5 12h14' />
-											<path d='m12 5 7 7-7 7' />
-										</svg>
+										<ArrowRightIcon />
 									</a>
 								</div>
 							</article>

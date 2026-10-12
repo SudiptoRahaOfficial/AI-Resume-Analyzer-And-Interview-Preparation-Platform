@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
 
 export default function Hero() {
 	return (
@@ -48,21 +49,7 @@ export default function Hero() {
 							className='inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:w-auto'
 						>
 							Start Your Preparation
-							<svg
-								xmlns='http://www.w3.org/2000/svg'
-								width='18'
-								height='18'
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='2'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-								aria-hidden='true'
-							>
-								<path d='M5 12h14' />
-								<path d='m12 5 7 7-7 7' />
-							</svg>
+							<ArrowRightIcon />
 						</Link>
 
 						<Link

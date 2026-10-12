@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
 
 export default function Contact() {
 	const [formData, setFormData] = useState({
@@ -347,19 +348,7 @@ export default function Contact() {
 									className='group inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-indigo-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition duration-200 hover:bg-indigo-400 hover:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-slate-950 sm:w-auto cursor-pointer'
 								>
 									Send Message
-									<svg
-										viewBox='0 0 24 24'
-										fill='none'
-										stroke='currentColor'
-										strokeWidth='1.8'
-										strokeLinecap='round'
-										strokeLinejoin='round'
-										aria-hidden='true'
-										className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-1'
-									>
-										<path d='M5 12h14' />
-										<path d='m12 5 7 7-7 7' />
-									</svg>
+									<ArrowRightIcon />
 								</button>
 
 								<p className='mt-4 text-xs leading-5 text-slate-500'>

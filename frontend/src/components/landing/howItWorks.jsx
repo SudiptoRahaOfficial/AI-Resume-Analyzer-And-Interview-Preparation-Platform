@@ -1,55 +1,32 @@
 'use client'
 
+import UploadIcon from '@/components/common/UploadIcon'
+import SelfDescriptionIcon from '@/components/common/SelfDescriptionIcon'
+import JobDescriptionIcon from '@/components/common/JobDescriptionIcon'
+import InterviewIcon from '@/components/common/InterviewIcon'
+import ResumeIcon from '@/components/common/ResumeIcon'
+
 const steps = [
 	{
 		number: '01',
 		title: 'Upload Your Resume',
 		description:
 			'Share your current resume in PDF format so AI can understand your experience, education, technical skills, and professional background.',
-		icon: (
-			<>
-				<path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-				<path d='m17 8-5-5-5 5' />
-				<path d='M12 3v12' />
-			</>
-		),
+		icon: <UploadIcon />,
 	},
 	{
 		number: '02',
 		title: 'Describe Yourself',
 		description:
 			'Tell us about your background, strengths, career goals, and relevant experience. Add context that may not be fully captured in your resume.',
-		icon: (
-			<>
-				<circle
-					cx='12'
-					cy='8'
-					r='4'
-				/>
-				<path d='M5 21v-2a7 7 0 0 1 14 0v2' />
-				<path d='m16 11 2 2 4-4' />
-			</>
-		),
+		icon: <SelfDescriptionIcon />,
 	},
 	{
 		number: '03',
 		title: 'Add Your Target Job',
 		description:
 			'Paste the job description for the role you want. AI uses its requirements to understand the skills, qualifications, and experience the employer expects.',
-		icon: (
-			<>
-				<rect
-					x='3'
-					y='4'
-					width='18'
-					height='16'
-					rx='2'
-				/>
-				<path d='M7 8h10' />
-				<path d='M7 12h10' />
-				<path d='M7 16h6' />
-			</>
-		),
+		icon: <JobDescriptionIcon />,
 	},
 ]
 
@@ -83,12 +60,7 @@ const outcomes = [
 					'Follow a day-by-day roadmap to focus your preparation effectively.',
 			},
 		],
-		icon: (
-			<>
-				<path d='M12 3 4 7v5c0 5 3.4 7.9 8 9 4.6-1.1 8-4 8-9V7l-8-4Z' />
-				<path d='m9 12 2 2 4-4' />
-			</>
-		),
+		icon: <InterviewIcon />,
 	},
 	{
 		id: 'resume',
@@ -119,15 +91,7 @@ const outcomes = [
 					'Export your optimized resume as a PDF for job applications.',
 			},
 		],
-		icon: (
-			<>
-				<path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z' />
-				<path d='M14 2v6h6' />
-				<path d='M8 13h8' />
-				<path d='M8 17h5' />
-				<path d='m8 9 1 1 2-2' />
-			</>
-		),
+		icon: <ResumeIcon />,
 	},
 ]
 
@@ -206,7 +170,7 @@ export default function HowItWorks() {
 									{/* Step icon */}
 									<div className='mb-5 flex items-center justify-between'>
 										<div className='flex h-11 w-11 items-center justify-center rounded-lg border border-indigo-400/20 bg-indigo-500/10 text-indigo-400 transition-colors duration-300 group-hover:bg-indigo-500/20'>
-											<Icon>{step.icon}</Icon>
+											{step.icon}
 										</div>
 
 										<span className='text-sm font-semibold tracking-widest text-slate-600 transition-colors group-hover:text-indigo-400'>
@@ -254,7 +218,7 @@ export default function HowItWorks() {
 								{/* Outcome heading */}
 								<div className='mb-5 flex items-start gap-3'>
 									<div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-indigo-400/20 bg-indigo-500/10 text-indigo-400'>
-										<Icon>{outcome.icon}</Icon>
+										{outcome.icon}
 									</div>
 
 									<div className='min-w-0 flex-1'>

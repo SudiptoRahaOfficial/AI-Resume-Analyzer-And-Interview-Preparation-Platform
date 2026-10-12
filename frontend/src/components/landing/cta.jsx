@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import ArrowRightIcon from '@/components/common/ArrowRightIcon'
 
 export default function CTA() {
 	return (
@@ -64,21 +65,7 @@ export default function CTA() {
 								className='inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 sm:w-auto'
 							>
 								Get Started for Free
-								<svg
-									xmlns='http://www.w3.org/2000/svg'
-									width='17'
-									height='17'
-									viewBox='0 0 24 24'
-									fill='none'
-									stroke='currentColor'
-									strokeWidth='2'
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									aria-hidden='true'
-								>
-									<path d='M5 12h14' />
-									<path d='m12 5 7 7-7 7' />
-								</svg>
+								<ArrowRightIcon />
 							</Link>
 
 							<p className='text-center text-xs leading-5 text-slate-500 sm:text-left'>
