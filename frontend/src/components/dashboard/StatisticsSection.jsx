@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import DashboardIcon from './DashboardIcon'
+import DashboardIcon from './icon'
 import StatCard from './StatCard'
 
 const stats = [

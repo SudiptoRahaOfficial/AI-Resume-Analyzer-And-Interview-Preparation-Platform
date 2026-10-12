@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-import DashboardSidebar from './DashboardSidebar'
-import DashboardHeader from './DashboardHeader'
+import DashboardSidebar from './sidebar'
+import DashboardHeader from './header'
 
 export default function DashboardLayout({
 	children,

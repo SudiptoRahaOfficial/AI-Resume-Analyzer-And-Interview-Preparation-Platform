@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import DashboardIcon from './DashboardIcon'
-import DashboardBrand from './DashboardBrand'
+import DashboardIcon from './icon'
+import DashboardBrand from './brand'
 
 const dashboardNavigation = [
 	{

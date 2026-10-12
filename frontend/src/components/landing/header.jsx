@@ -25,7 +25,7 @@ export default function Header() {
 						href='/'
 						onClick={closeMenu}
 						aria-label='ResumeAI home'
-						className='inline-flex shrink-0 items-center gap-2.5 text-white'
+						className='inline-flex shrink-0 items-center text-white'
 					>
 						<span className='text-xl font-bold tracking-tight'>
 							Resume<span className='text-indigo-400'>AI</span>
