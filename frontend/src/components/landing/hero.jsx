@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import ArrowRightIcon from '@/components/common/ArrowRightIcon'
+import ArrowRightIcon from '@/components/shared/ArrowRightIcon'
 
 export default function Hero() {
 	return (

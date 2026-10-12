@@ -1,8 +1,8 @@
 'use client'
 
-import InterviewIcon from '@/components/common/InterviewIcon'
-import ResumeIcon from '@/components/common/ResumeIcon'
-import ArrowRightIcon from '@/components/common/ArrowRightIcon'
+import InterviewIcon from '@/components/shared/InterviewIcon'
+import ResumeIcon from '@/components/shared/ResumeIcon'
+import ArrowRightIcon from '@/components/shared/ArrowRightIcon'
 
 const features = [
 	{

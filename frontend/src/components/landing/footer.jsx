@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import ArrowRightIcon from '@/components/common/ArrowRightIcon'
-import ArrowUpIcon from '@/components/common/ArrowUpIcon'
+import ArrowRightIcon from '@/components/shared/ArrowRightIcon'
+import ArrowUpIcon from '@/components/shared/ArrowUpIcon'
 
 const footerGroups = [
 	{

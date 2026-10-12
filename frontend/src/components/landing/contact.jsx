@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ArrowRightIcon from '@/components/common/ArrowRightIcon'
+import ArrowRightIcon from '@/components/shared/ArrowRightIcon'
 
 export default function Contact() {
 	const [formData, setFormData] = useState({
