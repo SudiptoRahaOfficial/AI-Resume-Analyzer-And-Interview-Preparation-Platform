@@ -13,7 +13,7 @@ const aiTools = [
 		points: [
 			'Technical and behavioral questions',
 			'Personalized skill gap analysis',
-			'Day-by-day 7-day preparation plan',
+			'Day-by-day preparation plan',
 		],
 	},
 	{

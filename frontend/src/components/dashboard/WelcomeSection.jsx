@@ -25,7 +25,7 @@ export default function WelcomeSection() {
 						Your AI career assistant
 					</div>
 
-					<h1 className='text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl'>
+					<h1 className='text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl'>
 						Your next opportunity
 						<br className='hidden sm:block' /> starts with{' '}
 						<span className='bg-linear-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent'>
@@ -33,7 +33,7 @@ export default function WelcomeSection() {
 						</span>
 					</h1>
 
-					<p className='mt-3 max-w-xl text-sm leading-6 text-slate-400 sm:text-base sm:leading-7'>
+					<p className='mt-3 max-w-xl text-xs leading-6 text-slate-400'>
 						Analyze your resume, identify skill gaps, and prepare
 						for your next interview with personalized AI guidance.
 					</p>
@@ -42,7 +42,7 @@ export default function WelcomeSection() {
 				<div className='flex shrink-0 flex-col gap-3 sm:flex-row'>
 					<Link
 						href='/interview-preparation'
-						className='inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/30 transition-all hover:bg-indigo-400'
+						className='inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-indigo-950/30 transition-all hover:bg-indigo-400'
 					>
 						<DashboardIcon
 							name='message'
@@ -57,7 +57,7 @@ export default function WelcomeSection() {
 
 					<Link
 						href='/resume-optimization'
-						className='inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-950/40 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-600 hover:bg-slate-800/60'
+						className='inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-950/40 px-4 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:border-slate-600 hover:bg-slate-800/60'
 					>
 						<DashboardIcon
 							name='file'

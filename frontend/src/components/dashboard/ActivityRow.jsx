@@ -40,7 +40,7 @@ export default function ActivityRow({ activity }) {
 				</span>
 
 				<p className='mt-1.5 text-xs text-slate-500'>
-					Score{' '}
+					{activity.scoreLabel || 'Score'}{' '}
 					<span className='font-semibold text-slate-300'>
 						{activity.score}
 					</span>

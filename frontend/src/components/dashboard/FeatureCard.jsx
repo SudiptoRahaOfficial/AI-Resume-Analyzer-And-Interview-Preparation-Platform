@@ -51,11 +51,11 @@ export default function FeatureCard({
 					</span>
 				</div>
 
-				<h3 className='text-lg font-semibold tracking-tight text-white sm:text-xl'>
+				<h3 className='text-sm font-semibold tracking-tight text-white'>
 					{title}
 				</h3>
 
-				<p className='mt-2 text-sm leading-6 text-slate-400'>
+				<p className='mt-2 text-xs leading-6 text-slate-400'>
 					{description}
 				</p>
 
@@ -63,7 +63,7 @@ export default function FeatureCard({
 					{points.map((point) => (
 						<li
 							key={point}
-							className='flex items-center gap-2.5 text-xs text-slate-300 sm:text-sm'
+							className='flex items-center gap-2.5 text-xs text-slate-300'
 						>
 							<span
 								className={`h-1.5 w-1.5 shrink-0 rounded-full ${style.dot}`}
@@ -76,7 +76,7 @@ export default function FeatureCard({
 
 				<Link
 					href={href}
-					className={`mt-6 inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-lg border px-4 py-2.5 text-sm font-semibold transition-all ${style.button}`}
+					className={`mt-6 inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-lg border px-4 py-2.5 text-xs font-semibold transition-all ${style.button}`}
 				>
 					Get started
 					<DashboardIcon

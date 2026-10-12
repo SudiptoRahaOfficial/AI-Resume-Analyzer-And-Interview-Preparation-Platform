@@ -23,9 +23,14 @@ const dashboardNavigation = [
 		icon: 'file',
 	},
 	{
-		label: 'My Reports',
-		href: '/reports',
-		icon: 'chart',
+		label: 'Interview Preparation Reports',
+		href: '/interview-preparation-reports',
+		icon: 'clipboard',
+	},
+	{
+		label: 'Resume Optimization Reports',
+		href: '/resume-optimization-reports',
+		icon: 'file-check',
 	},
 ]
 
@@ -82,7 +87,7 @@ export default function DashboardSidebar({ open, onClose }) {
 									href={item.href}
 									onClick={onClose}
 									aria-current={active ? 'page' : undefined}
-									className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+									className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-all ${
 										active
 											? 'border border-indigo-400/15 bg-indigo-500/10 text-indigo-300'
 											: 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
@@ -121,7 +126,7 @@ export default function DashboardSidebar({ open, onClose }) {
 						<Link
 							href='/profile'
 							onClick={onClose}
-							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
+							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
 						>
 							<DashboardIcon
 								name='user'
@@ -134,7 +139,7 @@ export default function DashboardSidebar({ open, onClose }) {
 						<Link
 							href='/settings'
 							onClick={onClose}
-							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
+							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
 						>
 							<DashboardIcon
 								name='settings'

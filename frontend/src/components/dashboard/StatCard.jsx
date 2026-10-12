@@ -23,7 +23,7 @@ export default function StatCard({ stat }) {
 
 			<div className='relative'>
 				<div className='flex items-center justify-between gap-3'>
-					<p className='text-xs font-medium text-slate-400 sm:text-sm'>
+					<p className='text-xs font-medium text-slate-400'>
 						{stat.label}
 					</p>
 
@@ -37,7 +37,7 @@ export default function StatCard({ stat }) {
 					</div>
 				</div>
 
-				<p className='mt-4 text-3xl font-bold tracking-tight text-white sm:text-[2rem]'>
+				<p className='mt-4 text-2xl font-bold tracking-tight text-white'>
 					{stat.value}
 				</p>
 
