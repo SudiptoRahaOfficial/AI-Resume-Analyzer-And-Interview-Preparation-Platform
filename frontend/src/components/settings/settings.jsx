@@ -348,7 +348,7 @@ export default function Settings() {
 				{/* Page heading */}
 				<header className='mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
 					<div>
-						<div className='mb-2 flex items-center gap-2 text-xs text-slate-500'>
+						<div className='mb-2 flex items-center gap-2 text-sm text-slate-500'>
 							<Link
 								href='/dashboard'
 								className='transition-colors hover:text-slate-300'
@@ -359,7 +359,7 @@ export default function Settings() {
 								name='chevron'
 								size={12}
 							/>
-							<span className='text-indigo-300'>Settings</span>
+							<span className='text-indigo-400'>Settings</span>
 						</div>
 
 						<h1 className='text-2xl font-semibold tracking-tight text-white sm:text-3xl'>

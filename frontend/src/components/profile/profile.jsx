@@ -1,5 +1,25 @@
 import Link from 'next/link'
 
+function ChevronIcon({ size = 18, className = '' }) {
+	return (
+		<svg
+			xmlns='http://www.w3.org/2000/svg'
+			width={size}
+			height={size}
+			viewBox='0 0 24 24'
+			fill='none'
+			stroke='currentColor'
+			strokeWidth={1.7}
+			strokeLinecap='round'
+			strokeLinejoin='round'
+			className={className}
+			aria-hidden={true}
+		>
+			<path d='m9 18 6-6-6-6' />
+		</svg>
+	)
+}
+
 export default function Profile() {
 	const profile = {
 		firstName: 'Sudipto',
@@ -16,11 +36,11 @@ export default function Profile() {
 		socialLinks: [
 			{
 				platform: 'GitHub',
-				url: 'https://github.com/example',
+				url: 'https://github.com',
 			},
 			{
 				platform: 'LinkedIn',
-				url: 'https://linkedin.com/in/example',
+				url: 'https://linkedin.com',
 			},
 		],
 	}
@@ -30,9 +50,16 @@ export default function Profile() {
 			<div className='mx-auto max-w-5xl'>
 				<div className='mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end'>
 					<div>
-						<p className='mb-2 text-xs font-medium uppercase tracking-wider text-indigo-300'>
-							ACCOUNT
-						</p>
+						<div className='mb-2 flex items-center gap-2 text-sm text-slate-500'>
+							<Link
+								href='/dashboard'
+								className='transition-colors hover:text-slate-300'
+							>
+								Dashboard
+							</Link>
+							<ChevronIcon />
+							<span className='text-indigo-400'>Profile</span>
+						</div>
 
 						<h1 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
 							My profile
@@ -44,7 +71,7 @@ export default function Profile() {
 					</div>
 
 					<Link
-						href='/profile/update'
+						href='/dashboard/profile/update-profile'
 						className='inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg border border-slate-700 bg-slate-900/60 px-4 text-xs font-semibold text-slate-200 transition-colors hover:border-indigo-400/30 hover:bg-slate-800 sm:self-auto'
 					>
 						<svg
@@ -336,18 +363,34 @@ export default function Profile() {
 					</div>
 				</div>
 
-				<div className='mt-6 flex flex-col justify-between gap-3 rounded-xl border border-slate-800/70 bg-slate-900/20 px-4 py-4 sm:flex-row sm:items-center'>
-					<p className='text-xs leading-5 text-slate-500'>
-						Keep your professional details up to date for a more
-						consistent experience across ResumeAI.
-					</p>
+				<div className='mt-6 rounded-xl border border-slate-800/70 bg-slate-900/20 px-4 py-4 sm:px-5'>
+					<div className='flex items-center justify-center gap-2'>
+						<svg
+							viewBox='0 0 24 24'
+							fill='none'
+							className='h-4 w-4 shrink-0 text-indigo-300'
+							aria-hidden='true'
+						>
+							<path
+								d='M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z'
+								stroke='currentColor'
+								strokeWidth='1.5'
+								strokeLinejoin='round'
+							/>
+							<path
+								d='m9 12 2 2 4-4'
+								stroke='currentColor'
+								strokeWidth='1.5'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+							/>
+						</svg>
 
-					<Link
-						href='/profile/update'
-						className='shrink-0 text-xs font-semibold text-indigo-300 transition-colors hover:text-indigo-200'
-					>
-						Update your profile →
-					</Link>
+						<p className='text-center text-xs leading-5 text-slate-500'>
+							Your account information is managed through your
+							ResumeAI account.
+						</p>
+					</div>
 				</div>
 			</div>
 		</main>

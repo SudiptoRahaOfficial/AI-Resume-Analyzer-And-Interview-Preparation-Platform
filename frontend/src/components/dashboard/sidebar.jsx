@@ -124,7 +124,7 @@ export default function DashboardSidebar({ open, onClose }) {
 						className='space-y-1'
 					>
 						<Link
-							href='/profile'
+							href='/dashboard/profile'
 							onClick={onClose}
 							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
 						>
@@ -137,7 +137,7 @@ export default function DashboardSidebar({ open, onClose }) {
 						</Link>
 
 						<Link
-							href='/settings'
+							href='/dashboard/settings'
 							onClick={onClose}
 							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
 						>

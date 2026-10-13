@@ -1,6 +1,3 @@
-import Link from 'next/link'
-
-import DashboardIcon from './icon'
 import StatCard from './StatCard'
 
 const stats = [
@@ -39,17 +36,6 @@ export default function StatisticsSection() {
 						A snapshot of your career preparation
 					</p>
 				</div>
-
-				<Link
-					href='/reports'
-					className='hidden items-center gap-1.5 text-xs font-medium text-indigo-300 transition-colors hover:text-indigo-200 sm:inline-flex'
-				>
-					View reports
-					<DashboardIcon
-						name='arrow'
-						size={14}
-					/>
-				</Link>
 			</div>
 
 			<div className='grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4'>

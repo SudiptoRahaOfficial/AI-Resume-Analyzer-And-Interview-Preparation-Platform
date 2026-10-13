@@ -34,7 +34,7 @@ export default function DashboardHeader({
 
 			<div className='flex items-center gap-3'>
 				<Link
-					href='/profile'
+					href='/dashboard/profile'
 					aria-label='Open profile'
 					className='flex h-9 w-9 items-center justify-center rounded-full border border-indigo-400/20 bg-indigo-500/10 text-xs font-bold text-indigo-200 transition-colors hover:bg-indigo-500/20'
 				>
