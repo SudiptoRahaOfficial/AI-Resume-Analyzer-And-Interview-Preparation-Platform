@@ -1,106 +1,246 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 
 export default function Signin() {
+	const [formData, setFormData] = useState({
+		identifier: '',
+		password: '',
+	})
+
+	const [submitted, setSubmitted] = useState(false)
+	const [showPassword, setShowPassword] = useState(false)
+
+	const handleChange = (event) => {
+		const { name, value } = event.target
+
+		setFormData((previousData) => ({
+			...previousData,
+			[name]: value,
+		}))
+	}
+
+	const handleSubmit = (event) => {
+		event.preventDefault()
+		setSubmitted(true)
+
+		if (!formData.identifier.trim() || !formData.password) {
+			return
+		}
+
+		// Connect your signin API here.
+		// After successful signin, redirect to /dashboard.
+	}
+
+	const inputClass =
+		'h-10.5 w-full rounded-lg border border-slate-700/80 bg-slate-950/60 px-3.5 text-sm text-white outline-none transition-colors placeholder:text-slate-600 hover:border-slate-600 focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-400/10'
+
+	const labelClass = 'mb-1.5 block text-xs font-medium text-slate-300'
+
 	return (
-		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030712] px-4 py-10 text-white sm:px-6'>
+		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-8 text-slate-300 sm:px-6'>
+			{/* Background glow effects */}
 			<div
 				aria-hidden='true'
-				className='pointer-events-none absolute -top-40 right-32 h-96 w-96 rounded-full bg-blue-500/[0.07] blur-[120px]'
-			/>
+				className='pointer-events-none absolute inset-0 overflow-hidden'
+			>
+				<div className='absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-500/15 blur-3xl' />
 
-			<div
-				aria-hidden='true'
-				className='pointer-events-none absolute -bottom-48 left-32 h-96 w-96 rounded-full bg-indigo-500/6 blur-[120px]'
-			/>
+				<div className='absolute right-0 top-1/3 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl' />
 
-			<div className='relative w-full max-w-md'>
-				<Link
-					href='/'
-					className='mb-8 flex items-center justify-center gap-2.5'
-				>
-					<span className='flex h-9 w-9 items-center justify-center rounded-xl border border-indigo-400/20 bg-indigo-500/10'>
-						<svg
-							viewBox='0 0 24 24'
-							fill='none'
-							className='h-5 w-5 text-indigo-300'
-							aria-hidden='true'
+				<div className='absolute bottom-0 left-0 h-72 w-72 rounded-full bg-indigo-500/5 blur-3xl' />
+			</div>
+
+			<div className='relative w-full max-w-xl'>
+				<section className='rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-7 lg:p-8'>
+					{/* Card header */}
+					<div className='mb-6 flex items-start justify-between gap-4'>
+						<div className='min-w-0'>
+							<p className='mb-2 text-xs font-semibold tracking-wider text-indigo-400'>
+								WELCOME BACK
+							</p>
+
+							<h1 className='text-xl font-semibold tracking-tight text-white sm:text-2xl'>
+								Sign in to your account
+							</h1>
+
+							<p className='mt-1.5 text-xs leading-5 text-slate-400 sm:text-sm'>
+								Continue preparing for your next career
+								opportunity.
+							</p>
+						</div>
+
+						{/* ResumeAI branding */}
+						<Link
+							href='/'
+							aria-label='ResumeAI home'
+							className='inline-flex shrink-0 items-center text-white'
 						>
-							<path
-								d='M5 18V6h4.5l5 8V6H19v12h-4.5l-5-8v8H5Z'
-								stroke='currentColor'
-								strokeWidth='1.7'
-								strokeLinejoin='round'
-							/>
-						</svg>
-					</span>
-					<span className='text-lg font-semibold tracking-tight'>
-						Resume<span className='text-indigo-300'>AI</span>
-					</span>
-				</Link>
-
-				<section className='rounded-2xl border border-slate-800/80 bg-slate-900/40 p-6 sm:p-8'>
-					<div className='mb-7'>
-						<p className='mb-3 text-xs font-medium text-indigo-300'>
-							WELCOME BACK
-						</p>
-
-						<h1 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-							Sign in to ResumeAI
-						</h1>
-
-						<p className='mt-2 text-sm leading-6 text-slate-400'>
-							Pick up where you left off and keep moving toward
-							your next career opportunity.
-						</p>
+							<span className='text-xl font-bold tracking-tight'>
+								Resume
+								<span className='text-indigo-400'>AI</span>
+							</span>
+						</Link>
 					</div>
 
-					<form className='space-y-5'>
+					{/* Signin form */}
+					<form
+						onSubmit={handleSubmit}
+						noValidate
+						className='space-y-4'
+					>
+						{/* Username or email */}
 						<div>
 							<label
 								htmlFor='identifier'
-								className='mb-2 block text-xs font-medium text-slate-300'
+								className={labelClass}
 							>
 								Username or email
 							</label>
+
 							<input
 								id='identifier'
 								name='identifier'
 								type='text'
 								autoComplete='username'
 								placeholder='Enter your username or email'
-								className='h-11 w-full rounded-lg border border-slate-700/80 bg-slate-950/60 px-3.5 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-400/10'
+								value={formData.identifier}
+								onChange={handleChange}
+								required
+								aria-invalid={
+									submitted && !formData.identifier.trim()
+								}
+								aria-describedby={
+									submitted && !formData.identifier.trim()
+										? 'identifier-error'
+										: undefined
+								}
+								className={inputClass}
 							/>
+
+							{submitted && !formData.identifier.trim() && (
+								<p
+									id='identifier-error'
+									role='alert'
+									className='mt-1.5 text-xs text-rose-400'
+								>
+									Please enter your username or email.
+								</p>
+							)}
 						</div>
 
+						{/* Password */}
 						<div>
-							<div className='mb-2 flex items-center justify-between gap-3'>
-								<label
-									htmlFor='password'
-									className='text-xs font-medium text-slate-300'
+							<label
+								htmlFor='password'
+								className={labelClass}
+							>
+								Password
+							</label>
+
+							{/* Input wrapper */}
+							<div className='relative'>
+								<input
+									id='password'
+									name='password'
+									type={showPassword ? 'text' : 'password'}
+									autoComplete='current-password'
+									placeholder='Enter your password'
+									value={formData.password}
+									onChange={handleChange}
+									required
+									aria-invalid={
+										submitted && !formData.password
+									}
+									aria-describedby={
+										submitted && !formData.password
+											? 'password-error'
+											: undefined
+									}
+									className={`${inputClass} pr-11`}
+								/>
+
+								{/* Hide/Show password button */}
+								<button
+									type='button'
+									onClick={() =>
+										setShowPassword(
+											(previousState) => !previousState,
+										)
+									}
+									aria-label={
+										showPassword
+											? 'Hide password'
+											: 'Show password'
+									}
+									aria-pressed={showPassword}
+									className='absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center rounded-r-lg text-slate-500 transition-colors hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-400 cursor-pointer'
 								>
-									Password
-								</label>
+									{showPassword ? (
+										/* Eye-off icon: password is visible */
+										<svg
+											xmlns='http://www.w3.org/2000/svg'
+											viewBox='0 0 24 24'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='1.7'
+											strokeLinecap='round'
+											strokeLinejoin='round'
+											className='h-4.5 w-4.5'
+											aria-hidden='true'
+										>
+											<path d='M3 3l18 18' />
+											<path d='M10.58 10.59a2 2 0 0 0 2.83 2.83' />
+											<path d='M9.88 5.09A10.9 10.9 0 0 1 12 4.9c5 0 8.27 4.1 9.5 7.1a11.8 11.8 0 0 1-2.16 3.2' />
+											<path d='M6.61 6.61A12.2 12.2 0 0 0 2.5 12c1.23 3 4.5 7.1 9.5 7.1a10.8 10.8 0 0 0 4.05-.78' />
+										</svg>
+									) : (
+										/* Eye icon: password is hidden */
+										<svg
+											xmlns='http://www.w3.org/2000/svg'
+											viewBox='0 0 24 24'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='1.7'
+											strokeLinecap='round'
+											strokeLinejoin='round'
+											className='h-4.5 w-4.5'
+											aria-hidden='true'
+										>
+											<path d='M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z' />
+											<circle
+												cx='12'
+												cy='12'
+												r='3'
+											/>
+										</svg>
+									)}
+								</button>
 							</div>
 
-							<input
-								id='password'
-								name='password'
-								type='password'
-								autoComplete='current-password'
-								placeholder='Enter your password'
-								className='h-11 w-full rounded-lg border border-slate-700/80 bg-slate-950/60 px-3.5 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-400/10'
-							/>
+							{/* Validation error */}
+							{submitted && !formData.password && (
+								<p
+									id='password-error'
+									role='alert'
+									className='mt-1.5 text-xs text-rose-400'
+								>
+									Please enter your password.
+								</p>
+							)}
 						</div>
 
+						{/* Submit button */}
 						<button
-							type='button'
-							className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-indigo-400'
+							type='submit'
+							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer'
 						>
 							Sign in
 							<svg
 								viewBox='0 0 24 24'
 								fill='none'
-								className='h-4 w-4'
+								className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5'
 								aria-hidden='true'
 							>
 								<path
@@ -114,21 +254,22 @@ export default function Signin() {
 						</button>
 					</form>
 
-					<div className='my-6 border-t border-slate-800/80' />
+					{/* Signup link */}
+					<div className='my-5 border-t border-slate-800/80' />
 
-					<p className='text-center text-xs text-slate-400'>
+					<p className='text-center text-xs text-slate-400 sm:text-sm'>
 						New to ResumeAI?{' '}
 						<Link
 							href='/signup'
-							className='font-medium text-indigo-300 transition-colors hover:text-indigo-200'
+							className='font-medium text-indigo-400 transition-colors hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500'
 						>
 							Create an account
 						</Link>
 					</p>
 				</section>
 
-				<p className='mt-6 text-center text-xs text-slate-600'>
-					Your next opportunity starts with better preparation.
+				<p className='mt-5 text-center text-xs text-slate-500'>
+					AI-powered preparation for your next opportunity.
 				</p>
 			</div>
 		</main>

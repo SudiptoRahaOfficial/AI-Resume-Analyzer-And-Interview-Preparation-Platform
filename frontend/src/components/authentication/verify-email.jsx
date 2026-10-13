@@ -1,111 +1,96 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 
 export default function VerifyEmail({ email = 'your registered email' }) {
+	const [otp, setOtp] = useState('')
+	const [submitted, setSubmitted] = useState(false)
+
+	const handleSubmit = (event) => {
+		event.preventDefault()
+		setSubmitted(true)
+
+		if (!/^\d{6}$/.test(otp)) {
+			return
+		}
+
+		// Connect your email verification API here.
+		// Send the email and OTP to your backend.
+		// After successful verification, redirect to /signin.
+	}
+
+	const handleResend = () => {
+		// Connect your resend verification OTP API here.
+	}
+
 	return (
-		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030712] px-4 py-10 text-white sm:px-6'>
+		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-8 text-slate-300 sm:px-6'>
+			{/* Background glow effects */}
 			<div
 				aria-hidden='true'
-				className='pointer-events-none absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-500/8 blur-[120px]'
-			/>
+				className='pointer-events-none absolute inset-0 overflow-hidden'
+			>
+				<div className='absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-500/15 blur-3xl' />
 
-			<div className='relative w-full max-w-md'>
-				<Link
-					href='/'
-					className='mb-8 flex items-center justify-center gap-2.5'
-				>
-					<span className='flex h-9 w-9 items-center justify-center rounded-xl border border-indigo-400/20 bg-indigo-500/10'>
-						<svg
-							viewBox='0 0 24 24'
-							fill='none'
-							className='h-5 w-5 text-indigo-300'
-							aria-hidden='true'
-						>
-							<path
-								d='M5 18V6h4.5l5 8V6H19v12h-4.5l-5-8v8H5Z'
-								stroke='currentColor'
-								strokeWidth='1.7'
-								strokeLinejoin='round'
-							/>
-						</svg>
-					</span>
-					<span className='text-lg font-semibold tracking-tight'>
-						Resume<span className='text-indigo-300'>AI</span>
-					</span>
-				</Link>
+				<div className='absolute right-0 top-1/3 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl' />
 
-				<section className='rounded-2xl border border-slate-800/80 bg-slate-900/40 p-6 sm:p-8'>
-					<div className='mb-7 flex h-12 w-12 items-center justify-center rounded-xl border border-indigo-400/20 bg-indigo-500/10 text-indigo-300'>
-						<svg
-							viewBox='0 0 24 24'
-							fill='none'
-							className='h-6 w-6'
-							aria-hidden='true'
+				<div className='absolute bottom-0 left-0 h-72 w-72 rounded-full bg-indigo-500/5 blur-3xl' />
+			</div>
+
+			<div className='relative w-full max-w-xl'>
+				<section className='rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-7 lg:p-8'>
+					{/* Card header */}
+					<div className='mb-6 flex items-start justify-between gap-4'>
+						<div className='min-w-0'>
+							<p className='mb-2 text-xs font-semibold tracking-wider text-indigo-400'>
+								EMAIL VERIFICATION
+							</p>
+
+							<h1 className='text-xl font-semibold tracking-tight text-white sm:text-2xl'>
+								Verify your email
+							</h1>
+
+							<p className='mt-1.5 text-xs leading-5 text-slate-400 sm:text-sm'>
+								Confirm your email address to get started.
+							</p>
+						</div>
+
+						{/* ResumeAI branding */}
+						<Link
+							href='/'
+							aria-label='ResumeAI home'
+							className='inline-flex shrink-0 items-center text-white'
 						>
-							<rect
-								x='3'
-								y='5'
-								width='18'
-								height='14'
-								rx='2.5'
-								stroke='currentColor'
-								strokeWidth='1.5'
-							/>
-							<path
-								d='m4 7 8 6 8-6'
-								stroke='currentColor'
-								strokeWidth='1.5'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-							/>
-							<circle
-								cx='18'
-								cy='17'
-								r='4'
-								fill='#0f172a'
-								stroke='currentColor'
-								strokeWidth='1.5'
-							/>
-							<path
-								d='m16.5 17 1 1 2-2'
-								stroke='currentColor'
-								strokeWidth='1.2'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-							/>
-						</svg>
+							<span className='text-xl font-bold tracking-tight'>
+								Resume
+								<span className='text-indigo-400'>AI</span>
+							</span>
+						</Link>
 					</div>
 
-					<div className='mb-7'>
-						<p className='mb-3 text-xs font-medium text-indigo-300'>
-							EMAIL VERIFICATION
-						</p>
-
-						<h1 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-							Check your inbox
-						</h1>
-
-						<p className='mt-2 text-sm leading-6 text-slate-400'>
-							We’ve sent a verification code to confirm your email
-							address and secure your account.
-						</p>
-					</div>
-
-					<div className='mb-6 rounded-xl border border-slate-800/80 bg-slate-950/50 p-4'>
-						<p className='mb-1 text-xs text-slate-500'>
+					{/* Email information */}
+					<div className='mb-4'>
+						<p className='text-sm text-slate-300 mb-1.5'>
 							Verification code sent to
 						</p>
-						<p className='break-all text-sm font-medium text-slate-200'>
+						<p className='text-sm font-mono text-slate-500 text-center rounded-lg border border-slate-800/80 bg-slate-950/50 p-3.5'>
 							{email}
 						</p>
 					</div>
 
-					<form className='space-y-5'>
+					{/* Verification form */}
+					<form
+						onSubmit={handleSubmit}
+						noValidate
+						className='space-y-4'
+					>
 						<div>
 							<label
 								htmlFor='otp'
-								className='mb-3 block text-xs font-medium text-slate-300'
+								className='mb-1.5 block text-sm text-slate-300'
 							>
-								Enter your 6-digit code
+								6-digit verification code
 							</label>
 
 							<input
@@ -114,16 +99,45 @@ export default function VerifyEmail({ email = 'your registered email' }) {
 								type='text'
 								inputMode='numeric'
 								autoComplete='one-time-code'
+								pattern='[0-9]{6}'
 								maxLength={6}
 								placeholder='000000'
-								className='h-14 w-full rounded-lg border border-slate-700/80 bg-slate-950/60 px-4 text-center font-mono text-2xl font-semibold tracking-[0.65em] text-white outline-none transition placeholder:text-slate-700 focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-400/10'
+								value={otp}
+								onChange={(event) => {
+									setOtp(
+										event.target.value
+											.replace(/\D/g, '')
+											.slice(0, 6),
+									)
+								}}
+								required
+								aria-invalid={submitted && !/^\d{6}$/.test(otp)}
+								aria-describedby={
+									submitted && !/^\d{6}$/.test(otp)
+										? 'otp-error otp-help'
+										: 'otp-help'
+								}
+								className='w-full h-12 rounded-lg border border-slate-700/80 bg-slate-950/60 text-center text-xl font-semibold tracking-[0.30em] text-white outline-none transition-colors placeholder:text-slate-600 hover:border-slate-600 focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-400/10'
 							/>
 
-							<div className='mt-3 flex items-start gap-2 text-xs leading-5 text-slate-500'>
+							{submitted && !/^\d{6}$/.test(otp) && (
+								<p
+									id='otp-error'
+									role='alert'
+									className='mt-1.5 text-xs text-rose-400'
+								>
+									Enter a valid six-digit verification code.
+								</p>
+							)}
+
+							<div
+								id='otp-help'
+								className='mt-3 flex items-start gap-2.5 rounded-lg border border-indigo-400/10 bg-indigo-500/5 px-3.5 py-3'
+							>
 								<svg
 									viewBox='0 0 24 24'
 									fill='none'
-									className='mt-0.5 h-4 w-4 shrink-0'
+									className='mt-0.5 h-4 w-4 shrink-0 text-indigo-300'
 									aria-hidden='true'
 								>
 									<circle
@@ -133,6 +147,7 @@ export default function VerifyEmail({ email = 'your registered email' }) {
 										stroke='currentColor'
 										strokeWidth='1.5'
 									/>
+
 									<path
 										d='M12 7v5l3 2'
 										stroke='currentColor'
@@ -140,22 +155,24 @@ export default function VerifyEmail({ email = 'your registered email' }) {
 										strokeLinecap='round'
 									/>
 								</svg>
-								<p>
-									This code expires in 3 minutes. For your
-									security, never share it with anyone.
+
+								<p className='text-xs leading-5 text-slate-400'>
+									Your verification code expires in 1 minutes.
+									Never share it with anyone.
 								</p>
 							</div>
 						</div>
 
+						{/* Verify button */}
 						<button
-							type='button'
-							className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-indigo-400'
+							type='submit'
+							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer'
 						>
 							Verify email
 							<svg
 								viewBox='0 0 24 24'
 								fill='none'
-								className='h-4 w-4'
+								className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5'
 								aria-hidden='true'
 							>
 								<path
@@ -169,49 +186,39 @@ export default function VerifyEmail({ email = 'your registered email' }) {
 						</button>
 					</form>
 
-					<div className='my-6 border-t border-slate-800/80' />
+					{/* Resend verification */}
+					<div className='my-5 border-t border-slate-800/80' />
 
-					<div className='space-y-3 text-center'>
-						<p className='text-xs text-slate-400'>
-							Didn’t receive the email?
-						</p>
+					<div className='flex items-center justify-between'>
+						{/* resend verification code */}
+						<div className='flex items-center justify-center gap-1'>
+							<p className='text-xs text-slate-400'>
+								Didn't receive the email?
+							</p>
 
-						<button
-							type='button'
-							className='text-xs font-medium text-indigo-300 transition-colors hover:text-indigo-200'
-						>
-							Resend verification code
-						</button>
+							<button
+								type='button'
+								onClick={handleResend}
+								className='text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer'
+							>
+								Resend verification code
+							</button>
+						</div>
 
-						<p className='text-xs leading-5 text-slate-600'>
-							Check your spam folder if the email isn’t in your
-							inbox.
-						</p>
+						{/* Back to signup */}
+						<div className=''>
+							<Link
+								href='/signup'
+								className='text-sm text-slate-400 transition-colors hover:text-white'
+							>
+								Back to signup
+							</Link>
+						</div>
 					</div>
 				</section>
-
-				<div className='mt-6 text-center'>
-					<Link
-						href='/signin'
-						className='inline-flex items-center gap-2 text-xs text-slate-400 transition-colors hover:text-white'
-					>
-						<svg
-							viewBox='0 0 24 24'
-							fill='none'
-							className='h-4 w-4'
-							aria-hidden='true'
-						>
-							<path
-								d='M19 12H5m7 7-7-7 7-7'
-								stroke='currentColor'
-								strokeWidth='1.6'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-							/>
-						</svg>
-						Back to sign in
-					</Link>
-				</div>
+				<p className='mt-5 text-center text-xs text-slate-500'>
+					AI-powered preparation for your next opportunity.
+				</p>
 			</div>
 		</main>
 	)
