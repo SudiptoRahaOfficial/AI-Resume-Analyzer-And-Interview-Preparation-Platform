@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import DashboardIcon from './icon'
+import DashboardIcon from '../../shared/icon'
 
 export default function ActivityRow({ activity }) {
 	return (

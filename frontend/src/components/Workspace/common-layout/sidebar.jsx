@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import DashboardIcon from './icon'
-import DashboardBrand from './brand'
+import Icon from '../../shared/icon'
+import Brand from './brand'
 
-const dashboardNavigation = [
+const navigation = [
 	{
 		label: 'Overview',
 		href: '/dashboard',
@@ -34,7 +34,7 @@ const dashboardNavigation = [
 	},
 ]
 
-export default function DashboardSidebar({ open, onClose }) {
+export default function Sidebar({ open, onClose }) {
 	const pathname = usePathname()
 
 	return (
@@ -54,7 +54,7 @@ export default function DashboardSidebar({ open, onClose }) {
 				}`}
 			>
 				<div className='flex h-18 shrink-0 items-center justify-between border-b border-slate-800/70 px-5'>
-					<DashboardBrand onClick={onClose} />
+					<Brand onClick={onClose} />
 
 					<button
 						type='button'
@@ -62,7 +62,7 @@ export default function DashboardSidebar({ open, onClose }) {
 						aria-label='Close navigation'
 						className='rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white lg:hidden'
 					>
-						<DashboardIcon
+						<Icon
 							name='close'
 							size={19}
 						/>
@@ -78,7 +78,7 @@ export default function DashboardSidebar({ open, onClose }) {
 						aria-label='Main navigation'
 						className='space-y-1'
 					>
-						{dashboardNavigation.map((item) => {
+						{navigation.map((item) => {
 							const active = pathname === item.href
 
 							return (
@@ -93,7 +93,7 @@ export default function DashboardSidebar({ open, onClose }) {
 											: 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
 									}`}
 								>
-									<DashboardIcon
+									<Icon
 										name={item.icon}
 										size={19}
 										className={
@@ -128,7 +128,7 @@ export default function DashboardSidebar({ open, onClose }) {
 							onClick={onClose}
 							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
 						>
-							<DashboardIcon
+							<Icon
 								name='user'
 								size={19}
 								className='text-slate-500 group-hover:text-slate-300'
@@ -141,7 +141,7 @@ export default function DashboardSidebar({ open, onClose }) {
 							onClick={onClose}
 							className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white'
 						>
-							<DashboardIcon
+							<Icon
 								name='settings'
 								size={19}
 								className='text-slate-500 group-hover:text-slate-300'

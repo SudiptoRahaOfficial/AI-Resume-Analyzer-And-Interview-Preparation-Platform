@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export default function DashboardFooter() {
+export default function Footer() {
 	// Current year calculation
 	const [year, setYear] = useState(null)
 

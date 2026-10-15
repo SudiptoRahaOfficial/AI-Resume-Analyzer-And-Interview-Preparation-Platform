@@ -2,14 +2,11 @@
 
 import { useState } from 'react'
 
-import DashboardSidebar from './sidebar'
-import DashboardHeader from './header'
+import Sidebar from './sidebar'
+import Header from './header'
+import Footer from './footer'
 
-export default function DashboardLayout({
-	children,
-	title = 'Overview',
-	description = 'Your career development workspace',
-}) {
+export default function Layout({ children, title, description }) {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
 
 	function closeSidebar() {
@@ -18,20 +15,21 @@ export default function DashboardLayout({
 
 	return (
 		<div className='min-h-screen bg-[#030712] text-slate-300 selection:bg-indigo-500/30'>
-			<DashboardSidebar
+			<Sidebar
 				open={sidebarOpen}
 				onClose={closeSidebar}
 			/>
 
 			<div className='min-h-screen lg:pl-65'>
-				<DashboardHeader
+				<Header
 					title={title}
 					description={description}
 					onMenuClick={() => setSidebarOpen(true)}
 				/>
 
-				<main className='mx-auto w-full max-w-360 px-4 py-7 sm:px-6 sm:py-9 lg:px-8 lg:py-10'>
+				<main className='mx-auto w-full max-w-360 px-4 sm:px-6 lg:px-8 py-7 sm:py-9 lg:py-10'>
 					{children}
+					<Footer />
 				</main>
 			</div>
 		</div>

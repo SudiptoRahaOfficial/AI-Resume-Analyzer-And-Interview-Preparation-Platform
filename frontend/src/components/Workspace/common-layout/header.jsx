@@ -1,12 +1,11 @@
 import Link from 'next/link'
+import Icon from '../../shared/icon'
 
-import DashboardIcon from './icon'
-
-export default function DashboardHeader({
+export default function Header({
 	onMenuClick,
-	title = 'Overview',
+	title = 'Workspace',
 	description = 'Your career development workspace',
-	userInitials = 'SR',
+	userInitials = 'DP',
 }) {
 	return (
 		<header className='sticky top-0 z-30 flex h-18 items-center justify-between border-b border-slate-800/80 bg-[#030712]/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8'>
@@ -17,7 +16,7 @@ export default function DashboardHeader({
 					onClick={onMenuClick}
 					className='rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-slate-300 transition-colors hover:bg-slate-800 lg:hidden'
 				>
-					<DashboardIcon
+					<Icon
 						name='menu'
 						size={20}
 					/>
@@ -47,7 +46,7 @@ export default function DashboardHeader({
 					</p>
 
 					<p className='mt-0.5 text-[10px] text-slate-500'>
-						Career dashboard
+						Career Dashboard
 					</p>
 				</div>
 			</div>

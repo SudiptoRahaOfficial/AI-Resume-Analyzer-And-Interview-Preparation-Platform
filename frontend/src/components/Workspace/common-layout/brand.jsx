@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export default function DashboardBrand({ onClick }) {
+export default function Brand({ onClick }) {
 	return (
 		<Link
 			href='/dashboard'

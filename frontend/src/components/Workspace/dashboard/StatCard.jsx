@@ -1,4 +1,4 @@
-import DashboardIcon from './icon'
+import DashboardIcon from '../../shared/icon'
 
 const styles = {
 	indigo: {

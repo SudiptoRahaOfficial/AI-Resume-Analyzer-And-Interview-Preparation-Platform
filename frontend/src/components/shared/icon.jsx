@@ -180,7 +180,7 @@ const iconPaths = {
 	check: <path d='m5 12 4 4L19 6' />,
 }
 
-export default function DashboardIcon({ name, size = 20, className = '' }) {
+export default function Icon({ name, size = 20, className = '' }) {
 	const icon = iconPaths[name]
 
 	if (!icon) {

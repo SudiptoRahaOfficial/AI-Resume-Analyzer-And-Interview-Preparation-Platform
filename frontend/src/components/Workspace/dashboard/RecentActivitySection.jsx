@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import DashboardIcon from './icon'
+import DashboardIcon from '../../shared/icon'
 import ActivityRow from './ActivityRow'
 
 const interviewActivities = [
@@ -139,10 +139,7 @@ function ActivitySection({
 
 export default function RecentActivitySection() {
 	return (
-		<section
-			aria-labelledby='activity-heading'
-			className='mb-9'
-		>
+		<section aria-labelledby='activity-heading'>
 			{/* Main section heading */}
 			<div className='mb-4 flex items-end justify-between gap-4'>
 				<div>
@@ -160,7 +157,7 @@ export default function RecentActivitySection() {
 			</div>
 
 			{/* Two report sections side by side */}
-			<div className='grid grid-cols-1 items-start gap-5 lg:grid-cols-2'>
+			<div className='grid grid-cols-1 items-start lg:grid-cols-2 gap-3 sm:gap-4'>
 				<ActivitySection
 					title='Recent Interview Preparation'
 					description='Your latest interview reports'
