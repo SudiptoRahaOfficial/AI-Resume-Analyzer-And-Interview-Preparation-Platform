@@ -207,6 +207,46 @@ const iconPaths = {
 		</>
 	),
 
+	search: (
+		<>
+			<circle
+				cx='11'
+				cy='11'
+				r='8'
+			/>
+			<path d='m21 21-4.35-4.35' />
+		</>
+	),
+
+	'sliders-horizontal': (
+		<>
+			<path d='M4 21v-7' />
+			<path d='M4 10V3' />
+			<path d='M12 21v-9' />
+			<path d='M12 8V3' />
+			<path d='M20 21v-5' />
+			<path d='M20 12V3' />
+			<path d='M2 14h4' />
+			<path d='M10 8h4' />
+			<path d='M18 16h4' />
+		</>
+	),
+
+	'chevron-down': <path d='m6 9 6 6 6-6' />,
+
+	'search-x': (
+		<>
+			<circle
+				cx='11'
+				cy='11'
+				r='8'
+			/>
+			<path d='m21 21-4.35-4.35' />
+			<path d='m8.5 8.5 5 5' />
+			<path d='m13.5 8.5-5 5' />
+		</>
+	),
+
 	check: <path d='m5 12 4 4L19 6' />,
 }
 

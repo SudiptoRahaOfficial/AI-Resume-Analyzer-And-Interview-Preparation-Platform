@@ -13,7 +13,7 @@ const interviewActivities = [
 		score: '78%',
 		scoreLabel: 'Readiness',
 		icon: 'message',
-		href: '/interview-preparation-report/123',
+		href: '/interview-preparation-reports/123',
 	},
 	{
 		id: 'interview-2',
@@ -24,7 +24,7 @@ const interviewActivities = [
 		score: '72%',
 		scoreLabel: 'Readiness',
 		icon: 'message',
-		href: '/interview-preparation-report/456',
+		href: '/interview-preparation-reports/124',
 	},
 	{
 		id: 'interview-3',
@@ -35,7 +35,7 @@ const interviewActivities = [
 		score: '84%',
 		scoreLabel: 'Readiness',
 		icon: 'message',
-		href: '/interview-preparation-report/457',
+		href: '/interview-preparation-reports/125',
 	},
 ]
 
