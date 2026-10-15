@@ -1,7 +1,12 @@
-import React from 'react'
+'use client'
 
-export default function interviewPreparation() {
-  return (
-    <div>interviewPreparation</div>
-  )
+import InterviewPreparationLayout from '@/components/Workspace/common-layout/layout'
+
+export default function InterviewPreparation() {
+	return (
+		<InterviewPreparationLayout
+			title='Interview Preparation'
+			description='Build your personalized interview strategy'
+		></InterviewPreparationLayout>
+	)
 }

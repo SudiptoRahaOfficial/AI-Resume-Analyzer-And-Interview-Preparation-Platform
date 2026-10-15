@@ -7,7 +7,7 @@ import StatisticsSection from '@/components/Workspace/dashboard/StatisticsSectio
 import AIToolsSection from '@/components/Workspace/dashboard/AIToolsSection'
 import RecentActivitySection from '@/components/Workspace/dashboard/RecentActivitySection'
 
-export default function DashboardPage() {
+export default function Dashboard() {
 	return (
 		<DashboardLayout
 			title='Overview'
