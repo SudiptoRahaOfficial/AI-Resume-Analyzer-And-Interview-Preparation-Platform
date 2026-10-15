@@ -176,6 +176,36 @@ const iconPaths = {
 			<path d='M12 7v5l3 2' />
 		</>
 	),
+	upload: (
+		<>
+			<path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+			<path d='m17 8-5-5-5 5M12 3v12' />
+		</>
+	),
+	shield: (
+		<>
+			<path d='M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z' />
+			<path d='m9 12 2 2 4-4' />
+		</>
+	),
+	briefcase: (
+		<>
+			<rect
+				x='3'
+				y='7'
+				width='18'
+				height='14'
+				rx='2'
+			/>
+			<path d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18' />
+		</>
+	),
+	x: (
+		<>
+			<path d='m18 6-12 12' />
+			<path d='m6 6 12 12' />
+		</>
+	),
 
 	check: <path d='m5 12 4 4L19 6' />,
 }
