@@ -7,6 +7,8 @@ export default function InterviewPreparationReports() {
 		<InterviewPreparationReportsLayout
 			title='Interview Preparation Reports'
 			description='Review and manage your interview preparation reports'
-		></InterviewPreparationReportsLayout>
+		>
+			
+		</InterviewPreparationReportsLayout>
 	)
 }

@@ -5,7 +5,7 @@ export default function Header({
 	onMenuClick,
 	title = 'Workspace',
 	description = 'Your career development workspace',
-	userInitials = 'DP',
+	userInitials = 'SR',
 }) {
 	return (
 		<header className='sticky top-0 z-30 flex h-18 items-center justify-between border-b border-slate-800/80 bg-[#030712]/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8'>
