@@ -5,19 +5,16 @@ export default function SettingsHeader() {
 	return (
 		<header className='mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
 			<div>
-				<div className='mb-2 flex items-center gap-2 text-sm text-slate-500'>
+				<nav className='flex flex-wrap items-center gap-2 text-xs text-slate-500 sm:text-sm'>
 					<Link
 						href='/dashboard'
-						className='transition-colors hover:text-slate-300'
+						className='transition hover:text-slate-300'
 					>
 						Dashboard
 					</Link>
-					<SettingsIcon
-						name='chevron'
-						size={12}
-					/>
+					<span>/</span>
 					<span className='text-indigo-400'>Settings</span>
-				</div>
+				</nav>
 
 				<h1 className='text-2xl font-semibold tracking-tight text-white sm:text-3xl'>
 					Settings

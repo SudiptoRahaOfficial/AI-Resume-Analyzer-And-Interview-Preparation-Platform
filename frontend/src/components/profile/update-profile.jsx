@@ -3,26 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
-function ChevronIcon({ size = 18, className = '' }) {
-	return (
-		<svg
-			xmlns='http://www.w3.org/2000/svg'
-			width={size}
-			height={size}
-			viewBox='0 0 24 24'
-			fill='none'
-			stroke='currentColor'
-			strokeWidth={1.7}
-			strokeLinecap='round'
-			strokeLinejoin='round'
-			className={className}
-			aria-hidden={true}
-		>
-			<path d='m9 18 6-6-6-6' />
-		</svg>
-	)
-}
-
 const MAX_SOCIAL_LINKS = 10
 
 const SOCIAL_PLATFORMS = [
@@ -172,25 +152,25 @@ export default function UpdateProfile() {
 			<div className='mx-auto max-w-4xl'>
 				<div className='mb-8 flex items-start justify-between gap-4'>
 					<div>
-						<div className='mb-2 flex items-center gap-2 text-sm text-slate-500'>
+						<nav className='flex flex-wrap items-center gap-2 text-xs text-slate-500 sm:text-sm'>
 							<Link
 								href='/dashboard'
-								className='transition-colors hover:text-slate-300'
+								className='transition hover:text-slate-300'
 							>
 								Dashboard
 							</Link>
-							<ChevronIcon />
+							<span>/</span>
 							<Link
 								href='/dashboard/profile'
-								className='transition-colors hover:text-slate-300'
+								className='transition hover:text-slate-300'
 							>
 								Profile
 							</Link>
-							<ChevronIcon />
+							<span>/</span>
 							<span className='text-indigo-400'>
 								Update Profile
 							</span>
-						</div>
+						</nav>
 
 						<h1 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
 							Update your profile

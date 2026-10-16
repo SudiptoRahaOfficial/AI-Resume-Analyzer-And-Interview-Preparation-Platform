@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 import Icon from '@/components/shared/icon'
 
 const MOCK_REPORT = {
@@ -52,10 +51,26 @@ const MOCK_REPORT = {
 		},
 	],
 	skillGaps: [
-		{ skill: 'System design', priority: 'High' },
-		{ skill: 'Database optimization', priority: 'Medium' },
-		{ skill: 'Scalable API architecture', priority: 'High' },
-		{ skill: 'Testing strategy', priority: 'Low' },
+		{
+			skill: 'System design',
+			priority: 'High',
+			severity: 'High',
+		},
+		{
+			skill: 'Database optimization',
+			priority: 'Medium',
+			severity: 'Medium',
+		},
+		{
+			skill: 'Scalable API architecture',
+			priority: 'High',
+			severity: 'High',
+		},
+		{
+			skill: 'Testing strategy',
+			priority: 'Low',
+			severity: 'Low',
+		},
 	],
 	preparationPlan: [
 		{
@@ -236,7 +251,7 @@ function QuestionList({ title, questions, icon }) {
 									)}
 
 									{item.answer && (
-										<div className='mt-4 rounded-lg border border-emerald-400/10 bg-emerald-400/[0.04] p-3 sm:p-4'>
+										<div className='mt-4 rounded-lg border border-emerald-400/10 bg-emerald-400/4 p-3 sm:p-4'>
 											<p className='text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300/80'>
 												Suggested answer
 											</p>
@@ -280,13 +295,25 @@ function SkillGapsSection({ skillGaps }) {
 									{gap.skill}
 								</h3>
 
-								<span
-									className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${getPriorityColor(
-										gap.priority,
-									)}`}
-								>
-									{gap.priority}
-								</span>
+								<div className='flex flex-wrap items-center gap-2'>
+									{/* Priority badge */}
+									<span
+										className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${getPriorityColor(
+											gap.priority,
+										)}`}
+									>
+										Priority: {gap.priority}
+									</span>
+
+									{/* Severity badge */}
+									<span
+										className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${getPriorityColor(
+											gap.severity,
+										)}`}
+									>
+										Severity: {gap.severity}
+									</span>
+								</div>
 							</div>
 						</article>
 					))}
@@ -353,10 +380,7 @@ function PreparationPlanSection({ preparationPlan }) {
 	)
 }
 
-export default function InterviewDetails() {
-	const params = useParams()
-	const reportId = params?.reportId
-
+export default function InterviewDetails({ reportId }) {
 	const report = MOCK_REPORT
 	const technicalQuestions = report.technicalQuestions
 	const behavioralQuestions = report.behavioralQuestions
@@ -381,10 +405,10 @@ export default function InterviewDetails() {
 						Interview reports
 					</Link>
 					<span>/</span>
-					<span className='text-slate-300'>Report details</span>
+					<span className='text-indigo-400'>Report details</span>
 				</nav>
 
-				<header className='rounded-2xl border border-slate-800/80 bg-gradient-to-br from-indigo-500/[0.10] via-slate-900/60 to-slate-900/20 p-5 sm:p-7'>
+				<header className='rounded-2xl border border-slate-800/80 bg-linear-to-br from-indigo-500/10 via-slate-900/60 to-slate-900/20 p-5 sm:p-7'>
 					<div className='flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between'>
 						<div className='flex items-start gap-4'>
 							<div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-400/20 bg-indigo-500/10 text-indigo-300'>
@@ -398,7 +422,7 @@ export default function InterviewDetails() {
 								<p className='text-[10px] font-semibold uppercase tracking-[0.2em] text-indigo-300'>
 									Interview analysis
 								</p>
-								<h1 className='mt-2 break-words text-2xl font-semibold tracking-tight text-white sm:text-3xl'>
+								<h1 className='mt-2 wrap-break-word text-2xl font-semibold tracking-tight text-white sm:text-3xl'>
 									{report.jobTitle}
 								</h1>
 								<p className='mt-2 text-sm leading-6 text-slate-400'>
@@ -455,35 +479,6 @@ export default function InterviewDetails() {
 						icon='clock'
 						detail='Preparation schedule'
 					/>
-				</section>
-
-				<section className='rounded-2xl border border-slate-800/80 bg-slate-900/30 p-4 sm:p-6'>
-					<SectionHeading
-						icon='briefcase'
-						eyebrow='Report context'
-						title='Job information'
-						description='Review the job and candidate context used for this demo report.'
-					/>
-
-					<div className='grid gap-4 lg:grid-cols-2'>
-						<div className='rounded-xl border border-slate-800/80 bg-[#080d19] p-4'>
-							<h3 className='text-sm font-semibold text-slate-200'>
-								Job description
-							</h3>
-							<p className='mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-400'>
-								{report.jobDescription}
-							</p>
-						</div>
-
-						<div className='rounded-xl border border-slate-800/80 bg-[#080d19] p-4'>
-							<h3 className='text-sm font-semibold text-slate-200'>
-								Self-description
-							</h3>
-							<p className='mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-400'>
-								{report.selfDescription}
-							</p>
-						</div>
-					</div>
 				</section>
 
 				<QuestionList
