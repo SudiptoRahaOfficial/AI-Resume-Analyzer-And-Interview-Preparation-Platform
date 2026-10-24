@@ -1,3 +1,6 @@
+// file: StatCard.jsx
+// responsibility: presentational card for a single dashboard statistic (with loading skeleton)
+
 import DashboardIcon from '../../shared/icon'
 
 const styles = {
@@ -11,7 +14,7 @@ const styles = {
 	},
 }
 
-export default function StatCard({ stat }) {
+export default function StatCard({ stat, isLoading = false }) {
 	const style = styles[stat.color] ?? styles.indigo
 
 	return (
@@ -37,13 +40,29 @@ export default function StatCard({ stat }) {
 					</div>
 				</div>
 
-				<p className='mt-4 text-2xl font-bold tracking-tight text-white'>
-					{stat.value}
-				</p>
+				{isLoading ? (
+					<div
+						aria-hidden='true'
+						className='mt-4 h-8 w-14 animate-pulse rounded-md bg-slate-800'
+					/>
+				) : (
+					<p className='mt-4 text-2xl font-bold tracking-tight text-white'>
+						{stat.value}
+					</p>
+				)}
 
-				<p className='mt-1.5 text-xs leading-5 text-slate-500'>
-					{stat.detail}
-				</p>
+				{isLoading ? (
+					<div
+						aria-hidden='true'
+						className='mt-1.5 flex h-5 items-center'
+					>
+						<div className='h-3 w-40 animate-pulse rounded bg-slate-800/70' />
+					</div>
+				) : (
+					<p className='mt-1.5 text-xs leading-5 text-slate-500'>
+						{stat.detail}
+					</p>
+				)}
 			</div>
 		</article>
 	)

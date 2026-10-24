@@ -1,5 +1,5 @@
 import '@/styles/globals.css'
-import Providers from '@/components/providers'
+import Providers from '@/components/shared/providers'
 
 // metadata infos
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'

@@ -30,9 +30,14 @@ export async function apiRequest(
 	path,
 	{ method = 'GET', body, auth = false } = {},
 ) {
+	// checking whether body is FormData (file upload) or plain object (json)
+	const isFormData = body instanceof FormData
+
 	// building headers
 	const headers = {}
-	if (body) headers['Content-Type'] = 'application/json'
+
+	// letting the browser set content-type (with boundary) for FormData
+	if (body && !isFormData) headers['Content-Type'] = 'application/json'
 	if (auth && accessToken) headers.Authorization = `Bearer ${accessToken}`
 
 	let response
@@ -43,7 +48,8 @@ export async function apiRequest(
 			method,
 			headers,
 			credentials: 'same-origin',
-			body: body ? JSON.stringify(body) : undefined,
+			// sending FormData as it is, stringifying only plain objects
+			body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
 		})
 	} catch {
 		// fetch only throws on network failure
