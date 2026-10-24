@@ -481,6 +481,7 @@ export default function Signup() {
 						<button
 							type='submit'
 							disabled={isSubmitting}
+							aria-busy={isSubmitting}
 							className='group inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0'
 						>
 							{isSubmitting

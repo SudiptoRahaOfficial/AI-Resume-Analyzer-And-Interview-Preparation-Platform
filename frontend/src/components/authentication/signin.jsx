@@ -49,7 +49,7 @@ export default function Signin() {
 
 			await signin(credentials)
 
-			router.replace('/dashboard/profile/create-profile')
+			router.replace('/dashboard')
 		} catch (error) {
 			setServerError(error.message)
 		} finally {
