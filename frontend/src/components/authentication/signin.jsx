@@ -2,8 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Signin() {
+	const router = useRouter()
+	const { signin } = useAuth()
+
 	const [formData, setFormData] = useState({
 		identifier: '',
 		password: '',
@@ -11,6 +16,9 @@ export default function Signin() {
 
 	const [submitted, setSubmitted] = useState(false)
 	const [showPassword, setShowPassword] = useState(false)
+
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [serverError, setServerError] = useState('')
 
 	const handleChange = (event) => {
 		const { name, value } = event.target
@@ -21,16 +29,33 @@ export default function Signin() {
 		}))
 	}
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setSubmitted(true)
+		setServerError('')
 
-		if (!formData.identifier.trim() || !formData.password) {
-			return
+		const identifier = formData.identifier.trim()
+
+		// stopping if required fields are empty
+		if (!identifier || !formData.password) return
+
+		setIsSubmitting(true)
+
+		try {
+			// backend expects either email or username, never both
+			const credentials = identifier.includes('@')
+				? { email: identifier, password: formData.password }
+				: { username: identifier, password: formData.password }
+
+			await signin(credentials)
+
+			// replace() so the back button does not return to the signin page
+			router.replace('/dashboard')
+		} catch (error) {
+			setServerError(error.message)
+		} finally {
+			setIsSubmitting(false)
 		}
-
-		// Connect your signin API here.
-		// After successful signin, redirect to /dashboard.
 	}
 
 	const inputClass =
@@ -231,12 +256,24 @@ export default function Signin() {
 							)}
 						</div>
 
+						{/* Server error */}
+						{serverError && (
+							<p
+								role='alert'
+								className='rounded-lg border border-rose-500/20 bg-rose-500/10 px-3.5 py-2.5 text-xs text-rose-300'
+							>
+								{serverError}
+							</p>
+						)}
+
 						{/* Submit button */}
 						<button
 							type='submit'
-							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer'
+							disabled={isSubmitting}
+							aria-busy={isSubmitting}
+							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0'
 						>
-							Sign in
+							{isSubmitting ? 'Signing in...' : 'Sign in'}
 							<svg
 								viewBox='0 0 24 24'
 								fill='none'

@@ -2,8 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { signup } from '@/services/auth.api'
 
 export default function Signup() {
+	const router = useRouter()
+
 	const [formData, setFormData] = useState({
 		username: '',
 		email: '',
@@ -16,12 +20,20 @@ export default function Signup() {
 	const [showPassword, setShowPassword] = useState(false)
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+	// states for api call
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [serverError, setServerError] = useState('')
+
 	const passwordRequirements =
 		/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S{8,}$/
 
 	const isPasswordValid = passwordRequirements.test(formData.password)
 
 	const doPasswordsMatch = formData.password === formData.confirmPassword
+
+	const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+		formData.email.trim(),
+	)
 
 	const handleChange = (event) => {
 		const { name, value } = event.target
@@ -32,21 +44,41 @@ export default function Signup() {
 		}))
 	}
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setSubmitted(true)
+		setServerError('')
 
+		// stopping if any field is invalid
 		if (
 			!formData.username.trim() ||
-			!formData.email.trim() ||
+			!isEmailValid ||
 			!isPasswordValid ||
 			!doPasswordsMatch
 		) {
 			return
 		}
 
-		// Connect your signup API here.
-		// After successful signup, redirect to email verification.
+		setIsSubmitting(true)
+
+		try {
+			const email = formData.email.trim()
+
+			// confirmPassword is only for the UI, never sent to the server
+			await signup({
+				username: formData.username.trim(),
+				email,
+				password: formData.password,
+			})
+
+			// moving user to the verification page with their email
+			router.push(`/verify-email?email=${encodeURIComponent(email)}`)
+		} catch (error) {
+			// showing the backend message (duplicate account, server error, etc.)
+			setServerError(error.message)
+		} finally {
+			setIsSubmitting(false)
+		}
 	}
 
 	const inputClass =
@@ -112,7 +144,7 @@ export default function Signup() {
 									htmlFor='username'
 									className={labelClass}
 								>
-									Full name
+									Username
 								</label>
 
 								<input
@@ -120,7 +152,7 @@ export default function Signup() {
 									name='username'
 									type='text'
 									autoComplete='name'
-									placeholder='Enter your full name'
+									placeholder='Enter your username'
 									value={formData.username}
 									onChange={handleChange}
 									required
@@ -135,7 +167,7 @@ export default function Signup() {
 										role='alert'
 										className='mt-1.5 text-xs text-rose-400'
 									>
-										Please enter your full name.
+										Please enter your username.
 									</p>
 								)}
 							</div>
@@ -435,12 +467,25 @@ export default function Signup() {
 							</p>
 						</div>
 
+						{/* Server error message */}
+						{serverError && (
+							<div
+								role='alert'
+								className='rounded-lg border border-rose-400/20 bg-rose-500/10 px-3.5 py-3 text-xs leading-5 text-rose-300'
+							>
+								{serverError}
+							</div>
+						)}
+
 						{/* Submit button */}
 						<button
 							type='submit'
+							disabled={isSubmitting}
 							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer'
 						>
-							Create account
+							{isSubmitting
+								? 'Creating account...'
+								: 'Create account'}
 							<svg
 								viewBox='0 0 24 24'
 								fill='none'

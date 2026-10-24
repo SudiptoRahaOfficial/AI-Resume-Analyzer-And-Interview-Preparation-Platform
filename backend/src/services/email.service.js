@@ -115,7 +115,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
           <td align="left">
 
             <p style="font-size:15px;font-weight:700;letter-spacing:-0.2px;color:#111827;">
-              Resume<span style="color:#0891b2;">AI</span>
+              Resume<span style="color:#615FFF;">AI</span>
             </p>
 
           </td>
@@ -138,7 +138,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
     <td class="content"
     style="padding:48px 44px 44px 44px;">
 
-      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0891b2;">
+      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#615FFF;">
         Email Verification
       </p>
 
@@ -186,7 +186,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
       style="margin-top:26px;">
 
         <tr>
-          <td style="padding:0 0 0 14px;border-left:2px solid #0891b2;">
+          <td style="padding:0 0 0 14px;border-left:2px solid #615FFF;">
 
             <p style="font-size:13px;line-height:1.7;color:#374151;">
               <strong>This code expires in 3 minutes.</strong><br/>
@@ -322,7 +322,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
           <td align="left">
 
             <p style="font-size:15px;font-weight:700;letter-spacing:-0.2px;color:#111827;">
-              Resume<span style="color:#0891b2;">AI</span>
+              Resume<span style="color:#615FFF;">AI</span>
             </p>
 
           </td>
@@ -346,7 +346,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
     <td class="content"
     style="padding:48px 44px 44px 44px;">
 
-      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0891b2;">
+      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#615FFF;">
         Account Activity
       </p>
 
@@ -378,7 +378,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
                   <table width="30" height="30" cellpadding="0" cellspacing="0" border="0">
                     <tr>
                       <td align="center"
-                      style="width:30px;height:30px;background:#ecfeff;border-radius:50%;font-size:14px;color:#0891b2;">
+                      style="width:30px;height:30px;background:#ecfeff;border-radius:50%;font-size:14px;color:#615FFF;">
                         ✓
                       </td>
                     </tr>
@@ -549,7 +549,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
           <td align="left">
 
             <p style="font-size:15px;font-weight:700;letter-spacing:-0.2px;color:#111827;">
-              Resume<span style="color:#0891b2;">AI</span>
+              Resume<span style="color:#615FFF;">AI</span>
             </p>
 
           </td>
@@ -574,7 +574,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
     <td class="content"
     style="padding:48px 44px 44px 44px;">
 
-      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0891b2;">
+      <p style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#615FFF;">
         Email Verification
       </p>
 
@@ -621,7 +621,7 @@ style="width:100%;max-width:560px;background:#ffffff;">
 
         <tr>
 
-          <td style="padding:0 0 0 14px;border-left:2px solid #0891b2;">
+          <td style="padding:0 0 0 14px;border-left:2px solid #615FFF;">
 
             <p style="font-size:13px;line-height:1.7;color:#374151;">
               <strong>This code expires in 3 minutes.</strong><br/>
@@ -808,7 +808,7 @@ The ResumeAI Team`
                 color:#111827;
               "
             >
-              Resume<span style="color:#0891b2;">AI</span>
+              Resume<span style="color:#615FFF;">AI</span>
             </p>
 
           </td>
@@ -853,7 +853,7 @@ The ResumeAI Team`
           font-weight:700;
           letter-spacing:1.5px;
           text-transform:uppercase;
-          color:#0891b2;
+          color:#615FFF;
         "
       >
         Account Verification
@@ -1025,7 +1025,7 @@ The ResumeAI Team`
           <td
             style="
               padding:0 0 0 14px;
-              border-left:2px solid #0891b2;
+              border-left:2px solid #615FFF;
             "
           >
 

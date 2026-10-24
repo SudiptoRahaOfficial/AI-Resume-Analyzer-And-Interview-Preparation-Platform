@@ -132,9 +132,6 @@ async function signupController(req, res) {
 			await otpModel.deleteOne({
 				_id: otpDoc._id,
 			})
-
-			// throwing email error
-			throw emailError
 		}
 
 		// response back on success
@@ -270,9 +267,6 @@ async function verifyEmailController(req, res) {
 				error: emailError.message,
 				stack: emailError.stack,
 			})
-
-			// throwing email error
-			throw emailError
 		}
 
 		// response back on success
@@ -375,9 +369,6 @@ async function resendVerifyEmailController(req, res) {
 			await otpModel.deleteOne({
 				_id: otpDoc._id,
 			})
-
-			// throwing email error
-			throw emailError
 		}
 
 		// response back on success
@@ -529,9 +520,6 @@ async function signinController(req, res) {
 				error: emailError.message,
 				stack: emailError.stack,
 			})
-
-			// throwing email error
-			throw emailError
 		}
 
 		// response back on success
@@ -674,6 +662,12 @@ async function refreshTokenController(req, res) {
 		return res.status(200).json({
 			message: 'Token refreshed successfully',
 			success: true,
+			user: {
+				id: user._id,
+				username: user.username,
+				email: user.email,
+				verified: user.verified,
+			},
 			accessToken,
 		})
 	} catch (error) {

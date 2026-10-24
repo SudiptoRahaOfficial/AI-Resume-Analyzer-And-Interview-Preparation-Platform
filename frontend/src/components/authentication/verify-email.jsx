@@ -1,27 +1,81 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { verifyEmail, resendVerifyEmail } from '@/services/auth.api'
 
-export default function VerifyEmail({ email = 'your registered email' }) {
+// seconds the user must wait before requesting another OTP
+const RESEND_COOLDOWN_SECONDS = 60
+
+export default function VerifyEmail({ email }) {
+	const router = useRouter()
+
 	const [otp, setOtp] = useState('')
 	const [submitted, setSubmitted] = useState(false)
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isResending, setIsResending] = useState(false)
+	const [cooldown, setCooldown] = useState(0)
+	const [serverError, setServerError] = useState('')
+	const [successMessage, setSuccessMessage] = useState('')
 
-	const handleSubmit = (event) => {
+	// counting down the resend cooldown one second at a time
+	useEffect(() => {
+		if (cooldown <= 0) return
+
+		const timerId = setTimeout(
+			() => setCooldown((value) => value - 1),
+			1000,
+		)
+
+		// cleaning timer on unmount or before next tick
+		return () => clearTimeout(timerId)
+	}, [cooldown])
+
+	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setSubmitted(true)
+		setServerError('')
+		setSuccessMessage('')
 
-		if (!/^\d{6}$/.test(otp)) {
-			return
+		// stopping if otp format is invalid
+		if (!/^\d{6}$/.test(otp)) return
+
+		setIsSubmitting(true)
+
+		try {
+			await verifyEmail({ email, otp })
+
+			// verified, user can now sign in
+			router.push('/signin')
+		} catch (error) {
+			setServerError(error.message)
+		} finally {
+			setIsSubmitting(false)
 		}
-
-		// Connect your email verification API here.
-		// Send the email and OTP to your backend.
-		// After successful verification, redirect to /signin.
 	}
 
-	const handleResend = () => {
-		// Connect your resend verification OTP API here.
+	const handleResend = async () => {
+		// blocking resend during cooldown or while a request is running
+		if (cooldown > 0 || isResending) return
+
+		setServerError('')
+		setSuccessMessage('')
+		setIsResending(true)
+
+		try {
+			const data = await resendVerifyEmail({ email })
+
+			// clearing old code, showing success, and starting cooldown
+			setOtp('')
+			setSubmitted(false)
+			setSuccessMessage(data.message)
+			setCooldown(RESEND_COOLDOWN_SECONDS)
+		} catch (error) {
+			setServerError(error.message)
+		} finally {
+			setIsResending(false)
+		}
 	}
 
 	return (
@@ -157,18 +211,39 @@ export default function VerifyEmail({ email = 'your registered email' }) {
 								</svg>
 
 								<p className='text-xs leading-5 text-slate-400'>
-									Your verification code expires in 1 minutes.
+									Your verification code expires in 3 minutes.
 									Never share it with anyone.
 								</p>
 							</div>
 						</div>
 
+						{/* error message */}
+						{serverError && (
+							<div
+								role='alert'
+								className='rounded-lg border border-rose-400/20 bg-rose-500/10 px-3.5 py-3 text-xs leading-5 text-rose-300'
+							>
+								{serverError}
+							</div>
+						)}
+
+						{/* success message */}
+						{successMessage && (
+							<div
+								role='status'
+								className='rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3.5 py-3 text-xs leading-5 text-emerald-300'
+							>
+								{successMessage}
+							</div>
+						)}
+
 						{/* Verify button */}
 						<button
 							type='submit'
-							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer'
+							disabled={isSubmitting}
+							className='group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60'
 						>
-							Verify email
+							{isSubmitting ? 'Verifying...' : 'Verify email'}
 							<svg
 								viewBox='0 0 24 24'
 								fill='none'
@@ -195,13 +270,17 @@ export default function VerifyEmail({ email = 'your registered email' }) {
 							<p className='text-xs text-slate-400'>
 								Didn't receive the email?
 							</p>
-
 							<button
 								type='button'
 								onClick={handleResend}
-								className='text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer'
+								disabled={cooldown > 0 || isResending}
+								className='text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer disabled:cursor-not-allowed disabled:text-slate-500'
 							>
-								Resend verification code
+								{isResending
+									? 'Sending...'
+									: cooldown > 0
+										? `Resend in ${cooldown}s`
+										: 'Resend verification code'}
 							</button>
 						</div>
 

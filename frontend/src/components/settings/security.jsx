@@ -1,14 +1,30 @@
+'use client'
+
 import {
 	SettingsCard,
 	SectionHeading,
 	SettingRow,
 	SettingsIcon,
 } from './settingsUi'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 
-export default function SecuritySection({
-	onRequestSignout,
-	onRequestSignoutAll,
-}) {
+export default function SecuritySection() {
+	const router = useRouter()
+	const { signout, signoutAll } = useAuth()
+
+	// signout
+	const handleSignout = async () => {
+		await signout()
+		router.replace('/signin')
+	}
+
+	// signout from all devices
+	const handleSignoutAll = async () => {
+		await signoutAll()
+		router.replace('/signin')
+	}
+
 	return (
 		<SettingsCard>
 			<SectionHeading
@@ -50,8 +66,8 @@ export default function SecuritySection({
 				>
 					<button
 						type='button'
-						onClick={onRequestSignout}
-						className='inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-3 py-2.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:bg-white/4 hover:text-white sm:w-auto'
+						onClick={handleSignout}
+						className='inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-3 py-2.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:bg-white/4 hover:text-white sm:w-auto cursor-pointer'
 					>
 						<SettingsIcon
 							name='logout'
@@ -68,8 +84,8 @@ export default function SecuritySection({
 				>
 					<button
 						type='button'
-						onClick={onRequestSignoutAll}
-						className='inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-400/20 bg-red-500/6 px-3 py-2.5 text-xs font-medium text-red-300 transition-colors hover:border-red-400/40 hover:bg-red-500/12 sm:w-auto'
+						onClick={handleSignoutAll}
+						className='inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-400/20 bg-red-500/6 px-3 py-2.5 text-xs font-medium text-red-300 transition-colors hover:border-red-400/40 hover:bg-red-500/12 sm:w-auto cursor-pointer'
 					>
 						<SettingsIcon
 							name='shield'

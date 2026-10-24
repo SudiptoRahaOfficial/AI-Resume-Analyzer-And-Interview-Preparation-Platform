@@ -4,3 +4,14 @@ html {
     scroll-behavior: smooth;
     scroll-padding-top: 20px;
 }
+
+/* loading progress animation */
+@keyframes resumeai-loading {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(200%);
+    }
+}
