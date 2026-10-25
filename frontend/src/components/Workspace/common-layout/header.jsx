@@ -444,7 +444,7 @@ export default function Header({
 										className={MENU_ITEM_CLASS}
 									>
 										<SvgIcon name='devices' />
-										Sign out of all devices
+										Sign out from all devices
 									</button>
 
 									<button

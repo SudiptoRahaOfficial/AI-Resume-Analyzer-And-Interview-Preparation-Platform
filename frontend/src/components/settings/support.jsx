@@ -32,6 +32,7 @@ export default function SupportSection() {
 
 			<Link
 				href='/contact'
+				target='_blank'
 				className='mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/2 px-4 py-2.5 text-xs font-medium text-slate-300 transition-colors hover:border-indigo-400/30 hover:bg-indigo-500/5 hover:text-white'
 			>
 				Contact support
