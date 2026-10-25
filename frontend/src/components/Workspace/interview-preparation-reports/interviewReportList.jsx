@@ -282,7 +282,7 @@ function ReportCard({ report }) {
 						{skillGapCount === 1 ? 'skill gap' : 'skill gaps'}
 					</span>
 
-					<span className='ml-auto inline-flex items-center gap-1 text-xs font-medium text-indigo-300 transition group-hover:text-indigo-200 sm:hidden'>
+					<span className='ml-auto inline-flex items-center gap-1 text-xs font-medium text-indigo-300 transition group-hover:text-indigo-200'>
 						View report
 						<Icon
 							name='arrow'
@@ -694,7 +694,7 @@ export default function InterviewReportList() {
 									<button
 										type='button'
 										onClick={clearFilters}
-										className='mt-4 rounded-lg border border-slate-700 px-4 py-2 text-xs font-medium text-slate-300 transition hover:border-indigo-400/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 cursor-pointer'
+										className='mt-4 rounded-lg border border-slate-700 px-4 py-2 text-xs font-medium text-slate-300 transition hover:border-indigo-400/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60'
 									>
 										Clear filters
 									</button>
