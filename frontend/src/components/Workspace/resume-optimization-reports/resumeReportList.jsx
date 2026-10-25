@@ -192,7 +192,7 @@ function ResumeCard({ resume }) {
 						Resume document
 					</span>
 
-					<span className='ml-auto inline-flex items-center gap-1 text-xs font-medium text-indigo-300 transition group-hover:text-indigo-200 sm:hidden'>
+					<span className='ml-auto inline-flex items-center gap-1 text-xs font-medium text-indigo-300 transition group-hover:text-indigo-200'>
 						View resume
 						<Icon
 							name='arrow'
