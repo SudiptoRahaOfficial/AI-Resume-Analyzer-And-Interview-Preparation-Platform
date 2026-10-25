@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { verifyEmail, resendVerifyEmail } from '@/services/auth.api'
+import LoadingScreen from '@/components/shared/loadingScreen'
 
 // seconds the user must wait before requesting another OTP
 const RESEND_COOLDOWN_SECONDS = 60
@@ -34,6 +35,10 @@ export default function VerifyEmail({ email }) {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault()
+
+		// guard against double submits (e.g. pressing Enter twice)
+		if (isSubmitting) return
+
 		setSubmitted(true)
 		setServerError('')
 		setSuccessMessage('')
@@ -41,23 +46,27 @@ export default function VerifyEmail({ email }) {
 		// stopping if otp format is invalid
 		if (!/^\d{6}$/.test(otp)) return
 
+		// this also shows the full-screen loader
 		setIsSubmitting(true)
 
 		try {
 			await verifyEmail({ email, otp })
 
 			// verified, user can now sign in
+			// NOTE: isSubmitting is intentionally NOT reset on success, so the
+			// loader stays visible until the signin page replaces this one
 			router.push('/signin')
 		} catch (error) {
 			setServerError(error.message)
-		} finally {
+
+			// request failed, so hide the loader and let the user retry
 			setIsSubmitting(false)
 		}
 	}
 
 	const handleResend = async () => {
 		// blocking resend during cooldown or while a request is running
-		if (cooldown > 0 || isResending) return
+		if (cooldown > 0 || isResending || isSubmitting) return
 
 		setServerError('')
 		setSuccessMessage('')
@@ -80,6 +89,18 @@ export default function VerifyEmail({ email }) {
 
 	return (
 		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-8 text-slate-300 sm:px-6'>
+			{/* Full-screen loader while the code is being verified.
+			    The form stays mounted underneath, so the typed OTP is kept on error */}
+			{isSubmitting && (
+				<div
+					role='status'
+					aria-live='polite'
+					className='fixed inset-0 z-50 bg-slate-950'
+				>
+					<LoadingScreen />
+				</div>
+			)}
+
 			{/* Background glow effects */}
 			<div
 				aria-hidden='true'
@@ -269,7 +290,7 @@ export default function VerifyEmail({ email }) {
 						{/* resend verification code */}
 						<div className='flex items-center justify-center gap-1'>
 							<p className='text-xs text-slate-400'>
-								Didn't receive the email?
+								Didn&apos;t receive the email?
 							</p>
 							<button
 								type='button'

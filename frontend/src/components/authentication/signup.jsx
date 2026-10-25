@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signup } from '@/services/auth.api'
+import LoadingScreen from '@/components/shared/loadingScreen'
 
 /* -------------------------------------------------------------------------- */
 /*  Constants (kept outside the component so they're created only once)       */
@@ -326,6 +327,7 @@ export default function Signup() {
 			return
 		}
 
+		// this also shows the full-screen loader
 		setIsSubmitting(true)
 
 		try {
@@ -339,6 +341,8 @@ export default function Signup() {
 			})
 
 			// moving user to the verification page with their email
+			// NOTE: isSubmitting is intentionally NOT reset on success, so the
+			// loader stays visible until the new page replaces this one
 			router.push(`/verify-email?email=${encodeURIComponent(email)}`)
 		} catch (error) {
 			const { fieldErrors, message } = parseServerError(error)
@@ -346,12 +350,13 @@ export default function Signup() {
 			setServerFieldErrors(fieldErrors)
 			setServerError(message)
 
+			// request failed, so hide the loader and let the user fix the form
+			setIsSubmitting(false)
+
 			const firstServerField = FIELD_ORDER.find(
 				(name) => fieldErrors[name],
 			)
 			if (firstServerField) focusField(firstServerField)
-		} finally {
-			setIsSubmitting(false)
 		}
 	}
 
@@ -364,6 +369,18 @@ export default function Signup() {
 
 	return (
 		<main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-8 text-slate-300 sm:px-6'>
+			{/* Full-screen loader while the account is being created.
+			    The form stays mounted underneath, so refs and state are kept */}
+			{isSubmitting && (
+				<div
+					role='status'
+					aria-live='polite'
+					className='fixed inset-0 z-50 bg-slate-950'
+				>
+					<LoadingScreen />
+				</div>
+			)}
+
 			{/* Background glow effects */}
 			<div
 				aria-hidden='true'
