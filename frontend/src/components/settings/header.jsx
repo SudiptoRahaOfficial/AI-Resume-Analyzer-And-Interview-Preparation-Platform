@@ -27,14 +27,14 @@ export default function SettingsHeader() {
 			</div>
 
 			<Link
-				href='/dashboard/profile'
+				href='/dashboard'
 				className='inline-flex w-fit items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-4 py-2.5 text-xs font-medium text-slate-300 transition-colors hover:border-indigo-400/30 hover:bg-indigo-500/5 hover:text-white'
 			>
 				<SettingsIcon
-					name='user'
+					name='dashboard'
 					size={15}
 				/>
-				View profile
+				Dashboard
 				<SettingsIcon
 					name='arrow'
 					size={13}

@@ -66,6 +66,38 @@ export function SettingsIcon({ name, size = 18, className = '' }) {
 				<path d='M8 10V7a4 4 0 1 1 8 0v3' />
 			</>
 		),
+		dashboard: (
+			<>
+				<rect
+					x='3'
+					y='3'
+					width='7'
+					height='7'
+					rx='1.5'
+				/>
+				<rect
+					x='14'
+					y='3'
+					width='7'
+					height='7'
+					rx='1.5'
+				/>
+				<rect
+					x='14'
+					y='14'
+					width='7'
+					height='7'
+					rx='1.5'
+				/>
+				<rect
+					x='3'
+					y='14'
+					width='7'
+					height='7'
+					rx='1.5'
+				/>
+			</>
+		),
 		help: (
 			<>
 				<circle
