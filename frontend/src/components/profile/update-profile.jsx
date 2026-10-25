@@ -1,23 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+
 import { useProfile } from '@/context/ProfileContext'
 import LoadingScreen from '@/components/shared/loadingScreen'
 
-// ---------- constants ----------
+// ============================================================
+// Constants
+// ============================================================
 
 const MAX_SOCIAL_LINKS = 10
 const MAX_SKILLS = 20
 const MAX_EXPERIENCE = 50
 const BIO_MAX_LENGTH = 500
-const MAX_IMAGE_SIZE = 3 * 1024 * 1024 // 3 MB
-const ALLOWED_IMAGE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']
+const MAX_IMAGE_SIZE = 3 * 1024 * 1024
+
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png'])
+
 const PROFILE_PATH = '/dashboard/profile'
 const CREATE_PROFILE_PATH = '/dashboard/profile/create-profile'
 
-// plain text fields that are compared and sent as trimmed strings
 const TEXT_FIELDS = ['firstName', 'lastName', 'profession', 'bio', 'phone']
 
 const SOCIAL_PLATFORMS = [
@@ -113,27 +117,33 @@ const SOCIAL_PLACEHOLDERS = {
 const getSocialPlaceholder = (platform) =>
 	SOCIAL_PLACEHOLDERS[platform] || 'https://example.com'
 
-// shared input styles (border colour switches to red when the field has an error)
+// ============================================================
+// Shared styles
+// ============================================================
+
 const INPUT_BASE =
-	'w-full rounded-lg border bg-slate-950/60 px-3.5 text-sm text-white outline-none transition placeholder:text-slate-600 focus:ring-2 disabled:opacity-60'
+	'w-full rounded-lg border bg-slate-950/60 px-3.5 text-sm text-white outline-none transition placeholder:text-slate-600 focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60'
+
 const INPUT_OK =
 	'border-slate-700/80 focus:border-indigo-400/60 focus:ring-indigo-400/10'
+
 const INPUT_ERROR =
 	'border-red-400/60 focus:border-red-400/70 focus:ring-red-400/10'
 
-// ---------- pure helpers (no React, easy to test) ----------
+// ============================================================
+// Pure helper functions
+// ============================================================
 
-// "js, node , JS" -> ['js', 'node'] (trimmed, no empties, case-insensitive dedupe)
-function parseSkills(value) {
+function parseSkills(value = '') {
 	const seen = new Set()
 	const skills = []
 
 	for (const rawSkill of value.split(',')) {
 		const skill = rawSkill.trim()
-		const key = skill.toLowerCase()
+		const normalizedSkill = skill.toLowerCase()
 
-		if (skill && !seen.has(key)) {
-			seen.add(key)
+		if (skill && !seen.has(normalizedSkill)) {
+			seen.add(normalizedSkill)
 			skills.push(skill)
 		}
 	}
@@ -141,29 +151,44 @@ function parseSkills(value) {
 	return skills
 }
 
-// only http / https links are accepted (blocks javascript: and data: URLs)
 function isValidHttpUrl(value) {
 	try {
 		const url = new URL(value)
-		return url.protocol === 'http:' || url.protocol === 'https:'
+
+		return (
+			['http:', 'https:'].includes(url.protocol) && Boolean(url.hostname)
+		)
 	} catch {
 		return false
 	}
 }
 
-// keeps only filled rows and strips the local `id` (it must never reach the API)
 function toPayloadLinks(links) {
 	return links
 		.filter((link) => link.url.trim())
-		.map((link) => ({ platform: link.platform, url: link.url.trim() }))
+		.map((link) => ({
+			platform: link.platform,
+			url: link.url.trim(),
+		}))
 }
 
-// turns the server profile into the form's starting state (taken once, then frozen)
 function buildInitialState(profile) {
-	const links = (profile.socialLinks ?? []).map((link, index) => ({
+	const profileSkills = Array.isArray(profile.skills) ? profile.skills : []
+
+	const profileLinks = Array.isArray(profile.socialLinks)
+		? profile.socialLinks
+		: []
+
+	const experience =
+		profile.experience != null &&
+		Number.isFinite(Number(profile.experience))
+			? Number(profile.experience)
+			: null
+
+	const socialLinks = profileLinks.map((link, index) => ({
 		id: index + 1,
-		platform: link.platform,
-		url: link.url,
+		platform: link.platform || 'Other',
+		url: link.url || '',
 	}))
 
 	return {
@@ -173,78 +198,103 @@ function buildInitialState(profile) {
 			profession: profile.profession ?? '',
 			bio: profile.bio ?? '',
 			phone: profile.phone ?? '',
-			experience:
-				profile.experience != null ? String(profile.experience) : '',
+			experience: experience !== null ? String(experience) : '',
 			city: profile.location?.city ?? '',
 			country: profile.location?.country ?? '',
-			skills: (profile.skills ?? []).join(', '),
+			skills: profileSkills.join(', '),
 		},
-		experience: profile.experience ?? null,
-		skills: parseSkills((profile.skills ?? []).join(', ')),
+
+		experience,
+
+		skills: parseSkills(profileSkills.join(', ')),
+
 		socialLinks:
-			links.length > 0
-				? links
+			socialLinks.length > 0
+				? socialLinks
 				: [{ id: 1, platform: 'LinkedIn', url: '' }],
 	}
 }
 
-// returns { fieldId: 'message' } in visual order, so the first key is the first invalid field
-function validateForm(values, skills, socialLinks, initial) {
-	const errors = {}
+function validateForm(values, skills, socialLinks, initial, errors) {
+	const nextErrors = {}
 
-	if (!values.firstName.trim()) errors.firstName = 'First name is required.'
-	if (!values.lastName.trim()) errors.lastName = 'Last name is required.'
+	// Profile information
+
+	if (!values.firstName.trim()) {
+		nextErrors.firstName = 'First name is required.'
+	}
+
+	if (!values.lastName.trim()) {
+		nextErrors.lastName = 'Last name is required.'
+	}
 
 	if (values.bio.trim().length > BIO_MAX_LENGTH) {
-		errors.bio = `Bio must be ${BIO_MAX_LENGTH} characters or fewer.`
+		nextErrors.bio = `Bio must be ${BIO_MAX_LENGTH} characters or fewer.`
 	}
 
-	if (
-		values.phone.trim() &&
-		!/^\+?[0-9\s\-()]{7,20}$/.test(values.phone.trim())
-	) {
-		errors.phone = 'Enter a valid phone number.'
+	// Contact information
+
+	const phone = values.phone.trim()
+
+	if (phone && !/^\+?[0-9\s\-()]{7,20}$/.test(phone)) {
+		nextErrors.phone = 'Enter a valid phone number.'
 	}
+
+	// Experience
 
 	if (values.experience !== '') {
 		const years = Number(values.experience)
 
 		if (!Number.isInteger(years) || years < 0 || years > MAX_EXPERIENCE) {
-			errors.experience = `Enter a whole number between 0 and ${MAX_EXPERIENCE}.`
+			nextErrors.experience = `Enter a whole number between 0 and ${MAX_EXPERIENCE}.`
 		}
 	} else if (initial.experience !== null) {
-		// clearing a saved number is ambiguous (null vs 0), so we ask for an explicit value
-		errors.experience =
+		nextErrors.experience =
 			'Experience can’t be empty. Enter 0 if you have none.'
 	}
 
+	// Skills
+
 	if (skills.length > MAX_SKILLS) {
-		errors.skills = `You can add up to ${MAX_SKILLS} skills (you entered ${skills.length}).`
+		nextErrors.skills = `You can add up to ${MAX_SKILLS} skills (you entered ${skills.length}).`
 	}
 
-	// only rows with a URL are validated, empty rows are dropped on save
+	// Social links
+
 	for (const link of socialLinks) {
 		const url = link.url.trim()
 
 		if (url && !isValidHttpUrl(url)) {
-			errors[`socialUrl${link.id}`] =
-				'Enter a valid URL starting with http:// or https://'
+			nextErrors[`socialUrl${link.id}`] =
+				'Enter a valid URL starting with http:// or https://.'
 		}
 	}
 
-	return errors
+	// Preserve image-validation errors until the image is corrected.
+
+	if (errors.profileImage) {
+		nextErrors.profileImage = errors.profileImage
+	}
+
+	return nextErrors
 }
 
-// PATCH payload: compares every field with the saved profile and keeps only what changed
 function getChanges(initial, values, skills, socialLinks, imageFile) {
 	const changes = {}
 
+	// Plain text fields
+
 	for (const field of TEXT_FIELDS) {
-		const current = values[field].trim()
-		if (current !== initial.values[field].trim()) changes[field] = current
+		const currentValue = values[field].trim()
+		const initialValue = initial.values[field].trim()
+
+		if (currentValue !== initialValue) {
+			changes[field] = currentValue
+		}
 	}
 
-	// number compared numerically so "02" and "2" count as the same
+	// Experience
+
 	if (
 		values.experience !== '' &&
 		Number(values.experience) !== initial.experience
@@ -252,7 +302,8 @@ function getChanges(initial, values, skills, socialLinks, imageFile) {
 		changes.experience = Number(values.experience)
 	}
 
-	// location is one JSON object, so a change to either part sends the complete object
+	// Location
+
 	const city = values.city.trim()
 	const country = values.country.trim()
 
@@ -261,32 +312,41 @@ function getChanges(initial, values, skills, socialLinks, imageFile) {
 		country !== initial.values.country.trim()
 	) {
 		const location = {}
+
 		if (city) location.city = city
 		if (country) location.country = country
+
 		changes.location = location
 	}
 
-	// arrays are replaced as a whole, so a change sends the complete new array
+	// Skills
+
 	if (JSON.stringify(skills) !== JSON.stringify(initial.skills)) {
 		changes.skills = skills
 	}
 
+	// Social links
+
 	const currentLinks = toPayloadLinks(socialLinks)
-	if (
-		JSON.stringify(currentLinks) !==
-		JSON.stringify(toPayloadLinks(initial.socialLinks))
-	) {
+	const initialLinks = toPayloadLinks(initial.socialLinks)
+
+	if (JSON.stringify(currentLinks) !== JSON.stringify(initialLinks)) {
 		changes.socialLinks = currentLinks
 	}
 
-	if (imageFile) changes.profileImage = imageFile
+	// Profile image
+
+	if (imageFile) {
+		changes.profileImage = imageFile
+	}
 
 	return changes
 }
 
-// ---------- small reusable pieces ----------
+// ============================================================
+// Reusable text field
+// ============================================================
 
-// label + input/textarea + hint or error, wired together for accessibility
 function TextField({
 	id,
 	label,
@@ -297,6 +357,7 @@ function TextField({
 	...controlProps
 }) {
 	const Control = multiline ? 'textarea' : 'input'
+
 	const describedBy = error ? `${id}Error` : hint ? `${id}Hint` : undefined
 
 	return (
@@ -306,6 +367,7 @@ function TextField({
 				className='mb-2 block text-xs font-medium text-slate-300'
 			>
 				{label}
+
 				{controlProps.required && (
 					<span
 						className='ml-0.5 text-red-400'
@@ -347,15 +409,23 @@ function TextField({
 	)
 }
 
-// shows the photo, or initials if there is no photo / the image fails to load
-// (the parent passes key={src} so the failed state resets when the image changes)
+// ============================================================
+// Profile avatar
+// ============================================================
+
 function Avatar({ src, initials }) {
 	const [hasFailed, setHasFailed] = useState(false)
 
+	// Reset the failure state whenever the source changes.
+
+	useEffect(() => {
+		setHasFailed(false)
+	}, [src])
+
 	if (src && !hasFailed) {
+		// A plain img supports blob previews and external image hosts.
+		// eslint-disable-next-line @next/next/no-img-element
 		return (
-			// plain <img>: works for blob: previews and any CDN host without next.config changes
-			// eslint-disable-next-line @next/next/no-img-element
 			<img
 				src={src}
 				alt='Profile photo'
@@ -368,19 +438,22 @@ function Avatar({ src, initials }) {
 	return <span aria-hidden='true'>{initials}</span>
 }
 
-// ---------- the form (only mounted once the profile exists) ----------
+// ============================================================
+// Update profile form
+// ============================================================
 
 function UpdateProfileForm({ profile }) {
 	const router = useRouter()
 	const { updateProfile } = useProfile()
 
-	// frozen snapshot of the saved profile: the baseline for "what changed?"
+	// Freeze the initial server snapshot for dirty checking.
+
 	const [initial] = useState(() => buildInitialState(profile))
 
 	const [values, setValues] = useState(initial.values)
+
 	const [socialLinks, setSocialLinks] = useState(initial.socialLinks)
 
-	// newly chosen image file + its temporary preview url
 	const [imageFile, setImageFile] = useState(null)
 	const [imagePreview, setImagePreview] = useState(null)
 
@@ -388,31 +461,65 @@ function UpdateProfileForm({ profile }) {
 	const [submitError, setSubmitError] = useState(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	// everything derived from state is computed during render (no extra state to keep in sync)
+	// These refs must be declared at component scope.
+
+	const submitErrorRef = useRef(null)
+	const submitLockRef = useRef(false)
+
+	// Derived state
+
 	const skills = parseSkills(values.skills)
+
 	const changes = getChanges(initial, values, skills, socialLinks, imageFile)
+
 	const isDirty = Object.keys(changes).length > 0
 
 	const initials =
-		`${values.firstName.trim()[0] ?? ''}${values.lastName.trim()[0] ?? ''}`.toUpperCase() ||
-		'?'
+		(
+			`${values.firstName.trim()[0] ?? ''}` +
+			`${values.lastName.trim()[0] ?? ''}`
+		).toUpperCase() || '?'
 
-	// creating / cleaning up the preview url (revoking prevents a memory leak)
+	const currentImage = imagePreview ?? profile.profileImage ?? null
+
+	// --------------------------------------------------------
+	// Image preview lifecycle
+	// --------------------------------------------------------
+
 	useEffect(() => {
 		if (!imageFile) {
 			setImagePreview(null)
-			return
+			return undefined
 		}
 
 		const previewUrl = URL.createObjectURL(imageFile)
+
 		setImagePreview(previewUrl)
 
-		return () => URL.revokeObjectURL(previewUrl)
+		return () => {
+			URL.revokeObjectURL(previewUrl)
+		}
 	}, [imageFile])
 
-	// warning before a refresh / tab close while there are unsaved edits
+	// --------------------------------------------------------
+	// Scroll to server / network errors
+	// --------------------------------------------------------
+
 	useEffect(() => {
-		if (!isDirty || isSubmitting) return
+		if (!submitError) return
+
+		submitErrorRef.current?.scrollIntoView({
+			behavior: 'smooth',
+			block: 'center',
+		})
+	}, [submitError])
+
+	// --------------------------------------------------------
+	// Warn about unsaved changes before leaving the page
+	// --------------------------------------------------------
+
+	useEffect(() => {
+		if (!isDirty || isSubmitting) return undefined
 
 		const handleBeforeUnload = (event) => {
 			event.preventDefault()
@@ -420,41 +527,80 @@ function UpdateProfileForm({ profile }) {
 		}
 
 		window.addEventListener('beforeunload', handleBeforeUnload)
-		return () =>
+
+		return () => {
 			window.removeEventListener('beforeunload', handleBeforeUnload)
+		}
 	}, [isDirty, isSubmitting])
 
-	// removing one field's error as soon as the user edits that field
-	const clearError = (key) => {
+	// --------------------------------------------------------
+	// Error handling helpers
+	// --------------------------------------------------------
+
+	const clearError = useCallback((key) => {
 		setErrors((previousErrors) => {
-			if (!previousErrors[key]) return previousErrors
+			if (!previousErrors[key]) {
+				return previousErrors
+			}
+
 			const nextErrors = { ...previousErrors }
+
 			delete nextErrors[key]
+
 			return nextErrors
 		})
-	}
+	}, [])
 
-	// one handler for every text/number/textarea input (input `name` matches the state key)
+	// --------------------------------------------------------
+	// General form input handler
+	// --------------------------------------------------------
+
 	const handleChange = (event) => {
 		const { name, value } = event.target
-		setValues((previousValues) => ({ ...previousValues, [name]: value }))
+
+		setValues((previousValues) => ({
+			...previousValues,
+			[name]: value,
+		}))
+
 		clearError(name)
+
+		// A corrected field should not leave a stale request error
+		// visible while the user continues editing.
+
+		if (submitError) {
+			setSubmitError(null)
+		}
 	}
 
-	// validating the chosen image on the client for fast feedback (server must still re-check)
+	// --------------------------------------------------------
+	// Image selection
+	// --------------------------------------------------------
+
 	const handleImageChange = (event) => {
 		const file = event.target.files?.[0]
 
-		// resetting the input so choosing the same file again still fires onChange
+		// Allow selecting the same file again.
+
 		event.target.value = ''
 
 		if (!file) return
 
-		if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+		if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
 			setErrors((previousErrors) => ({
 				...previousErrors,
 				profileImage: 'Please choose a JPG, JPEG or PNG image.',
 			}))
+
+			return
+		}
+
+		if (file.size === 0) {
+			setErrors((previousErrors) => ({
+				...previousErrors,
+				profileImage: 'The selected image is empty.',
+			}))
+
 			return
 		}
 
@@ -463,20 +609,29 @@ function UpdateProfileForm({ profile }) {
 				...previousErrors,
 				profileImage: 'Image must be 3 MB or smaller.',
 			}))
+
 			return
 		}
 
 		clearError('profileImage')
+
 		setImageFile(file)
+
+		setSubmitError(null)
 	}
 
-	// discarding the newly chosen image (the saved photo stays as it was)
 	const discardImage = () => {
 		setImageFile(null)
+
 		clearError('profileImage')
+
+		setSubmitError(null)
 	}
 
-	// social link handlers
+	// --------------------------------------------------------
+	// Social link handlers
+	// --------------------------------------------------------
+
 	const updateSocialLink = (id, field, value) => {
 		setSocialLinks((previousLinks) =>
 			previousLinks.map((link) =>
@@ -484,36 +639,58 @@ function UpdateProfileForm({ profile }) {
 			),
 		)
 
-		if (field === 'url') clearError(`socialUrl${id}`)
+		if (field === 'url') {
+			clearError(`socialUrl${id}`)
+		}
+
+		setSubmitError(null)
 	}
 
 	const addSocialLink = () => {
 		setSocialLinks((previousLinks) => {
-			if (previousLinks.length >= MAX_SOCIAL_LINKS) return previousLinks
+			if (previousLinks.length >= MAX_SOCIAL_LINKS) {
+				return previousLinks
+			}
 
 			const nextId =
 				Math.max(0, ...previousLinks.map((link) => link.id)) + 1
 
 			return [
 				...previousLinks,
-				{ id: nextId, platform: 'Other', url: '' },
+				{
+					id: nextId,
+					platform: 'Other',
+					url: '',
+				},
 			]
 		})
+
+		setSubmitError(null)
 	}
 
 	const removeSocialLink = (id) => {
 		setSocialLinks((previousLinks) =>
 			previousLinks.filter((link) => link.id !== id),
 		)
+
 		clearError(`socialUrl${id}`)
+
+		setSubmitError(null)
 	}
 
-	// validating, then sending only the changed fields
+	// --------------------------------------------------------
+	// Submit handler
+	// --------------------------------------------------------
+
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 
-		// blocking double submits, and empty PATCH requests
-		if (isSubmitting || !isDirty) return
+		// A ref prevents two submissions before React finishes
+		// rendering the disabled button.
+
+		if (submitLockRef.current || !isDirty) {
+			return
+		}
 
 		setSubmitError(null)
 
@@ -522,62 +699,91 @@ function UpdateProfileForm({ profile }) {
 			skills,
 			socialLinks,
 			initial,
+			errors,
 		)
-
-		// keeping an image error from handleImageChange alive across submits
-		if (errors.profileImage)
-			validationErrors.profileImage = errors.profileImage
 
 		setErrors(validationErrors)
 
-		// focusing the first invalid field so keyboard / screen reader users land on it
+		// Focus the first invalid field.
+
 		const firstInvalidId = Object.keys(validationErrors)[0]
+
 		if (firstInvalidId) {
 			document.getElementById(firstInvalidId)?.focus()
 			return
 		}
 
+		submitLockRef.current = true
+
 		setIsSubmitting(true)
 
 		try {
+			// Send only changed fields.
+			//
+			// updateProfile must support the existing payload contract,
+			// including multipart/form-data when profileImage is present.
+
 			await updateProfile(changes)
+
+			// The provider should update its cached profile before
+			// this navigation occurs.
+
 			router.push(PROFILE_PATH)
 		} catch (error) {
-			// ApiError.message is already user-friendly (network error or backend message)
-			setSubmitError(error.message || 'Could not update your profile.')
+			setSubmitError(error?.message || 'Could not update your profile.')
 		} finally {
+			submitLockRef.current = false
+
 			setIsSubmitting(false)
 		}
 	}
 
-	const currentImage = imagePreview ?? profile.profileImage ?? null
+	// ========================================================
+	// Render
+	// ========================================================
+
+	if (isSubmitting) {
+		return <LoadingScreen />
+	}
 
 	return (
 		<main className='min-h-screen bg-[#030712] px-4 py-8 text-white sm:px-6 lg:px-8 lg:py-10'>
 			<div className='mx-auto max-w-4xl'>
+				{/* Breadcrumb and page heading */}
+
 				<div className='mb-8 flex items-start justify-between gap-4'>
 					<div>
-						<nav className='flex flex-wrap items-center gap-2 text-xs text-slate-500 sm:text-sm'>
+						<nav
+							aria-label='Breadcrumb'
+							className='flex flex-wrap items-center gap-2 text-xs text-slate-500 sm:text-sm'
+						>
 							<Link
 								href='/dashboard'
 								className='transition hover:text-slate-300'
 							>
 								Dashboard
 							</Link>
-							<span>/</span>
+
+							<span aria-hidden='true'>/</span>
+
 							<Link
 								href={PROFILE_PATH}
 								className='transition hover:text-slate-300'
 							>
 								Profile
 							</Link>
-							<span>/</span>
-							<span className='text-indigo-400'>
+
+							<span aria-hidden='true'>/</span>
+
+							<span
+								aria-current='page'
+								className='text-indigo-400'
+							>
 								Update Profile
 							</span>
 						</nav>
 
-						<h1 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
+						<h1 className='mt-3 text-2xl font-semibold tracking-tight sm:text-3xl'>
 							Update your profile
 						</h1>
 
@@ -589,34 +795,37 @@ function UpdateProfileForm({ profile }) {
 					</div>
 				</div>
 
-				{/* noValidate: our own validation shows consistent messages instead of browser popups */}
 				<form
 					onSubmit={handleSubmit}
 					noValidate
 					className='space-y-6'
 				>
-					{/* fieldset disables every control while the request is running */}
 					<fieldset
 						disabled={isSubmitting}
 						className='m-0 min-w-0 space-y-6 border-0 p-0'
 					>
-						{/* Profile information */}
+						{/* ==================================== */}
+						{/* Profile information                  */}
+						{/* ==================================== */}
+
 						<section className='rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 sm:p-7'>
 							<div className='mb-6'>
 								<h2 className='text-base font-semibold text-white'>
 									Profile information
 								</h2>
+
 								<p className='mt-1 text-xs text-slate-500'>
 									Update your name, professional title, and
 									bio.
 								</p>
 							</div>
 
+							{/* Profile image */}
+
 							<div className='mb-6 rounded-xl border border-slate-800/80 bg-slate-950/40 p-4'>
 								<div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
 									<div className='flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-indigo-400/20 bg-indigo-500/10 text-lg font-semibold text-indigo-300'>
 										<Avatar
-											key={currentImage ?? 'no-image'}
 											src={currentImage}
 											initials={initials}
 										/>
@@ -626,6 +835,7 @@ function UpdateProfileForm({ profile }) {
 										<p className='text-sm font-medium text-slate-200'>
 											Profile photo
 										</p>
+
 										<p className='mt-1 text-xs leading-5 text-slate-500'>
 											{imageFile
 												? `New photo selected: ${imageFile.name}`
@@ -634,14 +844,13 @@ function UpdateProfileForm({ profile }) {
 									</div>
 
 									<div className='flex shrink-0 items-center gap-2'>
-										<label className='inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors focus-within:ring-2 focus-within:ring-indigo-400/40 hover:border-slate-600 hover:bg-slate-800/60'>
+										<label className='inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800/60 focus-within:ring-2 focus-within:ring-indigo-400/40'>
 											Change photo
 											<input
 												id='profileImage'
+												name='profileImage'
 												type='file'
-												accept={ALLOWED_IMAGE_TYPES.join(
-													',',
-												)}
+												accept='image/jpeg,image/png'
 												onChange={handleImageChange}
 												aria-invalid={Boolean(
 													errors.profileImage,
@@ -659,7 +868,7 @@ function UpdateProfileForm({ profile }) {
 											<button
 												type='button'
 												onClick={discardImage}
-												className='inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800/60'
+												className='inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/40'
 											>
 												Undo
 											</button>
@@ -717,22 +926,27 @@ function UpdateProfileForm({ profile }) {
 									label='Professional bio'
 									multiline
 									rows={4}
+									maxLength={BIO_MAX_LENGTH}
 									placeholder='Briefly describe your experience, strengths, and what you build.'
 									className='sm:col-span-2'
 									value={values.bio}
 									onChange={handleChange}
 									error={errors.bio}
-									hint={`${values.bio.trim().length}/${BIO_MAX_LENGTH}`}
+									hint={`${values.bio.length}/${BIO_MAX_LENGTH}`}
 								/>
 							</div>
 						</section>
 
-						{/* Contact and experience */}
+						{/* ==================================== */}
+						{/* Contact and experience                */}
+						{/* ==================================== */}
+
 						<section className='rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 sm:p-7'>
 							<div className='mb-6'>
 								<h2 className='text-base font-semibold text-white'>
 									Contact and experience
 								</h2>
+
 								<p className='mt-1 text-xs text-slate-500'>
 									Keep your contact details and experience
 									accurate.
@@ -789,12 +1003,16 @@ function UpdateProfileForm({ profile }) {
 							</div>
 						</section>
 
-						{/* Skills and expertise */}
+						{/* ==================================== */}
+						{/* Skills and expertise                  */}
+						{/* ==================================== */}
+
 						<section className='rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 sm:p-7'>
 							<div className='mb-6'>
 								<h2 className='text-base font-semibold text-white'>
 									Skills and expertise
 								</h2>
+
 								<p className='mt-1 text-xs text-slate-500'>
 									Review the technologies and skills on your
 									profile.
@@ -812,7 +1030,6 @@ function UpdateProfileForm({ profile }) {
 								hint={`Use commas to separate skills. Maximum ${MAX_SKILLS} skills.`}
 							/>
 
-							{/* live preview of exactly what will be saved */}
 							{skills.length > 0 && (
 								<ul
 									aria-label='Skills preview'
@@ -830,12 +1047,16 @@ function UpdateProfileForm({ profile }) {
 							)}
 						</section>
 
-						{/* Dynamic social links */}
+						{/* ==================================== */}
+						{/* Social links                          */}
+						{/* ==================================== */}
+
 						<section className='rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 sm:p-7'>
 							<div className='mb-6'>
 								<h2 className='text-base font-semibold text-white'>
 									Social links
 								</h2>
+
 								<p className='mt-1 text-xs text-slate-500'>
 									Update the links to your professional
 									profiles.
@@ -845,7 +1066,15 @@ function UpdateProfileForm({ profile }) {
 							<div className='space-y-4'>
 								{socialLinks.map((socialLink) => {
 									const urlId = `socialUrl${socialLink.id}`
+
 									const urlError = errors[urlId]
+
+									const hasKnownPlatform =
+										SOCIAL_PLATFORMS.some(
+											(platform) =>
+												platform.value ===
+												socialLink.platform,
+										)
 
 									return (
 										<div
@@ -877,6 +1106,19 @@ function UpdateProfileForm({ profile }) {
 														}
 														className='h-11 w-full appearance-none rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 pr-10 text-sm font-medium text-slate-200 outline-none transition-all duration-200 hover:border-slate-600 focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-500/15 disabled:opacity-60'
 													>
+														{!hasKnownPlatform && (
+															<option
+																value={
+																	socialLink.platform
+																}
+																className='bg-slate-900 text-white'
+															>
+																{
+																	socialLink.platform
+																}
+															</option>
+														)}
+
 														{SOCIAL_PLATFORMS.map(
 															(platform) => (
 																<option
@@ -948,7 +1190,11 @@ function UpdateProfileForm({ profile }) {
 														placeholder={getSocialPlaceholder(
 															socialLink.platform,
 														)}
-														className={`${INPUT_BASE} ${urlError ? INPUT_ERROR : INPUT_OK} h-11 min-w-0 flex-1`}
+														className={`${INPUT_BASE} ${
+															urlError
+																? INPUT_ERROR
+																: INPUT_OK
+														} h-11 min-w-0 flex-1`}
 													/>
 
 													{socialLinks.length > 1 && (
@@ -1037,9 +1283,13 @@ function UpdateProfileForm({ profile }) {
 						</section>
 					</fieldset>
 
-					{/* server / network failure */}
+					{/* ======================================== */}
+					{/* Submission error                         */}
+					{/* ======================================== */}
+
 					{submitError && (
 						<div
+							ref={submitErrorRef}
 							role='alert'
 							className='rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300'
 						>
@@ -1047,10 +1297,14 @@ function UpdateProfileForm({ profile }) {
 						</div>
 					)}
 
-					{/* Form actions */}
-					<div className='flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end py-6'>
+					{/* ======================================== */}
+					{/* Form actions                             */}
+					{/* ======================================== */}
+
+					<div className='flex flex-col-reverse gap-3 py-6 sm:flex-row sm:items-center sm:justify-end'>
 						<p
 							role='status'
+							aria-live='polite'
 							className='text-xs text-slate-500 sm:mr-auto'
 						>
 							{isDirty
@@ -1060,7 +1314,7 @@ function UpdateProfileForm({ profile }) {
 
 						<Link
 							href={PROFILE_PATH}
-							className='inline-flex h-11 items-center justify-center rounded-lg border border-slate-700 px-5 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white'
+							className='inline-flex h-11 items-center justify-center rounded-lg border border-slate-700 px-5 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/40'
 						>
 							Cancel
 						</Link>
@@ -1086,6 +1340,7 @@ function UpdateProfileForm({ profile }) {
 											strokeWidth='3'
 											className='opacity-25'
 										/>
+
 										<path
 											d='M21 12a9 9 0 0 0-9-9'
 											stroke='currentColor'
@@ -1122,10 +1377,13 @@ function UpdateProfileForm({ profile }) {
 	)
 }
 
-// ---------- page component (data gate) ----------
+// ============================================================
+// Page component
+// ============================================================
 
 export default function UpdateProfile() {
 	const router = useRouter()
+
 	const {
 		profile,
 		hasProfile,
@@ -1134,30 +1392,37 @@ export default function UpdateProfile() {
 		refetchProfile,
 	} = useProfile()
 
-	// nothing to update yet: sending the user to the create page
+	// Redirect to profile creation if no profile exists.
+
 	useEffect(() => {
 		if (!isProfileLoading && !profileError && !hasProfile) {
 			router.replace(CREATE_PROFILE_PATH)
 		}
 	}, [isProfileLoading, profileError, hasProfile, router])
 
-	// waiting for the profile to load
+	// Loading state.
+
 	if (isProfileLoading) {
 		return <LoadingScreen />
 	}
 
-	// loading failed for a real reason (not 404)
+	// API or network error.
+
 	if (profileError) {
 		return (
 			<main className='flex min-h-screen items-center justify-center bg-[#030712] px-4 text-white'>
 				<div className='max-w-sm text-center'>
-					<p className='text-sm text-slate-300'>
-						{profileError.message}
+					<p
+						role='alert'
+						className='text-sm text-slate-300'
+					>
+						{profileError.message || 'Could not load your profile.'}
 					</p>
+
 					<button
 						type='button'
 						onClick={refetchProfile}
-						className='mt-4 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-indigo-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-indigo-400'
+						className='mt-4 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-indigo-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300'
 					>
 						Try again
 					</button>
@@ -1166,12 +1431,14 @@ export default function UpdateProfile() {
 		)
 	}
 
-	// no profile: the effect above is redirecting
-	if (!hasProfile) {
+	// Wait while redirecting to profile creation.
+
+	if (!hasProfile || !profile) {
 		return <LoadingScreen />
 	}
 
-	// the form only mounts once the profile exists, so its state can start from real data
+	// Remount the form if the active profile changes.
+
 	return (
 		<UpdateProfileForm
 			key={profile._id}

@@ -472,7 +472,7 @@ export default function CreateProfile() {
 	// ----- non-form states -----
 
 	// waiting for the "does a profile already exist?" check, or redirecting away
-	if (isProfileLoading || hasProfile) {
+	if (isProfileLoading || hasProfile || isSubmitting) {
 		return <LoadingScreen />
 	}
 
