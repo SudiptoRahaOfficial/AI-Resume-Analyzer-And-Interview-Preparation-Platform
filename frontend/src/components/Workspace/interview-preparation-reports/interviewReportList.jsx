@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import Icon from '@/components/shared/icon'
-import { useAuth } from '@/context/AuthContext' // adjust to your actual path
-import { useInterview } from '@/context/InterviewContext' // adjust to your actual path
+import { useAuth } from '@/context/AuthContext'
+import { useInterview } from '@/context/InterviewContext'
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
