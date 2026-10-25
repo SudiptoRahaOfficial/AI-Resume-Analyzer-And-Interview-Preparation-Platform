@@ -1,17 +1,40 @@
 /**
-    - file name: auth.controllers.js
-    - responsibility: responsible for all auth related api controllers
+	- file name: auth.controllers.js
+	- responsibility: responsible for all auth related api controllers
  */
 
 // importing dependencis
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const envConfig = require('../configs/env.config')
 const securityConfig = require('../configs/security.config')
 const userModel = require('../models/user.model')
 const otpModel = require('../models/otp.model')
 const sessionModel = require('../models/session.model')
-const { generateSecureOTP } = require('../utils/auth.utils')
+const {
+	BCRYPT_SALT_ROUNDS,
+	OTP_EXPIRY_MS,
+	SESSION_DURATION_MS,
+	REFRESH_COOKIE_NAME,
+	DUPLICATE_MESSAGES,
+	DUMMY_PASSWORD_HASH,
+	EmailDeliveryError,
+	sendError,
+	toPublicUser,
+	getFirstErrorMessage,
+	validateSignupInput,
+	validateSigninInput,
+	validateVerifyEmailInput,
+	validateResendInput,
+	generateSecureOTP,
+	getResendRetryAfterSeconds,
+	hashToken,
+	signAccessToken,
+	signRefreshToken,
+	setRefreshTokenCookie,
+	clearRefreshTokenCookie,
+	findSessionByRefreshToken,
+	cleanupFailedSignup,
+	runInBackground,
+} = require('../utils/auth.utils')
 const {
 	sendSignupEmail,
 	sendSigninEmail,
@@ -20,909 +43,593 @@ const {
 } = require('../services/email.service')
 
 /**
-    - signup controller
-    - POST API - "/api/auth/signup"
+	- signup controller
+	- POST API - "/api/auth/signup"
  */
 async function signupController(req, res) {
-	// extract all data sent by client
-	const { username, email, password } = req.body
+	// 1. validate + normalize input (400 with per-field errors)
+	const { errors: inputErrors, values } = validateSignupInput(req.body)
 
-	// validating required fields
-	if (!username || !email || !password) {
-		return res.status(400).json({
-			message: 'Username, email & password are required',
-			success: false,
-		})
-	}
-
-	// validating fields type
-	if (
-		typeof username !== 'string' ||
-		typeof email !== 'string' ||
-		typeof password !== 'string'
-	) {
-		return res.status(400).json({
-			message: 'Username, email and password must be strings',
-			success: false,
-		})
-	}
-
-	// normalizing username & email
-	const normalizedUsername = username.trim()
-	const normalizedEmail = email.trim().toLowerCase()
-
-	// validating username
-	if (!normalizedUsername) {
-		return res.status(400).json({
-			message: 'Username cannot be empty',
-			success: false,
-		})
-	}
-
-	// validating email format
-	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-		return res.status(400).json({
-			message: 'Invalid email address',
-			success: false,
-		})
-	}
-
-	// validating password format
-	if (
-		!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/.test(
-			password,
+	if (Object.keys(inputErrors).length > 0) {
+		return sendError(
+			res,
+			400,
+			'Please correct the highlighted fields.',
+			inputErrors,
 		)
-	) {
-		return res.status(400).json({
-			message:
-				'Password must be at least 8 characters, contain uppercase & lowercase letter, one number, and one special character',
-			success: false,
-		})
 	}
+
+	const { username, email, password } = values
+
+	// set once the user document exists, so we know what to undo on failure
+	let createdUserId = null
 
 	try {
-		// duplicate account check with username & email
-		const isUserExists = await userModel.findOne({
-			$or: [{ username: normalizedUsername }, { email: normalizedEmail }],
+		// 2. friendly duplicate check (reports username AND email conflicts together)
+		const existingUsers = await userModel
+			.find({ $or: [{ username }, { email }] })
+			.select('username email')
+			.lean()
+
+		const duplicateErrors = {}
+		existingUsers.forEach((existing) => {
+			if (existing.username === username) {
+				duplicateErrors.username = DUPLICATE_MESSAGES.username
+			}
+			if (existing.email === email) {
+				duplicateErrors.email = DUPLICATE_MESSAGES.email
+			}
 		})
-		if (isUserExists) {
-			// username error response
-			if (isUserExists.username === normalizedUsername) {
-				return res.status(400).json({
-					message: 'Account already exists with the username',
-					success: false,
-				})
-			}
-			// email error response
-			if (isUserExists.email === normalizedEmail) {
-				return res.status(400).json({
-					message: 'Account already exists with the email',
-					success: false,
-				})
-			}
+
+		if (Object.keys(duplicateErrors).length > 0) {
+			return sendError(
+				res,
+				409,
+				'An account with these details already exists.',
+				duplicateErrors,
+			)
 		}
 
-		// encrypting password
-		const passwordHash = await bcrypt.hash(password, 10)
+		// 3. create the user with a hashed password
+		const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS)
 
-		// creating new user
 		const user = await userModel.create({
-			username: normalizedUsername,
-			email: normalizedEmail,
+			username,
+			email,
 			password: passwordHash,
 		})
+		createdUserId = user._id
 
-		// generating otp & encrypting otp
+		// 4. create the OTP
 		const otp = generateSecureOTP()
-		const otpHash = await bcrypt.hash(otp, 10)
+		const otpHash = await bcrypt.hash(otp, BCRYPT_SALT_ROUNDS)
 
-		// creating new otp document to db
-		const otpDoc = await otpModel.create({
+		await otpModel.create({
 			email: user.email,
 			user: user._id,
 			otpHash,
-			expiresAt: new Date(Date.now() + 3 * 60 * 1000),
+			expiresAt: new Date(Date.now() + OTP_EXPIRY_MS),
 		})
 
+		// 5. send the email (a failure here must not leave a stuck account)
 		try {
-			// sending email to user on signup
 			await sendSignupEmail(user.email, user.username, otp)
 		} catch (emailError) {
-			// if email sending failed remove the newly created OTP
-			await otpModel.deleteOne({
-				_id: otpDoc._id,
-			})
+			throw new EmailDeliveryError(emailError)
 		}
 
-		// response back on success
 		return res.status(201).json({
 			message: 'Signup successful! Please verify your email.',
 			success: true,
-			user: {
-				id: user._id,
-				username: user.username,
-				email: user.email,
-				verified: user.verified,
-			},
+			user: toPublicUser(user),
 		})
 	} catch (error) {
-		// logging on unexpected server error
+		// roll back anything created before the failure
+		await cleanupFailedSignup(createdUserId)
+
+		// email provider failed
+		if (error instanceof EmailDeliveryError) {
+			console.error('Signup email failed', {
+				error: error.cause?.message,
+			})
+			return sendError(
+				res,
+				502,
+				'We could not send the verification email. Please try again.',
+			)
+		}
+
+		// These two only make sense when the failure came from creating the
+		// USER. If the OTP insert failed, "email already exists" would be a lie.
+		if (!createdUserId) {
+			// Mongoose schema validation failed -> client mistake, not a 500
+			if (error.name === 'ValidationError') {
+				const errors = Object.fromEntries(
+					Object.values(error.errors).map((fieldError) => [
+						fieldError.path,
+						fieldError.message,
+					]),
+				)
+				return sendError(
+					res,
+					400,
+					'Please correct the highlighted fields.',
+					errors,
+				)
+			}
+
+			// unique index violation (race condition the find() can't catch)
+			if (error.code === 11000) {
+				const errors = Object.fromEntries(
+					Object.keys(error.keyPattern ?? {}).map((field) => [
+						field,
+						DUPLICATE_MESSAGES[field] ??
+							`This ${field} is already in use.`,
+					]),
+				)
+				return sendError(
+					res,
+					409,
+					'An account with these details already exists.',
+					errors,
+				)
+			}
+		}
+
+		// genuinely unexpected: log details server-side, hide them from the client
 		console.error('Signup failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
 /**
-    - verify-email controller
-    - POST API - "/api/auth/verify-email"
+	- verify-email controller
+	- POST API - "/api/auth/verify-email"
  */
 async function verifyEmailController(req, res) {
-	// extracting all data sent by client
-	const { otp, email } = req.body
+	// validating + normalizing input
+	const { errors: inputErrors, values } = validateVerifyEmailInput(req.body)
 
-	// validating required fields
-	if (!otp || !email) {
-		return res.status(400).json({
-			message: 'Email and OTP are required',
-			success: false,
-		})
+	if (Object.keys(inputErrors).length > 0) {
+		return sendError(
+			res,
+			400,
+			getFirstErrorMessage(inputErrors),
+			inputErrors,
+		)
 	}
 
-	// validating fields type
-	if (typeof email !== 'string' || typeof otp !== 'string') {
-		return res.status(400).json({
-			message: 'Email and OTP must be strings',
-			success: false,
-		})
-	}
-
-	// normalizing email
-	const normalizedEmail = email.trim().toLowerCase()
-
-	// validating email format
-	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-		return res.status(400).json({
-			message: 'Invalid email address',
-			success: false,
-		})
-	}
-
-	// validating OTP format
-	if (!/^\d{6}$/.test(otp)) {
-		return res.status(400).json({
-			message: 'Invalid OTP format',
-			success: false,
-		})
-	}
+	const { email, otp } = values
 
 	try {
-		// autometically claim one OTP verification attempt
+		// atomically claim one OTP verification attempt
 		const otpDoc = await otpModel.findOneAndUpdate(
 			{
-				email: normalizedEmail,
+				email,
 				expiresAt: { $gt: new Date() },
 				attempts: { $lt: securityConfig.MAX_OTP_ATTEMPTS },
 			},
-			{
-				$inc: { attempts: 1 },
-			},
-			{
-				returnDocument: 'after',
-			},
+			{ $inc: { attempts: 1 } },
+			{ returnDocument: 'after' },
 		)
 
-		// returning failed response if OTP is invalid, expired, or attempts over
+		// no claimable OTP: either all attempts are used up, or it's invalid/expired
 		if (!otpDoc) {
-			return res.status(400).json({
-				message: 'Invalid or expired OTP',
-				success: false,
+			const hasActiveOtp = await otpModel.exists({
+				email,
+				expiresAt: { $gt: new Date() },
 			})
+
+			if (hasActiveOtp) {
+				return sendError(
+					res,
+					429,
+					'Too many incorrect attempts. Please request a new code.',
+				)
+			}
+
+			return sendError(res, 400, 'Invalid or expired OTP')
 		}
 
 		// securely comparing provided OTP with stored OTP
 		const isOtpValid = await bcrypt.compare(otp, otpDoc.otpHash)
 
-		// returning failed response if OTP is incorrect
+		// wrong OTP: tell the user how many tries are left
 		if (!isOtpValid) {
-			return res.status(400).json({
-				message: 'Invalid or expired OTP',
-				success: false,
-			})
+			const attemptsLeft = Math.max(
+				securityConfig.MAX_OTP_ATTEMPTS - otpDoc.attempts,
+				0,
+			)
+
+			if (attemptsLeft === 0) {
+				return sendError(
+					res,
+					429,
+					'Too many incorrect attempts. Please request a new code.',
+				)
+			}
+
+			return sendError(
+				res,
+				400,
+				`Incorrect code. ${attemptsLeft} ${attemptsLeft === 1 ? 'attempt' : 'attempts'} left.`,
+			)
 		}
 
-		// updating verified status true at user document if OTP verified
+		// marking the user verified (only if not already verified)
 		const user = await userModel.findOneAndUpdate(
 			{ _id: otpDoc.user, verified: false },
 			{ $set: { verified: true } },
 			{ returnDocument: 'after' },
 		)
 
-		// returning failed response if user does not exist
-		if (!user) {
-			return res.status(404).json({
-				message: 'User not found',
-				success: false,
-			})
-		}
-
 		// deleting all OTPs belonging to the user
 		await otpModel.deleteMany({ user: otpDoc.user })
 
-		try {
-			// sending email to user on email verification success
-			await sendVerificationSuccessEmail(user.email, user.username)
-		} catch (emailError) {
-			// logging email delivery failure
-			console.error('Verification success email delivery failed', {
-				userId: user._id.toString(),
-				email: user.email,
-				error: emailError.message,
-				stack: emailError.stack,
-			})
+		if (!user) {
+			return sendError(res, 404, 'User not found or already verified')
 		}
 
-		// response back on success
+		// non-critical email: must not delay or fail the response
+		runInBackground(
+			'Verification success email delivery',
+			() => sendVerificationSuccessEmail(user.email, user.username),
+			{ userId: user._id.toString() },
+		)
+
 		return res.status(200).json({
 			message: 'Email verified successfully',
 			success: true,
-			user: {
-				id: user._id,
-				username: user.username,
-				email: user.email,
-				verified: user.verified,
-			},
+			user: toPublicUser(user),
 		})
 	} catch (error) {
-		// logging on unexpected server error
 		console.error('Email verification failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
 /**
-    - resend-verify-email controller
-    - POST API - "/api/auth/resend-verify-email"
+	- resend-verify-email controller
+	- POST API - "/api/auth/resend-verify-email"
  */
 async function resendVerifyEmailController(req, res) {
-	// extracting email sent by client
-	const { email } = req.body
+	// validating + normalizing input
+	const { errors: inputErrors, values } = validateResendInput(req.body)
 
-	// validating required field
-	if (!email) {
-		return res.status(400).json({
-			message: 'Email is required',
-			success: false,
-		})
+	if (Object.keys(inputErrors).length > 0) {
+		return sendError(
+			res,
+			400,
+			getFirstErrorMessage(inputErrors),
+			inputErrors,
+		)
 	}
 
-	// normalizing email
-	const normalizedEmail = email.trim().toLowerCase()
-
-	// validating email format
-	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-		return res.status(400).json({
-			message: 'Invalid email address',
-			success: false,
-		})
-	}
+	const { email } = values
 
 	try {
 		// finding user by normalized email
-		const user = await userModel.findOne({
-			email: normalizedEmail,
-		})
+		const user = await userModel.findOne({ email })
 
-		// returning failed response if user not exists
 		if (!user) {
-			return res.status(200).json({
-				message: 'User not found',
-				success: false,
-			})
+			return sendError(res, 404, 'User not found')
 		}
 
-		// returning response if email already verified
 		if (user.verified) {
-			return res.status(200).json({
-				message: 'Email already verified',
-				success: false,
-			})
+			return sendError(res, 409, 'Email already verified')
+		}
+
+		// cooldown: stops OTP email spam / bombing
+		const latestOtp = await otpModel
+			.findOne({ user: user._id })
+			.sort({ expiresAt: -1 })
+			.select('expiresAt')
+			.lean()
+
+		const retryAfter = getResendRetryAfterSeconds(latestOtp?.expiresAt)
+
+		if (retryAfter > 0) {
+			res.set('Retry-After', String(retryAfter))
+			return sendError(
+				res,
+				429,
+				`Please wait ${retryAfter} seconds before requesting a new code.`,
+			)
 		}
 
 		// invalidating all previously generated OTPs for this user
-		await otpModel.deleteMany({
-			user: user._id,
-		})
+		await otpModel.deleteMany({ user: user._id })
 
 		// generating otp & encrypting otp
 		const otp = generateSecureOTP()
-		const otpHash = await bcrypt.hash(otp, 10)
+		const otpHash = await bcrypt.hash(otp, BCRYPT_SALT_ROUNDS)
 
-		// creating new otp document to db
 		const otpDoc = await otpModel.create({
 			email: user.email,
 			user: user._id,
 			otpHash,
-			expiresAt: new Date(Date.now() + 3 * 60 * 1000),
+			expiresAt: new Date(Date.now() + OTP_EXPIRY_MS),
 		})
 
 		try {
-			// sending email to user on signup
 			await sendOTPEmail(user.email, user.username, otp)
 		} catch (emailError) {
-			// if email sending failed remove the newly created OTP
-			await otpModel.deleteOne({
-				_id: otpDoc._id,
+			// the OTP was never delivered, so remove it and tell the user honestly
+			await otpModel.deleteOne({ _id: otpDoc._id })
+
+			console.error('Resend OTP email failed', {
+				userId: user._id.toString(),
+				error: emailError.message,
 			})
+
+			return sendError(
+				res,
+				502,
+				'We could not send the verification email. Please try again.',
+			)
 		}
 
-		// response back on success
 		return res.status(200).json({
 			message: 'A new OTP has been sent',
 			success: true,
 		})
 	} catch (error) {
-		// logging on unexpected server error
 		console.error('OTP sending failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
 /**
-    - signin controller
-    - POST API - "/api/auth/signin"
+	- signin controller
+	- POST API - "/api/auth/signin"
  */
 async function signinController(req, res) {
-	// extracting all data sent by client
-	const { username, email, password } = req.body
+	// validating + normalizing input
+	const { errors: inputErrors, values } = validateSigninInput(req.body)
 
-	// normalizing username & email
-	const normalizedUsername = username?.trim()
-	const normalizedEmail = email?.trim().toLowerCase()
-
-	// validating required fields
-	if ((!normalizedUsername && !normalizedEmail) || !password) {
-		return res.status(400).json({
-			message: 'Username or email and password are required',
-			success: false,
-		})
+	if (Object.keys(inputErrors).length > 0) {
+		return sendError(
+			res,
+			400,
+			getFirstErrorMessage(inputErrors),
+			inputErrors,
+		)
 	}
 
-	// validating that only one identifier is provided
-	if (normalizedUsername && normalizedEmail) {
-		return res.status(400).json({
-			message: 'Provide either username or email, not both',
-			success: false,
-		})
-	}
+	const { username, email, password } = values
 
-	// validating email format
-	if (
-		normalizedEmail &&
-		!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
-	) {
-		return res.status(400).json({
-			message: 'Invalid email address',
-			success: false,
-		})
-	}
-
-	// making query accroding username/email
-	const query = normalizedUsername
-		? { username: normalizedUsername }
-		: { email: normalizedEmail }
+	// making query according to username/email
+	const query = username ? { username } : { email }
 
 	try {
-		// finding user to db by username or email
 		const user = await userModel.findOne(query)
 
-		// returning error response if user not found
-		if (!user) {
-			return res.status(401).json({
-				message: 'Invalid credentials',
-				success: false,
-			})
+		// ALWAYS run bcrypt (against a dummy hash if the user doesn't exist), so
+		// response time doesn't reveal whether an account exists
+		const isPasswordValid = await bcrypt.compare(
+			password,
+			user?.password ?? DUMMY_PASSWORD_HASH,
+		)
+
+		if (!user || !isPasswordValid) {
+			return sendError(res, 401, 'Invalid credentials')
 		}
 
-		// returning failed response if email not verified
+		// checked AFTER the password, so only the real owner learns this
 		if (!user.verified) {
-			return res.status(401).json({
-				message: 'Email not verified',
-				success: false,
-			})
+			return sendError(res, 403, 'Email not verified')
 		}
 
-		// checking for password valid/invalid
-		const isPasswordValid = await bcrypt.compare(password, user.password)
-
-		// returning error response if password invalid
-		if (!isPasswordValid) {
-			return res.status(401).json({
-				message: 'Invalid credentials',
-				success: false,
-			})
-		}
-
-		// creating an empty session to generate a unique session id
-		const session = await sessionModel.create({
+		// building the session in memory first: its _id is known immediately,
+		// so we need ONE database write instead of create + save
+		const session = new sessionModel({
 			user: user._id,
 			ip: req.ip,
-			userAgent: req.headers['user-agent'],
-			expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+			userAgent: req.get('user-agent')?.slice(0, 512),
+			expiresAt: new Date(Date.now() + SESSION_DURATION_MS),
 		})
 
-		// generating refresh token
-		const refreshToken = jwt.sign(
-			{
-				type: 'refresh',
-				id: user._id,
-				sessionId: session._id,
-			},
-			envConfig.JWT_REFRESH_TOKEN_SECRET,
-			{ expiresIn: '7d' },
-		)
-
-		// hashing & storing refresh token at session
-		const refreshTokenHash = await bcrypt.hash(refreshToken, 10)
-		session.refreshTokenHash = refreshTokenHash
+		const refreshToken = signRefreshToken(user._id, session._id)
+		session.refreshTokenHash = hashToken(refreshToken)
 		await session.save()
 
-		// setting refreshToken to browser's cookie
-		res.cookie('refreshToken', refreshToken, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-		})
+		setRefreshTokenCookie(res, refreshToken)
 
-		// generating access token
-		const accessToken = jwt.sign(
-			{
-				type: 'access',
-				id: user._id,
-				sessionId: session._id,
-			},
-			envConfig.JWT_ACCESS_TOKEN_SECRET,
-			{ expiresIn: '15m' },
+		const accessToken = signAccessToken(user._id, session._id)
+
+		// non-critical email: must not delay or fail the signin
+		runInBackground(
+			'Signin email delivery',
+			() => sendSigninEmail(user.email, user.username),
+			{ userId: user._id.toString() },
 		)
 
-		try {
-			// sending email to user on signin
-			await sendSigninEmail(user.email, user.username)
-		} catch (emailError) {
-			// logging email delivery failure
-			console.error('Signin email delivery failed', {
-				userId: user._id.toString(),
-				email: user.email,
-				error: emailError.message,
-				stack: emailError.stack,
-			})
-		}
-
-		// response back on success
 		return res.status(200).json({
 			message: 'User signed in successfully',
 			success: true,
-			user: {
-				id: user._id,
-				username: user.username,
-				email: user.email,
-				verified: user.verified,
-			},
+			user: toPublicUser(user),
 			accessToken,
 		})
 	} catch (error) {
-		// logging on unexpected server error
 		console.error('Signin failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
 /**
-    - refresh-token controller
-    - POST API - "/api/auth/refresh-token"
+	- refresh-token controller
+	- POST API - "/api/auth/refresh-token"
  */
 async function refreshTokenController(req, res) {
-	// extracting refresh token
-	const refreshToken = req.cookies.refreshToken
+	const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME]
 
-	// returning failed response if refresh token not found
-	if (!refreshToken) {
-		return res.status(401).json({
-			message: 'Unauthenticated user, refresh token missing',
-			success: false,
-		})
+	if (!refreshToken || typeof refreshToken !== 'string') {
+		return sendError(
+			res,
+			401,
+			'Unauthenticated user, refresh token missing',
+		)
 	}
 
 	try {
-		// verifying refresh token
-		const decoded = jwt.verify(
-			refreshToken,
-			envConfig.JWT_REFRESH_TOKEN_SECRET,
-		)
+		// verifies the JWT AND finds the active session matching this exact token
+		const session = await findSessionByRefreshToken(refreshToken)
 
-		// extracting token type, user id and session id
-		const { type, id, sessionId } = decoded
-
-		// returning failed response if required data missing
-		if (type !== 'refresh' || !id || !sessionId) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
-		}
-
-		// checking for the user to db
-		const user = await userModel.findById(id)
-
-		// returning response with error if user not found
-		if (!user) {
-			return res.status(401).json({
-				message: 'Unauthenticated user',
-				success: false,
-			})
-		}
-
-		// finding active session belonging to authenticated user
-		const session = await sessionModel.findOne({
-			_id: sessionId,
-			user: id,
-			revoked: false,
-		})
-
-		// returning failed response if session not found
 		if (!session) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
+			clearRefreshTokenCookie(res)
+			return sendError(res, 401, 'Invalid refresh token')
 		}
 
-		// checking refresh token against stored session hash
-		const isRefreshTokenValid = await bcrypt.compare(
-			refreshToken,
-			session.refreshTokenHash,
-		)
+		const user = await userModel.findById(session.user)
 
-		// returning failed response if refresh token doesn't match
-		if (!isRefreshTokenValid) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
+		if (!user) {
+			clearRefreshTokenCookie(res)
+			return sendError(res, 401, 'Unauthenticated user')
 		}
 
-		// generating a new refresh token
-		const newRefreshToken = jwt.sign(
+		// rotating the refresh token atomically (compare-and-swap on the hash):
+		// if two requests race with the same token, only one wins
+		const newRefreshToken = signRefreshToken(user._id, session._id)
+
+		const rotatedSession = await sessionModel.findOneAndUpdate(
 			{
-				type: 'refresh',
-				id: user._id,
-				sessionId: session._id,
+				_id: session._id,
+				revoked: false,
+				refreshTokenHash: session.refreshTokenHash,
 			},
-			envConfig.JWT_REFRESH_TOKEN_SECRET,
-			{ expiresIn: '7d' },
+			{ $set: { refreshTokenHash: hashToken(newRefreshToken) } },
+			{ returnDocument: 'after' },
 		)
 
-		// hashing & storing refresh token to db
-		const newRefreshTokenHash = await bcrypt.hash(newRefreshToken, 10)
-		session.refreshTokenHash = newRefreshTokenHash
-		await session.save()
+		// lost the race: another request already rotated it
+		// (not clearing the cookie, it may already hold the winner's new token)
+		if (!rotatedSession) {
+			return sendError(res, 401, 'Invalid refresh token')
+		}
 
-		// setting new refreshToken to browser's cookie
-		res.cookie('refreshToken', newRefreshToken, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-		})
+		setRefreshTokenCookie(res, newRefreshToken)
 
-		// generating new access token
-		const accessToken = jwt.sign(
-			{
-				type: 'access',
-				id: user._id,
-				sessionId: session._id,
-			},
-			envConfig.JWT_ACCESS_TOKEN_SECRET,
-			{ expiresIn: '15m' },
-		)
+		const accessToken = signAccessToken(user._id, session._id)
 
-		// response back with newly generated access token
 		return res.status(200).json({
 			message: 'Token refreshed successfully',
 			success: true,
-			user: {
-				id: user._id,
-				username: user.username,
-				email: user.email,
-				verified: user.verified,
-			},
+			user: toPublicUser(user),
 			accessToken,
 		})
 	} catch (error) {
-		// returning response if refresh token verification fails
-		if (
-			error.name === 'JsonWebTokenError' ||
-			error.name === 'TokenExpiredError'
-		) {
-			res.clearCookie('refreshToken', {
-				httpOnly: true,
-				secure: true,
-				sameSite: 'strict',
-			})
-
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
-		}
-
-		// logging on unexpected server error
 		console.error('Token rotation failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
 /**
-    - signout controller
-    - POST API - "/api/auth/signout"
+	- signout controller
+	- POST API - "/api/auth/signout"
  */
 async function signoutController(req, res) {
-	// extracting refresh token
-	const refreshToken = req.cookies.refreshToken
+	const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME]
 
-	// returning failed response if refresh token not found
-	if (!refreshToken) {
-		return res.status(401).json({
-			message: 'Unauthenticated user, refresh token missing',
-			success: false,
-		})
+	if (!refreshToken || typeof refreshToken !== 'string') {
+		return sendError(
+			res,
+			401,
+			'Unauthenticated user, refresh token missing',
+		)
 	}
 
 	try {
-		// verifying refresh token
-		const decoded = jwt.verify(
-			refreshToken,
-			envConfig.JWT_REFRESH_TOKEN_SECRET,
-		)
+		const session = await findSessionByRefreshToken(refreshToken)
 
-		// extracting token type, user id and session id
-		const { type, id, sessionId } = decoded
-
-		// returning failed response if required data missing
-		if (type !== 'refresh' || !id || !sessionId) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
-		}
-
-		// finding active session belonging to authenticated user
-		const session = await sessionModel.findOne({
-			_id: sessionId,
-			user: id,
-			revoked: false,
-		})
-
-		// returning failed response if session not found
 		if (!session) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
+			clearRefreshTokenCookie(res)
+			return sendError(res, 401, 'Invalid refresh token')
 		}
 
-		// checking refresh token against stored session hash
-		const isRefreshTokenValid = await bcrypt.compare(
-			refreshToken,
-			session.refreshTokenHash,
+		// revoking only this device's session
+		await sessionModel.updateOne(
+			{ _id: session._id },
+			{ $set: { revoked: true } },
 		)
 
-		// returning failed response if refresh token doesn't match
-		if (!isRefreshTokenValid) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
-		}
+		clearRefreshTokenCookie(res)
 
-		// revoking session & saving to db
-		session.revoked = true
-		await session.save()
-
-		// clearing refreshToken from browser's cookies
-		res.clearCookie('refreshToken', {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-		})
-
-		// response back on success
 		return res.status(200).json({
 			message: 'User signed out successfully',
 			success: true,
 		})
 	} catch (error) {
-		// returning failed response if refresh token verification fails
-		if (
-			error.name === 'JsonWebTokenError' ||
-			error.name === 'TokenExpiredError'
-		) {
-			res.clearCookie('refreshToken', {
-				httpOnly: true,
-				secure: true,
-				sameSite: 'strict',
-			})
-
-			return res.status(401).json({
-				message: 'Invalid refresh token, verification fails',
-				success: false,
-			})
-		}
-
-		// logging on unexpected server error
 		console.error('Signout failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
 /**
-    - signout-all controller
-    - POST API - "/api/auth/signout-all"
+	- signout-all controller
+	- POST API - "/api/auth/signout-all"
  */
 async function signoutAllController(req, res) {
-	// extracting refresh token
-	const refreshToken = req.cookies.refreshToken
+	const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME]
 
-	// returning failed response if refresh token not found
-	if (!refreshToken) {
-		return res.status(401).json({
-			message: 'Unauthenticated user, refresh token missing',
-			success: false,
-		})
+	if (!refreshToken || typeof refreshToken !== 'string') {
+		return sendError(
+			res,
+			401,
+			'Unauthenticated user, refresh token missing',
+		)
 	}
 
 	try {
-		// verifying refresh token
-		const decoded = jwt.verify(
-			refreshToken,
-			envConfig.JWT_REFRESH_TOKEN_SECRET,
-		)
+		const session = await findSessionByRefreshToken(refreshToken)
 
-		// extracting token type, user id and session id
-		const { type, id, sessionId } = decoded
-
-		// returning failed response if required data missing
-		if (type !== 'refresh' || !id || !sessionId) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
-		}
-
-		// finding active session belonging to authenticated user
-		const session = await sessionModel.findOne({
-			_id: sessionId,
-			user: id,
-			revoked: false,
-		})
-
-		// returning failed response if session not found
 		if (!session) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
-		}
-
-		// checking refresh token against stored session hash
-		const isRefreshTokenValid = await bcrypt.compare(
-			refreshToken,
-			session.refreshTokenHash,
-		)
-
-		// returning failed response if refresh token doesn't match
-		if (!isRefreshTokenValid) {
-			return res.status(401).json({
-				message: 'Invalid refresh token',
-				success: false,
-			})
+			clearRefreshTokenCookie(res)
+			return sendError(res, 401, 'Invalid refresh token')
 		}
 
 		// revoking all active sessions belonging to the authenticated user
 		await sessionModel.updateMany(
-			{ user: id, revoked: false },
-			{ revoked: true },
+			{ user: session.user, revoked: false },
+			{ $set: { revoked: true } },
 		)
 
-		// clearing refreshToken from browser's cookies
-		res.clearCookie('refreshToken', {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-		})
+		clearRefreshTokenCookie(res)
 
-		// response back on success
 		return res.status(200).json({
 			message: 'Signed out from all devices successfully',
 			success: true,
 		})
 	} catch (error) {
-		// returning failed response if refresh token verification fails
-		if (
-			error.name === 'JsonWebTokenError' ||
-			error.name === 'TokenExpiredError'
-		) {
-			res.clearCookie('refreshToken', {
-				httpOnly: true,
-				secure: true,
-				sameSite: 'strict',
-			})
-
-			return res.status(401).json({
-				message: 'Invalid refresh token, verification fails',
-				success: false,
-			})
-		}
-
-		// logging on unexpected server error
 		console.error('Signout from all devices failed', {
 			error: error.message,
 			stack: error.stack,
 		})
 
-		// response back on server error
-		return res.status(500).json({
-			message: 'Internal server error',
-			success: false,
-		})
+		return sendError(res, 500, 'Internal server error')
 	}
 }
 
