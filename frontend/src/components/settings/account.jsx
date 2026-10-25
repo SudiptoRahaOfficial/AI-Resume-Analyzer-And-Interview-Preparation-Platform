@@ -56,8 +56,8 @@ export default function AccountSection({ account }) {
 				</div>
 
 				<Link
-					href='/dashboard/profile/update-profile'
-					aria-label='Edit profile'
+					href='/dashboard/profile'
+					aria-label='view profile'
 					className='rounded-lg border border-white/10 p-2 text-slate-400 transition-colors hover:border-indigo-400/30 hover:text-white'
 				>
 					<SettingsIcon
