@@ -14,6 +14,10 @@ const nextConfig = {
 		]
 	},
 
+	experimental: {
+		proxyTimeout: 120_000, // 2 minutes;
+	},
+
 	// Allow access to Next.js development resources from your LAN IP.
 	allowedDevOrigins: ['192.168.1.100'],
 

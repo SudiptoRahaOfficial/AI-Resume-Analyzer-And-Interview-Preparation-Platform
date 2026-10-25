@@ -12,7 +12,25 @@ const initialFormState = {
 	jobDescription: '',
 }
 
-export default function Form({ onGenerateReport }) {
+function getErrorMessage(error) {
+	switch (error?.status) {
+		case 0:
+			return 'Network error. Please check your connection.'
+		case 400:
+		case 422:
+			return error.message // server validation message is safe to show
+		case 401:
+			return 'Your session has expired. Please sign in again.'
+		case 413:
+			return 'Your resume is too large. Please upload a smaller PDF.'
+		case 429:
+			return 'Too many requests. Please wait a moment and try again.'
+		default:
+			return 'We could not generate your report. Please try again.'
+	}
+}
+
+export default function Form({ onGenerateReport, isGenerating = false }) {
 	const fileInputRef = useRef(null)
 
 	const [resumeFile, setResumeFile] = useState(null)
@@ -73,8 +91,9 @@ export default function Form({ onGenerateReport }) {
 		setError('')
 	}
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
+		if (isGenerating) return
 		setError('')
 
 		if (!jobDescription.trim()) {
@@ -89,12 +108,15 @@ export default function Form({ onGenerateReport }) {
 			return
 		}
 
-		if (typeof onGenerateReport === 'function') {
-			onGenerateReport({
+		try {
+			await onGenerateReport({
 				resume: resumeFile,
 				selfDescription: selfDescription.trim(),
 				jobDescription: jobDescription.trim(),
 			})
+		} catch (err) {
+			// keep the user's input intact so they can retry without retyping
+			setError(getErrorMessage(err))
 		}
 	}
 
@@ -133,271 +155,299 @@ export default function Form({ onGenerateReport }) {
 				</div>
 
 				{/* Form fields */}
-				<div className='p-5 sm:p-7'>
-					<div className='grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-4 lg:gap-6'>
-						{/* Resume upload */}
-						<section className='flex min-w-0 flex-col'>
-							<div className='mb-3 flex min-h-5 items-center justify-between gap-2'>
-								<label
-									htmlFor='resume'
-									className={labelClass}
-								>
-									Resume
-								</label>
+				<fieldset
+					disabled={isGenerating}
+					aria-busy={isGenerating}
+					className='m-0 min-w-0 border-0 p-0'
+				>
+					<div className='p-5 sm:p-7'>
+						<div className='grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-4 lg:gap-6'>
+							{/* Resume upload */}
+							<section className='flex min-w-0 flex-col'>
+								<div className='mb-3 flex min-h-5 items-center justify-between gap-2'>
+									<label
+										htmlFor='resume'
+										className={labelClass}
+									>
+										Resume
+									</label>
 
-								<span className='text-[11px] text-slate-500'>
-									Optional
-								</span>
-							</div>
+									<span className='text-[11px] text-slate-500'>
+										Optional
+									</span>
+								</div>
 
-							<input
-								ref={fileInputRef}
-								id='resume'
-								name='resume'
-								type='file'
-								accept='.pdf,application/pdf'
-								onChange={handleResumeChange}
-								className='sr-only'
-								tabIndex={-1}
-								aria-label='Upload your PDF resume'
-							/>
+								<input
+									ref={fileInputRef}
+									id='resume'
+									name='resume'
+									type='file'
+									accept='.pdf,application/pdf'
+									onChange={handleResumeChange}
+									className='sr-only'
+									tabIndex={-1}
+									aria-label='Upload your PDF resume'
+								/>
 
-							<div className={uploadCardClass}>
-								{resumeFile ? (
-									<>
-										{/* Selected resume details */}
-										<div className='flex min-h-0 min-w-0 items-start gap-3'>
-											<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-indigo-400/20 bg-indigo-500/10 text-indigo-300'>
-												<Icon
-													name='file'
-													size={19}
-												/>
+								<div className={uploadCardClass}>
+									{resumeFile ? (
+										<>
+											{/* Selected resume details */}
+											<div className='flex min-h-0 min-w-0 items-start gap-3'>
+												<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-indigo-400/20 bg-indigo-500/10 text-indigo-300'>
+													<Icon
+														name='file'
+														size={19}
+													/>
+												</div>
+
+												<div className='min-w-0 flex-1'>
+													<p
+														title={resumeFile.name}
+														className='break-all text-sm font-medium leading-5 text-slate-200'
+													>
+														{resumeFile.name}
+													</p>
+
+													<p className='mt-1.5 text-xs text-slate-500'>
+														{(
+															resumeFile.size /
+															1024
+														).toFixed(0)}{' '}
+														KB
+														{' · '}PDF
+													</p>
+
+													<p className='mt-2 text-xs font-medium text-emerald-400'>
+														Resume selected
+													</p>
+												</div>
 											</div>
 
-											<div className='min-w-0 flex-1'>
-												<p
-													title={resumeFile.name}
-													className='break-all text-sm font-medium leading-5 text-slate-200'
+											{/* Resume actions */}
+											<div className='mt-auto flex shrink-0 gap-2 pt-3'>
+												<button
+													type='button'
+													onClick={() =>
+														fileInputRef.current?.click()
+													}
+													className='flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs font-medium text-slate-300 transition hover:border-indigo-400/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60'
 												>
-													{resumeFile.name}
-												</p>
+													Replace
+												</button>
 
-												<p className='mt-1.5 text-xs text-slate-500'>
-													{(
-														resumeFile.size / 1024
-													).toFixed(0)}{' '}
-													KB
-													{' · '}PDF
-												</p>
+												<button
+													type='button'
+													onClick={removeResume}
+													aria-label='Remove selected resume'
+													className='flex h-9 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-700 text-slate-400 transition hover:border-rose-400/30 hover:bg-rose-500/5 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50'
+												>
+													<Icon
+														name='x'
+														size={16}
+													/>
+												</button>
+											</div>
+										</>
+									) : (
+										<>
+											{/* Upload card heading */}
+											<div className='flex min-w-0 shrink-0 items-center gap-3'>
+												<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-indigo-300'>
+													<Icon
+														name='upload'
+														size={19}
+													/>
+												</div>
 
-												<p className='mt-2 text-xs font-medium text-emerald-400'>
-													Resume selected
+												<div className='min-w-0'>
+													<p className='text-sm font-semibold text-slate-200'>
+														Upload your resume
+													</p>
+
+													<p className='mt-1 text-xs text-slate-500'>
+														PDF format · Max 3 MB
+													</p>
+												</div>
+											</div>
+
+											{/* Description uses remaining space */}
+											<div className='flex min-h-0 flex-1 items-center overflow-hidden py-2'>
+												<p className='text-xs leading-5 text-slate-400 w-full text-center'>
+													Share your existing resume
 												</p>
 											</div>
-										</div>
 
-										{/* Resume actions */}
-										<div className='mt-auto flex shrink-0 gap-2 pt-3'>
+											{/* Upload action stays at the bottom */}
 											<button
 												type='button'
 												onClick={() =>
 													fileInputRef.current?.click()
 												}
-												className='flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs font-medium text-slate-300 transition hover:border-indigo-400/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60'
-											>
-												Replace
-											</button>
-
-											<button
-												type='button'
-												onClick={removeResume}
-												aria-label='Remove selected resume'
-												className='flex h-9 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-700 text-slate-400 transition hover:border-rose-400/30 hover:bg-rose-500/5 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50'
+												className='flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2.5 text-xs font-semibold text-slate-200 transition hover:border-indigo-400/40 hover:bg-indigo-500/5 hover:text-indigo-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 cursor-pointer'
 											>
 												<Icon
-													name='x'
-													size={16}
+													name='upload'
+													size={15}
 												/>
+												Choose PDF
 											</button>
-										</div>
+										</>
+									)}
+								</div>
+
+								<p className='mt-2.5 text-xs leading-5 text-slate-500'>
+									No resume? Describe your background instead.
+								</p>
+							</section>
+
+							{/* Professional background */}
+							<section className='flex min-w-0 flex-col'>
+								<div className='mb-3 flex min-h-5 items-center justify-between gap-2'>
+									<label
+										htmlFor='selfDescription'
+										className={labelClass}
+									>
+										About you
+									</label>
+
+									<span className='text-[11px] text-slate-500'>
+										Optional
+									</span>
+								</div>
+
+								<textarea
+									id='selfDescription'
+									name='selfDescription'
+									value={selfDescription}
+									onChange={updateField}
+									maxLength={MAX_SELF_DESCRIPTION_LENGTH}
+									placeholder='Describe your experience, technical skills, projects, achievements, and career goals...'
+									className={inputClass}
+								/>
+
+								<div className='mt-2.5 flex items-start justify-between gap-3'>
+									<p className='text-xs leading-5 text-slate-500'>
+										{resumeFile
+											? 'Add any additional professional context.'
+											: 'Required if you do not upload a resume.'}
+									</p>
+
+									<span className='shrink-0 text-[11px] tabular-nums text-slate-600'>
+										{selfDescription.length.toLocaleString()}
+										/
+										{MAX_SELF_DESCRIPTION_LENGTH.toLocaleString()}
+									</span>
+								</div>
+							</section>
+
+							{/* Target job description */}
+							<section className='flex min-w-0 flex-col'>
+								<div className='mb-3 flex min-h-5 items-center justify-between gap-2'>
+									<label
+										htmlFor='jobDescription'
+										className={labelClass}
+									>
+										Target job description
+										<span className='ml-1 text-rose-400'>
+											*
+										</span>
+									</label>
+
+									<span className='text-[11px] text-slate-500'>
+										Required
+									</span>
+								</div>
+
+								<textarea
+									id='jobDescription'
+									name='jobDescription'
+									value={jobDescription}
+									onChange={updateField}
+									maxLength={MAX_JOB_DESCRIPTION_LENGTH}
+									placeholder='Paste the target job posting, including responsibilities, required skills, qualifications, and experience requirements...'
+									className={inputClass}
+								/>
+
+								<div className='mt-2.5 flex items-start justify-between gap-3'>
+									<p className='text-xs leading-5 text-slate-500'>
+										Use the original job description
+									</p>
+
+									<span className='shrink-0 text-[11px] tabular-nums text-slate-600'>
+										{jobDescription.length.toLocaleString()}
+										/
+										{MAX_JOB_DESCRIPTION_LENGTH.toLocaleString()}
+									</span>
+								</div>
+							</section>
+						</div>
+
+						{/* Validation error */}
+						{error && (
+							<div
+								role='alert'
+								aria-live='polite'
+								className='mt-6 flex items-start gap-3 rounded-xl border border-rose-400/20 bg-rose-500/6 px-4 py-3.5'
+							>
+								<div className='mt-0.5 shrink-0 text-rose-300'>
+									<Icon
+										name='x'
+										size={16}
+									/>
+								</div>
+
+								<p className='text-sm leading-6 text-rose-200'>
+									{error}
+								</p>
+							</div>
+						)}
+
+						{/* Submit section */}
+						<div className='mt-7 border-t border-slate-800/80 pt-6'>
+							<button
+								type='submit'
+								disabled={isGenerating}
+								aria-busy={isGenerating}
+								className='flex w-full items-center justify-center gap-2.5 rounded-xl bg-indigo-500 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/20 transition hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d19] active:scale-[0.99] sm:mx-auto sm:w-auto sm:min-w-72 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-indigo-500 disabled:active:scale-100'
+							>
+								{isGenerating ? (
+									<>
+										<span
+											className='h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white'
+											aria-hidden='true'
+										/>
+
+										<span>Generating your report...</span>
 									</>
 								) : (
 									<>
-										{/* Upload card heading */}
-										<div className='flex min-w-0 shrink-0 items-center gap-3'>
-											<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-indigo-300'>
-												<Icon
-													name='upload'
-													size={19}
-												/>
-											</div>
+										<Icon
+											name='sparkles'
+											size={17}
+										/>
 
-											<div className='min-w-0'>
-												<p className='text-sm font-semibold text-slate-200'>
-													Upload your resume
-												</p>
+										<span>Generate Interview Report</span>
 
-												<p className='mt-1 text-xs text-slate-500'>
-													PDF format · Max 3 MB
-												</p>
-											</div>
-										</div>
-
-										{/* Description uses remaining space */}
-										<div className='flex min-h-0 flex-1 items-center overflow-hidden py-2'>
-											<p className='text-xs leading-5 text-slate-400 w-full text-center'>
-												Share your existing resume
-											</p>
-										</div>
-
-										{/* Upload action stays at the bottom */}
-										<button
-											type='button'
-											onClick={() =>
-												fileInputRef.current?.click()
-											}
-											className='flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2.5 text-xs font-semibold text-slate-200 transition hover:border-indigo-400/40 hover:bg-indigo-500/5 hover:text-indigo-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 cursor-pointer'
-										>
-											<Icon
-												name='upload'
-												size={15}
-											/>
-											Choose PDF
-										</button>
+										<Icon
+											name='arrow'
+											size={16}
+										/>
 									</>
 								)}
-							</div>
+							</button>
 
-							<p className='mt-2.5 text-xs leading-5 text-slate-500'>
-								No resume? Describe your background instead.
-							</p>
-						</section>
-
-						{/* Professional background */}
-						<section className='flex min-w-0 flex-col'>
-							<div className='mb-3 flex min-h-5 items-center justify-between gap-2'>
-								<label
-									htmlFor='selfDescription'
-									className={labelClass}
-								>
-									About you
-								</label>
-
-								<span className='text-[11px] text-slate-500'>
-									Optional
-								</span>
-							</div>
-
-							<textarea
-								id='selfDescription'
-								name='selfDescription'
-								value={selfDescription}
-								onChange={updateField}
-								maxLength={MAX_SELF_DESCRIPTION_LENGTH}
-								placeholder='Describe your experience, technical skills, projects, achievements, and career goals...'
-								className={inputClass}
-							/>
-
-							<div className='mt-2.5 flex items-start justify-between gap-3'>
-								<p className='text-xs leading-5 text-slate-500'>
-									{resumeFile
-										? 'Add any additional professional context.'
-										: 'Required if you do not upload a resume.'}
-								</p>
-
-								<span className='shrink-0 text-[11px] tabular-nums text-slate-600'>
-									{selfDescription.length.toLocaleString()}/
-									{MAX_SELF_DESCRIPTION_LENGTH.toLocaleString()}
-								</span>
-							</div>
-						</section>
-
-						{/* Target job description */}
-						<section className='flex min-w-0 flex-col'>
-							<div className='mb-3 flex min-h-5 items-center justify-between gap-2'>
-								<label
-									htmlFor='jobDescription'
-									className={labelClass}
-								>
-									Target job description
-									<span className='ml-1 text-rose-400'>
-										*
-									</span>
-								</label>
-
-								<span className='text-[11px] text-slate-500'>
-									Required
-								</span>
-							</div>
-
-							<textarea
-								id='jobDescription'
-								name='jobDescription'
-								value={jobDescription}
-								onChange={updateField}
-								maxLength={MAX_JOB_DESCRIPTION_LENGTH}
-								placeholder='Paste the target job posting, including responsibilities, required skills, qualifications, and experience requirements...'
-								className={inputClass}
-							/>
-
-							<div className='mt-2.5 flex items-start justify-between gap-3'>
-								<p className='text-xs leading-5 text-slate-500'>
-									Use the original job description
-								</p>
-
-								<span className='shrink-0 text-[11px] tabular-nums text-slate-600'>
-									{jobDescription.length.toLocaleString()}/
-									{MAX_JOB_DESCRIPTION_LENGTH.toLocaleString()}
-								</span>
-							</div>
-						</section>
-					</div>
-
-					{/* Validation error */}
-					{error && (
-						<div
-							role='alert'
-							aria-live='polite'
-							className='mt-6 flex items-start gap-3 rounded-xl border border-rose-400/20 bg-rose-500/6 px-4 py-3.5'
-						>
-							<div className='mt-0.5 shrink-0 text-rose-300'>
-								<Icon
-									name='x'
-									size={16}
-								/>
-							</div>
-
-							<p className='text-sm leading-6 text-rose-200'>
-								{error}
+							<p
+								className='mt-3 text-center text-xs leading-5 text-slate-500'
+								aria-live='polite'
+							>
+								{isGenerating
+									? 'This can take up to a minute. Please keep this page open.'
+									: 'Technical questions · Behavioral questions · Skill-gap analysis · Preparation plan'}
 							</p>
 						</div>
-					)}
-
-					{/* Submit section */}
-					<div className='mt-7 border-t border-slate-800/80 pt-6'>
-						<button
-							type='submit'
-							className='flex w-full items-center justify-center gap-2.5 rounded-xl bg-indigo-500 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/20 transition hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d19] active:scale-[0.99] sm:mx-auto sm:w-auto sm:min-w-72 cursor-pointer'
-						>
-							<Icon
-								name='sparkles'
-								size={17}
-							/>
-
-							<span>Generate Interview Report</span>
-
-							<Icon
-								name='arrow'
-								size={16}
-							/>
-						</button>
-
-						<p className='mt-3 text-center text-xs leading-5 text-slate-500'>
-							Technical questions · Behavioral questions ·
-							Skill-gap analysis · Preparation plan
-						</p>
 					</div>
-				</div>
+				</fieldset>
 			</form>
 		</section>
 	)
