@@ -1,4 +1,4 @@
-# AI Resume Analyzer & Interview Preparation Platform
+# ResumeAI - AI Powered Interview Preparation Platform
 
 A Production-ready full stack GenAI platform for resume analysis, ATS optimization, skill-gap detection, and AI-powered interview preparation.
 
