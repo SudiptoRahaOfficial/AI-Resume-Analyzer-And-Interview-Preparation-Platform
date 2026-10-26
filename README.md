@@ -36,7 +36,8 @@ A Production-ready full stack GenAI platform for resume analysis, ATS optimizati
 - ATS resume optimization
 - AI skill-gap detection
 - Personalized interview question generation
-- PDF resume generation
+- Personalized interview preparation plan generation
+- PDF resume generation or optimization
 
 ## Goal
 
