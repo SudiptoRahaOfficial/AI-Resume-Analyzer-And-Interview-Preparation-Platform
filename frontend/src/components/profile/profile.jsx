@@ -486,7 +486,7 @@ function ProfileView({ profile }) {
 						</svg>
 
 						<p className='text-center text-xs leading-5 text-slate-500'>
-							Your account information is managed through your
+							Your profile information is managed through your
 							ResumeAI account.
 						</p>
 					</div>

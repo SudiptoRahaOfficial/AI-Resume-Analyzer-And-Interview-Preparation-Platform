@@ -483,7 +483,7 @@ OUTPUT FORMAT (follow exactly):
 - resumePdfHtml: the complete HTML document as one string. Do not wrap the HTML in markdown code fences.
 - jobTitle: the job title written in the job description. If there is no clear title, write "Not mentioned in the job description". Do not invent a title.
 
-Create the resume for the candidate below.
+Create the resume for the candidate below with in one single page.
 
 <resume>
 ${safeResume}
