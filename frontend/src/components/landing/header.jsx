@@ -2,11 +2,17 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/context/AuthContext'
 import ArrowRightIcon from '@/components/landing/landing-icons/ArrowRightIcon'
 
 export default function Header() {
 	const [menuOpen, setMenuOpen] = useState(false)
 	const closeMenu = () => setMenuOpen(false)
+
+	// auth state decides which action buttons are shown
+	const { user, isLoading } = useAuth()
+	const isAuthenticated = !isLoading && Boolean(user)
+	const isGuest = !isLoading && !user
 
 	const navLinks = [
 		{ label: 'Features', href: '/#features' },
@@ -50,20 +56,44 @@ export default function Header() {
 
 					{/* Desktop actions */}
 					<div className='ml-auto hidden shrink-0 items-center gap-2 md:flex'>
-						<Link
-							href='/signin'
-							className='rounded-lg px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-900 hover:text-white'
-						>
-							Sign In
-						</Link>
+						{/* Placeholder while auth state is loading (prevents button flicker) */}
+						{isLoading && (
+							<div
+								aria-hidden='true'
+								className='h-10 w-28 animate-pulse rounded-lg bg-slate-800 motion-reduce:animate-none'
+							/>
+						)}
 
-						<Link
-							href='/signup'
-							className='group inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/20 transition-colors duration-200 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030712] motion-reduce:transition-none'
-						>
-							Get Started
-							<ArrowRightIcon />
-						</Link>
+						{/* Signed in user: only the Dashboard button */}
+						{isAuthenticated && (
+							<Link
+								href='/dashboard'
+								className='group inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/20 transition-colors duration-200 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030712] motion-reduce:transition-none'
+							>
+								Dashboard
+								<ArrowRightIcon />
+							</Link>
+						)}
+
+						{/* Signed out user: Sign In and Get Started buttons */}
+						{isGuest && (
+							<>
+								<Link
+									href='/signin'
+									className='rounded-lg px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-900 hover:text-white'
+								>
+									Sign In
+								</Link>
+
+								<Link
+									href='/signup'
+									className='group inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/20 transition-colors duration-200 hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030712] motion-reduce:transition-none'
+								>
+									Get Started
+									<ArrowRightIcon />
+								</Link>
+							</>
+						)}
 					</div>
 
 					{/* Mobile menu button */}
@@ -118,24 +148,50 @@ export default function Header() {
 							</a>
 						))}
 
-						<div className='mt-3 grid grid-cols-2 gap-3 border-t border-slate-800 pt-4'>
-							<Link
-								href='/signin'
-								tabIndex={menuOpen ? 0 : -1}
-								onClick={closeMenu}
-								className='rounded-lg border border-slate-700 px-4 py-3 text-center text-sm font-semibold text-slate-300 transition-colors hover:bg-slate-900 hover:text-white'
-							>
-								Sign In
-							</Link>
+						{/* Mobile actions */}
+						<div className='mt-3 border-t border-slate-800 pt-4'>
+							{/* Placeholder while auth state is loading */}
+							{isLoading && (
+								<div
+									aria-hidden='true'
+									className='h-11 w-full animate-pulse rounded-lg bg-slate-800 motion-reduce:animate-none'
+								/>
+							)}
 
-							<Link
-								href='/signup'
-								tabIndex={menuOpen ? 0 : -1}
-								onClick={closeMenu}
-								className='rounded-lg bg-indigo-500 px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-indigo-400'
-							>
-								Get Started
-							</Link>
+							{/* Signed in user: only the Dashboard button */}
+							{isAuthenticated && (
+								<Link
+									href='/dashboard'
+									tabIndex={menuOpen ? 0 : -1}
+									onClick={closeMenu}
+									className='block rounded-lg bg-indigo-500 px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-indigo-400'
+								>
+									Dashboard
+								</Link>
+							)}
+
+							{/* Signed out user: Sign In and Get Started buttons */}
+							{isGuest && (
+								<div className='grid grid-cols-2 gap-3'>
+									<Link
+										href='/signin'
+										tabIndex={menuOpen ? 0 : -1}
+										onClick={closeMenu}
+										className='rounded-lg border border-slate-700 px-4 py-3 text-center text-sm font-semibold text-slate-300 transition-colors hover:bg-slate-900 hover:text-white'
+									>
+										Sign In
+									</Link>
+
+									<Link
+										href='/signup'
+										tabIndex={menuOpen ? 0 : -1}
+										onClick={closeMenu}
+										className='rounded-lg bg-indigo-500 px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-indigo-400'
+									>
+										Get Started
+									</Link>
+								</div>
+							)}
 						</div>
 					</nav>
 				</div>

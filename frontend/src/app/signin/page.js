@@ -1,4 +1,3 @@
-import GuestRoute from '@/components/authentication/GuestRoute'
 import Signin from '@/components/authentication/signin'
 
 // metadata of this page
@@ -14,9 +13,5 @@ export const metadata = {
 }
 
 export default function SigninPage() {
-	return (
-		<GuestRoute>
-			<Signin />
-		</GuestRoute>
-	)
+	return <Signin />
 }

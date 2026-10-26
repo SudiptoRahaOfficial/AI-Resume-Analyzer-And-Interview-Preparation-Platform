@@ -1,4 +1,3 @@
-import GuestRoute from '@/components/authentication/GuestRoute'
 import Signup from '@/components/authentication/signup'
 
 // metadata of this page
@@ -14,9 +13,5 @@ export const metadata = {
 }
 
 export default function SignupPage() {
-	return (
-		<GuestRoute>
-			<Signup />
-		</GuestRoute>
-	)
+	return <Signup />
 }
