@@ -9,7 +9,7 @@ export default function ActivityRow({ activity }) {
 	return (
 		<Link
 			href={activity.href}
-			className='group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-slate-800/30 sm:px-5'
+			className='group min-h-20 flex items-center gap-3 px-4 py-4 transition-colors hover:bg-slate-800/30 sm:px-5'
 		>
 			{/* Icon */}
 			<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-700/70 bg-slate-800/60 text-slate-300 transition-colors group-hover:border-indigo-400/20 group-hover:text-indigo-300'>
