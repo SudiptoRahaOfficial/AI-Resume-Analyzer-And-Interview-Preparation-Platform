@@ -38,5 +38,10 @@ app.use('/api/interview', interviewRouter)
 app.use('/api/resume', resumeRouter)
 app.use('/api/dashboard', dashboardRouter)
 
+// dummy test API for checking server
+app.get('/', (req, res) => {
+	res.send('ResumeAI Backend is up and running!')
+})
+
 // exporting app
 module.exports = app

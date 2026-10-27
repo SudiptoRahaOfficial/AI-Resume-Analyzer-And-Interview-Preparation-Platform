@@ -20,6 +20,11 @@ if (!process.env.TRUSTED_ORIGIN_2) {
 	throw new Error('TRUSTED_ORIGIN_2 is not defined in .env')
 }
 
+// environment error
+if (!process.env.NODE_ENV) {
+	throw new Error('NODE_ENV is not defined in .env')
+}
+
 // db connection uri error
 if (!process.env.MONGO_DB_URI) {
 	throw new Error('MONGO_DB_URI is not defined in .env')
@@ -63,6 +68,8 @@ const config = {
 
 	TRUSTED_ORIGIN_1: process.env.TRUSTED_ORIGIN_1,
 	TRUSTED_ORIGIN_2: process.env.TRUSTED_ORIGIN_2,
+
+	NODE_ENV: process.env.NODE_ENV || 'production',
 
 	MONGO_DB_URI: process.env.MONGO_DB_URI,
 

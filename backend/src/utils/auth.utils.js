@@ -30,11 +30,13 @@ const REFRESH_TOKEN_EXPIRES_IN = '7d'
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000
 const JWT_ALGORITHM = 'HS256'
 
+const IS_DEVELOPMENT = envConfig.NODE_ENV === 'development'
 const REFRESH_COOKIE_NAME = 'refreshToken'
 const REFRESH_COOKIE_OPTIONS = {
 	httpOnly: true,
-	secure: true,
+	secure: !IS_DEVELOPMENT,
 	sameSite: 'strict',
+	path: '/api/auth',
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
