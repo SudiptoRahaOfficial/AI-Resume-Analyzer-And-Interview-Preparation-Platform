@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-// backend url (server side only, never exposed to the browser)
+// backend url
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000'
 
 const nextConfig = {
